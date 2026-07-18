@@ -1,0 +1,30 @@
+.text {
+    color: brown;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+@media only screen and (min-width: 320px) {
+    .text{
+        color:black;
+        font-size: 40px;
+    }
+}
+@media only screen and (min-width: 425px) {
+    .text{
+        color: blue;
+        font-size: 40px;
+    }
+}
+@media only screen and (min-width: 768px) {
+    .text{
+        color: chartreuse;
+        font-size: 30px;
+    }
+}
+@media only screen and (min-width: 1024px) {
+    .text{
+        color: darkmagenta;
+        font-size: 40px;
+    }
+}

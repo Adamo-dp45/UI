@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RH / Personnel — TransportApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+</head>
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   1. DESIGN TOKENS
+═══════════════════════════════════════════════════════════════ */
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --color-bg:#f5f5f3;--color-surface:#fff;
+  --color-surface-2:#f0efed;--color-surface-3:#e8e7e4;--color-surface-4:#dfdedd;
+  --color-border:#e4e3e0;--color-border-2:#cccbc7;
+  --color-text:#171715;--color-text-2:#5e5e5a;--color-text-3:#96968f;--color-text-4:#bbbbb3;
+  --color-amber:#d97706;--color-amber-light:#fef3c7;--color-amber-dark:#92400e;
+  --color-amber-glow:rgba(217,119,6,.18);
+  --color-green:#059669;--color-green-light:#d1fae5;
+  --color-red:#dc2626;--color-red-light:#fee2e2;
+  --color-sky:#0284c7;--color-sky-light:#dbeafe;
+  --color-violet:#7c3aed;--color-violet-light:#ede9fe;
+  --color-orange:#ea580c;--color-orange-light:#ffedd5;
+  --color-teal:#0d9488;--color-teal-light:#ccfbf1;
+  --color-indigo:#4f46e5;--color-indigo-light:#e0e7ff;
+  --color-rose:#e11d48;--color-rose-light:#ffe4e6;
+  --radius-xs:4px;--radius-sm:7px;--radius:11px;
+  --radius-lg:14px;--radius-xl:18px;--radius-2xl:22px;
+  --shadow-xs:0 1px 2px rgba(0,0,0,.05);
+  --shadow-sm:0 1px 4px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 16px 40px rgba(0,0,0,.12),0 4px 12px rgba(0,0,0,.06);
+  --shadow-xl:0 24px 60px rgba(0,0,0,.16),0 8px 20px rgba(0,0,0,.08);
+  --ease:cubic-bezier(.4,0,.2,1);--dur-fast:150ms;--dur-slow:260ms;
+}
+.theme-dark{
+  --color-bg:#0d0d0c;--color-surface:#191917;
+  --color-surface-2:#212120;--color-surface-3:#282826;--color-surface-4:#303030;
+  --color-border:#2b2b28;--color-border-2:#3c3c38;
+  --color-text:#eaeae6;--color-text-2:#97978f;--color-text-3:#5c5c56;--color-text-4:#3a3a36;
+  --color-amber:#f59e0b;--color-amber-light:#261f09;--color-amber-dark:#fbbf24;
+  --color-amber-glow:rgba(245,158,11,.15);
+  --color-green:#10b981;--color-green-light:#092018;
+  --color-red:#f87171;--color-red-light:#220d0d;
+  --color-sky:#38bdf8;--color-sky-light:#051523;
+  --color-violet:#a78bfa;--color-violet-light:#130d27;
+  --color-orange:#fb923c;--color-orange-light:#1f1008;
+  --color-teal:#2dd4bf;--color-teal-light:#031a18;
+  --color-indigo:#818cf8;--color-indigo-light:#1e1b4b;
+  --color-rose:#fb7185;--color-rose-light:#2d0a13;
+  --shadow-sm:0 1px 4px rgba(0,0,0,.25);
+  --shadow-xl:0 24px 60px rgba(0,0,0,.70);
+}
+html,body{font-family:'DM Sans',system-ui,sans-serif;font-size:14px;line-height:1.55;
+  background:var(--color-bg);color:var(--color-text);-webkit-font-smoothing:antialiased;min-height:100%;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit;}
+svg{display:block;flex-shrink:0;}
+:focus-visible{outline:2px solid var(--color-amber);outline-offset:2px;border-radius:var(--radius-xs);}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. UTILITAIRES COMMUNS
+═══════════════════════════════════════════════════════════════ */
+.page-content{padding:28px 28px 48px;background:var(--color-bg);min-height:100vh;}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;gap:16px;}
+.page-header__title{font-size:22px;font-weight:700;letter-spacing:-.55px;}
+.page-header__subtitle{font-size:13px;color:var(--color-text-3);margin-top:5px;}
+.page-header__actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:var(--radius);
+  font-size:13.5px;font-weight:600;white-space:nowrap;cursor:pointer;border:none;font-family:inherit;
+  transition:opacity var(--dur-fast),background var(--dur-fast),box-shadow var(--dur-fast);}
+.btn--primary{background:var(--color-amber);color:#fff;box-shadow:0 2px 8px var(--color-amber-glow);}
+.btn--primary:hover{opacity:.9;}
+.btn--ghost{background:var(--color-surface);color:var(--color-text-2);border:1px solid var(--color-border);}
+.btn--ghost:hover{background:var(--color-surface-2);color:var(--color-text);}
+.btn--danger{background:var(--color-red-light);color:var(--color-red);}
+.btn--danger:hover{opacity:.85;}
+.btn--sm{padding:6px 12px;font-size:12.5px;}
+.btn--xs{padding:4px 9px;font-size:11.5px;border-radius:var(--radius-sm);}
+
+.tag{display:inline-flex;align-items:center;gap:3px;font-size:11px;font-weight:700;
+  padding:2.5px 8px;border-radius:99px;white-space:nowrap;}
+.tag--green {background:var(--color-green-light); color:var(--color-green);}
+.tag--red   {background:var(--color-red-light);   color:var(--color-red);}
+.tag--amber {background:var(--color-amber-light);  color:var(--color-amber);}
+.tag--sky   {background:var(--color-sky-light);    color:var(--color-sky);}
+.tag--violet{background:var(--color-violet-light); color:var(--color-violet);}
+.tag--orange{background:var(--color-orange-light); color:var(--color-orange);}
+.tag--teal  {background:var(--color-teal-light);   color:var(--color-teal);}
+.tag--indigo{background:var(--color-indigo-light); color:var(--color-indigo);}
+.tag--rose  {background:var(--color-rose-light);   color:var(--color-rose);}
+.tag--gray  {background:var(--color-surface-3);    color:var(--color-text-3);}
+
+/* ═══════════════════════════════════════════════════════════════
+   NOUVEAU CSS — Onglets module
+═══════════════════════════════════════════════════════════════ */
+.module-tabs{display:flex;align-items:stretch;border-bottom:1px solid var(--color-border);
+  margin-bottom:28px;overflow-x:auto;scrollbar-width:none;}
+.module-tabs::-webkit-scrollbar{display:none;}
+.module-tab{display:flex;align-items:center;gap:8px;padding:10px 18px 11px;font-size:13.5px;
+  font-weight:500;color:var(--color-text-3);border-bottom:2px solid transparent;margin-bottom:-1px;
+  cursor:pointer;transition:color var(--dur-fast),border-color var(--dur-fast);
+  white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;}
+.module-tab:hover{color:var(--color-text);}
+.module-tab.is-active{color:var(--color-amber);border-bottom-color:var(--color-amber);font-weight:600;}
+.module-tab__icon{opacity:.6;}
+.module-tab.is-active .module-tab__icon{opacity:1;}
+.tab-panel{display:none;}
+.tab-panel.is-active{display:block;}
+
+/* ═══════════════════════════════════════════════════════════════
+   NOUVEAU CSS — KPI
+═══════════════════════════════════════════════════════════════ */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+.kpi-card{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-sm);}
+.kpi-card__header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.kpi-card__label{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-3);}
+.kpi-card__icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.kpi-card__value{font-size:28px;font-weight:700;letter-spacing:-.7px;line-height:1;}
+.kpi-card__footer{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-text-3);margin-top:10px;}
+
+/* ═══════════════════════════════════════════════════════════════
+   NOUVEAU CSS — Toolbar
+═══════════════════════════════════════════════════════════════ */
+.toolbar{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
+.toolbar-spacer{flex:1;}
+.search-field{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;
+  background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius);
+  font-size:13px;color:var(--color-text-3);width:240px;cursor:text;
+  transition:border-color var(--dur-fast),box-shadow var(--dur-fast);}
+.search-field:focus-within{border-color:var(--color-amber);box-shadow:0 0 0 3px var(--color-amber-glow);}
+.search-field input{flex:1;border:none;background:transparent;font-family:inherit;font-size:13px;color:var(--color-text);outline:none;}
+.search-field input::placeholder{color:var(--color-text-3);}
+.filter-tabs{display:flex;align-items:center;gap:2px;background:var(--color-surface-2);
+  border:1px solid var(--color-border);border-radius:var(--radius);padding:3px;}
+.filter-tab{padding:5px 11px;border-radius:var(--radius-sm);font-size:12.5px;font-weight:500;
+  color:var(--color-text-3);cursor:pointer;border:none;background:none;font-family:inherit;
+  transition:background var(--dur-fast),color var(--dur-fast);white-space:nowrap;
+  display:flex;align-items:center;gap:5px;}
+.filter-tab:hover{color:var(--color-text);}
+.filter-tab.is-active{background:var(--color-surface);color:var(--color-text);font-weight:600;box-shadow:var(--shadow-xs);}
+.filter-tab .tab-count{font-size:10px;font-weight:700;padding:1px 5px;border-radius:99px;
+  background:var(--color-surface-3);color:var(--color-text-3);}
+.filter-tab.is-active .tab-count{background:var(--color-amber-light);color:var(--color-amber);}
+
+/* Sélecteur de vue (grille / table) */
+.view-toggle{display:flex;align-items:center;gap:2px;background:var(--color-surface-2);
+  border:1px solid var(--color-border);border-radius:var(--radius);padding:3px;}
+.view-btn{width:30px;height:28px;display:flex;align-items:center;justify-content:center;
+  border-radius:var(--radius-sm);color:var(--color-text-3);cursor:pointer;
+  transition:background var(--dur-fast),color var(--dur-fast);border:none;background:none;}
+.view-btn.is-active{background:var(--color-surface);color:var(--color-text);box-shadow:var(--shadow-xs);}
+
+/* ═══════════════════════════════════════════════════════════════
+   NOUVEAU CSS — Grille de cards personnel
+═══════════════════════════════════════════════════════════════ */
+.staff-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+
+.staff-card{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;
+  cursor:pointer;transition:border-color var(--dur-fast),box-shadow var(--dur-fast),transform var(--dur-fast);}
+.staff-card:hover{border-color:var(--color-border-2);box-shadow:var(--shadow);transform:translateY(-2px);}
+
+/* Bandeau haut coloré par type */
+.staff-card__banner{height:6px;width:100%;}
+
+.staff-card__body{padding:18px 18px 14px;display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;}
+
+/* Avatar grand format avec initiales */
+.staff-avatar{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;color:#fff;font-weight:800;font-size:18px;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);}
+.staff-avatar--sm{width:32px;height:32px;font-size:12px;font-weight:700;}
+.staff-avatar--md{width:44px;height:44px;font-size:15px;font-weight:700;}
+
+.staff-card__name{font-size:14px;font-weight:700;letter-spacing:-.25px;line-height:1.25;}
+.staff-card__type{font-size:12px;color:var(--color-text-3);margin-top:2px;}
+.staff-card__footer{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 18px;border-top:1px solid var(--color-border);background:var(--color-surface-2);}
+.staff-card__actions{display:flex;gap:4px;opacity:0;transition:opacity var(--dur-fast);}
+.staff-card:hover .staff-card__actions{opacity:1;}
+
+/* ═══════════════════════════════════════════════════════════════
+   NOUVEAU CSS — Table personnel
+═══════════════════════════════════════════════════════════════ */
+.table-card{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;}
+.table-card__header{display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px 15px;border-bottom:1px solid var(--color-border);}
+.table-card__title{font-size:15px;font-weight:700;letter-spacing:-.3px;}
+.table-card__subtitle{font-size:12.5px;color:var(--color-text-3);margin-top:2px;}
+.data-table{width:100%;border-collapse:collapse;font-size:13px;}
+.data-table thead tr{border-bottom:1px solid var(--color-border);}
+.data-table th{text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.07em;color:var(--color-text-3);padding:0 16px 12px;white-space:nowrap;}
+.data-table th:first-child{padding-left:22px;}
+.data-table th:last-child{padding-right:22px;}
+.data-table td{padding:12px 16px;border-bottom:1px solid var(--color-border);vertical-align:middle;}
+.data-table td:first-child{padding-left:22px;}
+.data-table td:last-child{padding-right:22px;}
+.data-table tbody tr:last-child td{border-bottom:none;}
+.data-table tbody tr{transition:background var(--dur-fast);cursor:pointer;}
+.data-table tbody tr:hover td{background:var(--color-surface-2);}
+.cell-mono{font-family:'DM Mono',monospace;font-size:12px;}
+.cell-dim{color:var(--color-text-3);font-size:12px;}
+.row-actions{display:flex;align-items:center;gap:3px;opacity:0;transition:opacity var(--dur-fast);}
+.data-table tbody tr:hover .row-actions{opacity:1;}
+.action-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;
+  border-radius:var(--radius-sm);color:var(--color-text-3);
+  transition:background var(--dur-fast),color var(--dur-fast);cursor:pointer;border:none;background:none;}
+.action-btn:hover{background:var(--color-surface-3);color:var(--color-text);}
+.action-btn--danger:hover{background:var(--color-red-light);color:var(--color-red);}
+.table-footer{display:flex;align-items:center;justify-content:space-between;
+  padding:13px 22px;border-top:1px solid var(--color-border);
+  background:var(--color-surface-2);font-size:12.5px;color:var(--color-text-3);}
+
+/* ═══════════════════════════════════════════════════════════════
+   NOUVEAU CSS — Types de personnel (cards à la promo)
+═══════════════════════════════════════════════════════════════ */
+.types-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;}
+
+.type-card{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);overflow:hidden;
+  transition:box-shadow var(--dur-fast),transform var(--dur-fast);}
+.type-card:hover{box-shadow:var(--shadow);transform:translateY(-1px);}
+.type-card__banner{padding:18px 20px 16px;position:relative;overflow:hidden;}
+.type-card__banner::after{content:'';position:absolute;right:-18px;top:-18px;
+  width:80px;height:80px;border-radius:50%;background:currentColor;opacity:.07;}
+.type-card__icon{width:40px;height:40px;border-radius:var(--radius);display:flex;
+  align-items:center;justify-content:center;margin-bottom:12px;background:rgba(255,255,255,.25);}
+.type-card__name{font-size:16px;font-weight:800;letter-spacing:-.35px;}
+.type-card__body{padding:14px 20px 16px;border-top:1px solid var(--color-border);}
+.type-card__stat{display:flex;align-items:center;justify-content:space-between;
+  font-size:12.5px;margin-bottom:6px;}
+.type-card__stat:last-child{margin-bottom:0;}
+.type-card__stat-label{color:var(--color-text-3);}
+.type-card__stat-value{font-weight:700;font-family:'DM Mono',monospace;font-size:12px;}
+.type-card__footer{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px;border-top:1px solid var(--color-border);background:var(--color-surface-2);}
+
+.type-card--add{border-style:dashed;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:10px;min-height:180px;cursor:pointer;
+  color:var(--color-text-3);transition:border-color var(--dur-fast),color var(--dur-fast),background var(--dur-fast);}
+.type-card--add:hover{border-color:var(--color-amber);color:var(--color-amber);background:var(--color-amber-light);}
+.type-card--add span{font-size:13px;font-weight:600;}
+
+/* ═══════════════════════════════════════════════════════════════
+   NOUVEAU CSS — Organigramme
+═══════════════════════════════════════════════════════════════ */
+.org-wrap{overflow-x:auto;padding:20px 0 32px;}
+.org-tree{display:flex;flex-direction:column;align-items:center;gap:0;}
+
+/* Niveau racine */
+.org-level{display:flex;align-items:flex-start;justify-content:center;gap:24px;position:relative;}
+.org-level + .org-level{margin-top:0;}
+
+/* Connecteurs verticaux */
+.org-connector-wrap{display:flex;flex-direction:column;align-items:center;}
+.org-v-line{width:2px;height:28px;background:var(--color-border-2);}
+.org-h-line-wrap{display:flex;align-items:flex-start;position:relative;}
+.org-h-line{height:2px;background:var(--color-border-2);position:absolute;top:0;}
+
+/* Node organigramme */
+.org-group{display:flex;flex-direction:column;align-items:center;}
+.org-node{background:var(--color-surface);border:1.5px solid var(--color-border);
+  border-radius:var(--radius-lg);padding:14px 16px;width:160px;text-align:center;
+  box-shadow:var(--shadow-sm);cursor:pointer;flex-shrink:0;
+  transition:border-color var(--dur-fast),box-shadow var(--dur-fast),transform var(--dur-fast);}
+.org-node:hover{border-color:var(--color-amber);box-shadow:var(--shadow);transform:translateY(-2px);}
+.org-node--root{width:180px;border-color:var(--color-amber);border-width:2px;
+  background:var(--color-amber-light);}
+.org-node__avatar{margin:0 auto 8px;}
+.org-node__name{font-size:12.5px;font-weight:700;letter-spacing:-.2px;line-height:1.3;}
+.org-node__title{font-size:11px;color:var(--color-text-3);margin-top:3px;}
+
+/* Children container */
+.org-children{display:flex;flex-direction:column;align-items:center;}
+.org-children-row{display:flex;align-items:flex-start;justify-content:center;gap:0;position:relative;}
+.org-child-wrap{display:flex;flex-direction:column;align-items:center;padding:0 12px;}
+
+/* ═══════════════════════════════════════════════════════════════
+   NOUVEAU CSS — Drawer fiche employé
+═══════════════════════════════════════════════════════════════ */
+.drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);z-index:700;
+  opacity:0;pointer-events:none;transition:opacity .25s var(--ease);}
+.drawer-backdrop.is-open{opacity:1;pointer-events:auto;}
+.drawer{position:fixed;top:0;right:0;height:100dvh;width:min(540px,100vw);
+  background:var(--color-surface);border-left:1px solid var(--color-border);
+  box-shadow:var(--shadow-xl);z-index:701;display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .28s var(--ease);overflow:hidden;}
+.drawer-backdrop.is-open .drawer{transform:translateX(0);}
+.drawer__header{display:flex;align-items:center;justify-content:space-between;
+  padding:18px 24px;border-bottom:1px solid var(--color-border);flex-shrink:0;}
+.drawer__title{font-size:15px;font-weight:700;letter-spacing:-.3px;}
+.drawer__close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  border-radius:var(--radius-sm);color:var(--color-text-3);cursor:pointer;
+  transition:background var(--dur-fast),color var(--dur-fast);}
+.drawer__close:hover{background:var(--color-surface-2);color:var(--color-text);}
+.drawer__body{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--color-surface-4) transparent;}
+.drawer__footer{display:flex;align-items:center;gap:10px;padding:14px 24px;
+  border-top:1px solid var(--color-border);flex-shrink:0;background:var(--color-surface-2);}
+
+/* Hero fiche employé */
+.emp-hero{padding:24px;border-bottom:1px solid var(--color-border);
+  background:linear-gradient(135deg,var(--color-surface-2) 0%,var(--color-surface) 100%);
+  display:flex;gap:18px;align-items:flex-start;}
+.emp-hero__info{flex:1;min-width:0;}
+.emp-hero__code{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--color-text-3);margin-bottom:5px;}
+.emp-hero__name{font-size:20px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;}
+.emp-hero__type{font-size:13px;color:var(--color-text-2);margin-bottom:10px;}
+.emp-hero__badges{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+
+/* Sections */
+.drawer-section{padding:18px 24px;border-bottom:1px solid var(--color-border);}
+.drawer-section:last-child{border-bottom:none;}
+.drawer-section__title{font-size:11px;font-weight:700;text-transform:uppercase;
+  letter-spacing:.1em;color:var(--color-text-4);margin-bottom:14px;}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.info-item{display:flex;flex-direction:column;gap:3px;}
+.info-item--full{grid-column:1/-1;}
+.info-item__label{font-size:11.5px;color:var(--color-text-3);}
+.info-item__value{font-size:13.5px;font-weight:500;}
+
+/* Timeline affectations */
+.timeline{display:flex;flex-direction:column;gap:0;}
+.timeline-item{display:flex;gap:14px;padding:0 0 16px;}
+.timeline-item:last-child{padding-bottom:0;}
+.timeline-item__left{display:flex;flex-direction:column;align-items:center;width:16px;flex-shrink:0;margin-top:3px;}
+.timeline-item__dot{width:12px;height:12px;border-radius:50%;border:2.5px solid currentColor;flex-shrink:0;background:var(--color-surface);}
+.timeline-item__dot--active{background:currentColor;}
+.timeline-item__line{flex:1;width:2px;background:var(--color-border);margin-top:4px;}
+.timeline-item__body{flex:1;}
+.timeline-item__title{font-size:13px;font-weight:600;line-height:1.3;}
+.timeline-item__sub{font-size:12px;color:var(--color-text-3);margin-top:2px;}
+.timeline-item__date{font-size:11px;font-family:'DM Mono',monospace;color:var(--color-text-4);margin-top:4px;}
+
+/* Stat mini-cards dans la fiche */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.stat-mini{background:var(--color-surface-2);border:1px solid var(--color-border);
+  border-radius:var(--radius);padding:12px 14px;text-align:center;}
+.stat-mini__value{font-size:20px;font-weight:800;letter-spacing:-.5px;line-height:1;}
+.stat-mini__label{font-size:11px;color:var(--color-text-3);margin-top:4px;}
+
+/* ═══════════════════════════════════════════════════════════════
+   NOUVEAU CSS — Modal
+═══════════════════════════════════════════════════════════════ */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.42);
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);z-index:800;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity .22s var(--ease);}
+.modal-backdrop.is-open{opacity:1;pointer-events:auto;}
+.modal{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-xl);box-shadow:var(--shadow-xl);
+  width:min(580px,calc(100vw - 32px));max-height:calc(100dvh - 48px);
+  display:flex;flex-direction:column;
+  transform:translateY(16px) scale(.97);transition:transform .24s var(--ease);overflow:hidden;}
+.modal-backdrop.is-open .modal{transform:translateY(0) scale(1);}
+.modal--sm{width:min(440px,calc(100vw - 32px));}
+.modal__header{display:flex;align-items:flex-start;justify-content:space-between;
+  padding:22px 24px 18px;border-bottom:1px solid var(--color-border);flex-shrink:0;}
+.modal__title{font-size:16px;font-weight:700;letter-spacing:-.35px;}
+.modal__subtitle{font-size:12.5px;color:var(--color-text-3);margin-top:3px;}
+.modal__close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+  border-radius:var(--radius-sm);color:var(--color-text-3);cursor:pointer;
+  transition:background var(--dur-fast),color var(--dur-fast);}
+.modal__close:hover{background:var(--color-surface-2);color:var(--color-text);}
+.modal__body{flex:1;overflow-y:auto;padding:22px 24px;scrollbar-width:thin;}
+.modal__footer{display:flex;align-items:center;justify-content:flex-end;gap:10px;
+  padding:14px 24px;border-top:1px solid var(--color-border);flex-shrink:0;background:var(--color-surface-2);}
+
+/* Formulaire */
+.form-grid{display:grid;gap:16px;}
+.form-grid--2{grid-template-columns:1fr 1fr;}
+.form-grid--3{grid-template-columns:1fr 1fr 1fr;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-group--full{grid-column:1/-1;}
+.form-label{font-size:12.5px;font-weight:600;color:var(--color-text-2);display:flex;align-items:center;gap:4px;}
+.form-label .required{color:var(--color-red);}
+.form-hint{font-size:11.5px;color:var(--color-text-3);}
+.form-control{height:38px;padding:0 12px;background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius);font-family:inherit;font-size:13.5px;color:var(--color-text);outline:none;
+  transition:border-color var(--dur-fast),box-shadow var(--dur-fast);}
+.form-control:focus{border-color:var(--color-amber);box-shadow:0 0 0 3px var(--color-amber-glow);}
+.form-control::placeholder{color:var(--color-text-4);}
+select.form-control{cursor:pointer;}
+textarea.form-control{height:auto;padding:10px 12px;resize:vertical;}
+
+/* Séparateur de section dans modal */
+.modal-sep{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  color:var(--color-text-4);padding:14px 0 10px;border-top:1px solid var(--color-border);margin-top:4px;}
+.modal-sep:first-child{padding-top:0;border-top:none;margin-top:0;}
+
+/* Upload avatar */
+.avatar-upload{display:flex;align-items:center;gap:16px;}
+.avatar-preview{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:22px;font-weight:800;color:#fff;flex-shrink:0;
+  box-shadow:var(--shadow-sm);transition:background .2s;}
+.avatar-upload__btn{display:flex;flex-direction:column;gap:6px;}
+
+/* Confirm + Toast */
+.confirm-dialog{background:var(--color-surface);border:1px solid var(--color-border);
+  border-radius:var(--radius-xl);box-shadow:var(--shadow-xl);width:min(400px,calc(100vw - 32px));
+  padding:28px 28px 22px;display:flex;flex-direction:column;gap:16px;
+  transform:translateY(16px) scale(.97);transition:transform .24s var(--ease);}
+.modal-backdrop.is-open .confirm-dialog{transform:translateY(0) scale(1);}
+.confirm-dialog__icon{width:48px;height:48px;border-radius:var(--radius-lg);
+  background:var(--color-red-light);display:flex;align-items:center;justify-content:center;color:var(--color-red);}
+.confirm-dialog__title{font-size:16px;font-weight:700;}
+.confirm-dialog__message{font-size:13.5px;color:var(--color-text-2);line-height:1.55;}
+.confirm-dialog__actions{display:flex;gap:10px;justify-content:flex-end;}
+
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:1000;
+  display:flex;flex-direction:column;gap:10px;pointer-events:none;}
+.toast{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--color-text);
+  color:var(--color-surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);
+  font-size:13.5px;font-weight:500;min-width:240px;pointer-events:auto;
+  animation:toastIn .3s var(--ease) forwards;}
+.toast--success{background:var(--color-green);}
+.toast--error{background:var(--color-red);}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px) scale(.96);}to{opacity:1;transform:none;}}
+@keyframes toastOut{from{opacity:1;}to{opacity:0;transform:translateY(8px) scale(.96);}}
+.toast.is-leaving{animation:toastOut .25s var(--ease) forwards;}
+
+.empty-state{display:flex;flex-direction:column;align-items:center;gap:12px;padding:48px 24px;text-align:center;}
+.empty-state__icon{width:54px;height:54px;border-radius:var(--radius-xl);background:var(--color-surface-2);
+  display:flex;align-items:center;justify-content:center;color:var(--color-text-4);}
+.empty-state__title{font-size:14px;font-weight:600;color:var(--color-text-2);}
+.empty-state__subtitle{font-size:13px;color:var(--color-text-3);max-width:280px;}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════════════════ */
+@media(max-width:1100px){.staff-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .types-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:768px){.form-grid--2,.form-grid--3{grid-template-columns:1fr;}
+  .info-grid{grid-template-columns:1fr;}.stat-row{grid-template-columns:1fr 1fr;}}
+@media(max-width:640px){.page-content{padding:14px 14px 36px;}
+  .toolbar{flex-direction:column;align-items:flex-start;}.search-field{width:100%;}
+  .drawer{width:100vw;}.types-grid{grid-template-columns:1fr;}
+  .staff-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:400px){.kpi-grid{grid-template-columns:1fr;}.staff-grid{grid-template-columns:1fr;}}
+</style>
+
+<body>
+<main class="page-content">
+
+  <div class="page-header">
+    <div>
+      <h1 class="page-header__title">RH / Personnel</h1>
+      <p class="page-header__subtitle">Gestion des employés, types de personnel et organigramme</p>
+    </div>
+    <div class="page-header__actions" id="header-actions"></div>
+  </div>
+
+  <!-- Onglets -->
+  <div class="module-tabs" role="tablist" aria-label="Navigation RH / Personnel">
+    <button class="module-tab is-active" role="tab" aria-selected="true" data-tab="personnel" aria-controls="panel-personnel">
+      <svg class="module-tab__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Personnel
+    </button>
+    <button class="module-tab" role="tab" aria-selected="false" data-tab="types" aria-controls="panel-types">
+      <svg class="module-tab__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9.5" y1="14.5" x2="14.5" y2="14.5"/></svg>
+      Types de personnel
+    </button>
+    <button class="module-tab" role="tab" aria-selected="false" data-tab="organigramme" aria-controls="panel-organigramme">
+      <svg class="module-tab__icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="1" width="6" height="4" rx="1"/><rect x="1" y="16" width="6" height="4" rx="1"/><rect x="9" y="16" width="6" height="4" rx="1"/><rect x="17" y="16" width="6" height="4" rx="1"/><path d="M12 5v4M4 16v-4h16v4M12 9v3"/></svg>
+      Organigramme
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       ONGLET 1 — PERSONNEL
+  ══════════════════════════════════════════════════════════ -->
+  <div id="panel-personnel" class="tab-panel is-active" role="tabpanel">
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-card__header"><span class="kpi-card__label">Effectif total</span>
+          <div class="kpi-card__icon" style="background:var(--color-amber-light)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+        </div>
+        <div class="kpi-card__value" id="kpi-total">—</div>
+        <div class="kpi-card__footer">employés enregistrés</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__header"><span class="kpi-card__label">Actifs</span>
+          <div class="kpi-card__icon" style="background:var(--color-green-light)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+        </div>
+        <div class="kpi-card__value" id="kpi-actifs" style="color:var(--color-green)">—</div>
+        <div class="kpi-card__footer"><span class="tag tag--green" id="kpi-actifs-pct">—</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__header"><span class="kpi-card__label">Chauffeurs</span>
+          <div class="kpi-card__icon" style="background:var(--color-indigo-light)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-indigo)" stroke-width="2"><path d="M1 17l3-9h16l3 9M1 17h22M6.5 17a2 2 0 100-4 2 2 0 000 4zM17.5 17a2 2 0 100-4 2 2 0 000 4z"/></svg>
+          </div>
+        </div>
+        <div class="kpi-card__value" id="kpi-chauffeurs" style="color:var(--color-indigo)">—</div>
+        <div class="kpi-card__footer">disponibles ce jour</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-card__header"><span class="kpi-card__label">Ancienneté moy.</span>
+          <div class="kpi-card__icon" style="background:var(--color-teal-light)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+        </div>
+        <div class="kpi-card__value" id="kpi-anciennete" style="font-size:20px;color:var(--color-teal)">—</div>
+        <div class="kpi-card__footer">années en moyenne</div>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="filter-tabs" role="group" aria-label="Filtrer par type">
+        <button class="filter-tab is-active" data-filter="all">Tous <span class="tab-count" id="cnt-all">0</span></button>
+        <button class="filter-tab" data-filter="actif">Actifs <span class="tab-count" id="cnt-actif">0</span></button>
+        <button class="filter-tab" data-filter="inactif">Inactifs <span class="tab-count" id="cnt-inactif">0</span></button>
+      </div>
+      <select class="form-control" id="filter-type" style="height:36px;width:180px;font-size:13px" aria-label="Filtrer par type de personnel">
+        <option value="">Tous les types</option>
+      </select>
+      <div class="toolbar-spacer"></div>
+      <label class="search-field" for="search-personnel">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <input id="search-personnel" type="search" placeholder="Nom, prénom, code…" autocomplete="off"/>
+      </label>
+      <div class="view-toggle" role="group" aria-label="Mode d'affichage">
+        <button class="view-btn is-active" data-view="grid" aria-label="Vue grille" title="Grille">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+        </button>
+        <button class="view-btn" data-view="table" aria-label="Vue liste" title="Liste">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Vue grille -->
+    <div id="view-grid">
+      <div class="staff-grid" id="staff-grid" aria-label="Liste du personnel" role="list"></div>
+      <div class="empty-state" id="staff-empty-grid" style="display:none">
+        <div class="empty-state__icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="empty-state__title">Aucun employé trouvé</div>
+        <div class="empty-state__subtitle">Modifiez le filtre ou ajoutez un employé.</div>
+      </div>
+    </div>
+
+    <!-- Vue table -->
+    <div id="view-table" style="display:none">
+      <div class="table-card">
+        <div class="table-card__header">
+          <div>
+            <div class="table-card__title">Liste du personnel</div>
+            <div class="table-card__subtitle" id="table-count">Chargement…</div>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table" aria-label="Personnel">
+            <thead><tr>
+              <th scope="col">Code</th>
+              <th scope="col">Employé</th>
+              <th scope="col">Type</th>
+              <th scope="col">Contact</th>
+              <th scope="col">Embauche</th>
+              <th scope="col">Statut</th>
+              <th scope="col" aria-label="Actions"></th>
+            </tr></thead>
+            <tbody id="staff-tbody"></tbody>
+          </table>
+          <div class="empty-state" id="staff-empty-table" style="display:none">
+            <div class="empty-state__icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+            <div class="empty-state__title">Aucun employé trouvé</div>
+            <div class="empty-state__subtitle">Modifiez le filtre ou ajoutez un employé.</div>
+          </div>
+        </div>
+        <div class="table-footer"><span id="staff-info">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       ONGLET 2 — TYPES DE PERSONNEL
+  ══════════════════════════════════════════════════════════ -->
+  <div id="panel-types" class="tab-panel" role="tabpanel">
+    <div class="types-grid" id="types-grid" aria-label="Types de personnel"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       ONGLET 3 — ORGANIGRAMME
+  ══════════════════════════════════════════════════════════ -->
+  <div id="panel-organigramme" class="tab-panel" role="tabpanel">
+    <div class="table-card">
+      <div class="table-card__header">
+        <div>
+          <div class="table-card__title">Organigramme de l'entreprise</div>
+          <div class="table-card__subtitle">Hiérarchie par type de personnel</div>
+        </div>
+      </div>
+      <div class="org-wrap" id="org-wrap"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DRAWER — Fiche employé
+══════════════════════════════════════════════════════════════ -->
+<div id="drawer-emp-backdrop" class="drawer-backdrop" role="dialog" aria-modal="true" aria-labelledby="drawer-emp-title">
+  <div class="drawer">
+    <div class="drawer__header">
+      <div class="drawer__title" id="drawer-emp-title">Fiche employé</div>
+      <button class="drawer__close" data-close-drawer="emp" aria-label="Fermer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="drawer__body">
+      <!-- Hero -->
+      <div class="emp-hero">
+        <div class="staff-avatar staff-avatar--md" id="dh-avatar" aria-hidden="true"></div>
+        <div class="emp-hero__info">
+          <div class="emp-hero__code" id="dh-code">—</div>
+          <div class="emp-hero__name" id="dh-name">—</div>
+          <div class="emp-hero__type" id="dh-type">—</div>
+          <div class="emp-hero__badges" id="dh-badges"></div>
+        </div>
+      </div>
+
+      <!-- Stats rapides -->
+      <div class="drawer-section">
+        <div class="stat-row">
+          <div class="stat-mini"><div class="stat-mini__value" id="ds-voyages">0</div><div class="stat-mini__label">Voyages</div></div>
+          <div class="stat-mini"><div class="stat-mini__value" id="ds-anciennete">0</div><div class="stat-mini__label">Ans d'ancienneté</div></div>
+          <div class="stat-mini"><div class="stat-mini__value" id="ds-conges">0</div><div class="stat-mini__label">Congés / an</div></div>
+        </div>
+      </div>
+
+      <!-- Informations personnelles -->
+      <div class="drawer-section">
+        <div class="drawer-section__title">Informations personnelles</div>
+        <div class="info-grid">
+          <div class="info-item"><span class="info-item__label">Prénom</span><span class="info-item__value" id="di-prenom">—</span></div>
+          <div class="info-item"><span class="info-item__label">Nom</span><span class="info-item__value" id="di-nom">—</span></div>
+          <div class="info-item"><span class="info-item__label">Date de naissance</span><span class="info-item__value" id="di-naissance">—</span></div>
+          <div class="info-item"><span class="info-item__label">Sexe</span><span class="info-item__value" id="di-sexe">—</span></div>
+          <div class="info-item"><span class="info-item__label">Téléphone</span><span class="info-item__value" id="di-tel">—</span></div>
+          <div class="info-item"><span class="info-item__label">Email</span><span class="info-item__value" id="di-email">—</span></div>
+          <div class="info-item info-item--full"><span class="info-item__label">Adresse</span><span class="info-item__value" id="di-adresse">—</span></div>
+        </div>
+      </div>
+
+      <!-- Informations professionnelles -->
+      <div class="drawer-section">
+        <div class="drawer-section__title">Informations professionnelles</div>
+        <div class="info-grid">
+          <div class="info-item"><span class="info-item__label">Type de personnel</span><span class="info-item__value" id="di-type">—</span></div>
+          <div class="info-item"><span class="info-item__label">Date d'embauche</span><span class="info-item__value" id="di-embauche">—</span></div>
+          <div class="info-item"><span class="info-item__label">Salaire mensuel</span><span class="info-item__value cell-mono" id="di-salaire" style="color:var(--color-amber);font-weight:700">—</span></div>
+          <div class="info-item"><span class="info-item__label">N° permis</span><span class="info-item__value cell-mono" id="di-permis">—</span></div>
+        </div>
+      </div>
+
+      <!-- Historique affectations -->
+      <div class="drawer-section">
+        <div class="drawer-section__title">Historique des affectations</div>
+        <div class="timeline" id="di-timeline"></div>
+      </div>
+    </div>
+
+    <div class="drawer__footer">
+      <button class="btn btn--ghost btn--sm" id="emp-btn-edit">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Modifier
+      </button>
+      <button class="btn btn--ghost btn--sm" id="emp-btn-toggle">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M18.36 6.64A9 9 0 0121 12a9 9 0 01-9 9 9 9 0 01-9-9 9 9 0 012.64-6.36"/><line x1="12" y1="2" x2="12" y2="12"/></svg><span id="emp-toggle-label">Désactiver</span>
+      </button>
+      <div style="flex:1"></div>
+      <button class="btn btn--danger btn--sm" id="emp-btn-delete">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL — Créer / Éditer un employé
+══════════════════════════════════════════════════════════════ -->
+<div id="modal-emp" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-emp-title">
+  <div class="modal">
+    <div class="modal__header">
+      <div>
+        <div class="modal__title" id="modal-emp-title">Ajouter un employé</div>
+        <div class="modal__subtitle" id="modal-emp-sub">Renseignez les informations du nouvel employé</div>
+      </div>
+      <button class="modal__close" data-close="modal-emp" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal__body">
+      <!-- Prévisualisation avatar -->
+      <div class="avatar-upload" style="margin-bottom:20px">
+        <div class="avatar-preview" id="modal-avatar-preview" aria-hidden="true">?</div>
+        <div class="avatar-upload__btn">
+          <div style="font-size:13px;font-weight:600;color:var(--color-text-2)">Photo de profil</div>
+          <div style="font-size:12px;color:var(--color-text-3)">Les initiales sont générées automatiquement</div>
+        </div>
+      </div>
+
+      <form id="form-emp" novalidate>
+        <div class="modal-sep">Identité</div>
+        <div class="form-grid form-grid--2">
+          <div class="form-group">
+            <label class="form-label" for="e-prenom">Prénom <span class="required">*</span></label>
+            <input class="form-control" type="text" id="e-prenom" placeholder="Kofi" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="e-nom">Nom <span class="required">*</span></label>
+            <input class="form-control" type="text" id="e-nom" placeholder="ASANTE" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="e-naissance">Date de naissance</label>
+            <input class="form-control" type="date" id="e-naissance"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="e-sexe">Sexe</label>
+            <select class="form-control" id="e-sexe">
+              <option value="M">Masculin</option>
+              <option value="F">Féminin</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="e-tel">Téléphone</label>
+            <input class="form-control" type="tel" id="e-tel" placeholder="+225 …"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="e-email">Email</label>
+            <input class="form-control" type="email" id="e-email" placeholder="kofi@transportapp.ci"/>
+          </div>
+          <div class="form-group form-group--full">
+            <label class="form-label" for="e-adresse">Adresse</label>
+            <input class="form-control" type="text" id="e-adresse" placeholder="Quartier, ville…"/>
+          </div>
+        </div>
+
+        <div class="modal-sep">Informations professionnelles</div>
+        <div class="form-grid form-grid--2">
+          <div class="form-group">
+            <label class="form-label" for="e-type">Type de personnel <span class="required">*</span></label>
+            <select class="form-control" id="e-type" required><option value="" disabled selected>Sélectionner…</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="e-embauche">Date d'embauche <span class="required">*</span></label>
+            <input class="form-control" type="date" id="e-embauche" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="e-salaire">Salaire mensuel (FCFA)</label>
+            <input class="form-control" type="number" id="e-salaire" min="0" placeholder="150000"/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="e-permis">N° permis de conduire</label>
+            <input class="form-control" type="text" id="e-permis" placeholder="CI-2020-XXXXX"/>
+            <span class="form-hint">Requis pour les chauffeurs</span>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" data-close="modal-emp">Annuler</button>
+      <button class="btn btn--primary" id="btn-submit-emp">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Enregistrer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL — Créer / Éditer un type de personnel -->
+<div id="modal-type" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-type-title">
+  <div class="modal modal--sm">
+    <div class="modal__header">
+      <div>
+        <div class="modal__title" id="modal-type-title">Nouveau type de personnel</div>
+        <div class="modal__subtitle">Définissez la catégorie et sa couleur</div>
+      </div>
+      <button class="modal__close" data-close="modal-type" aria-label="Fermer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="modal__body">
+      <form id="form-type" novalidate>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="t-libelle">Libellé <span class="required">*</span></label>
+            <input class="form-control" type="text" id="t-libelle" placeholder="Ex : Chauffeur" required/>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="t-couleur">Couleur</label>
+            <select class="form-control" id="t-couleur">
+              <option value="amber">Ambre</option>
+              <option value="indigo">Indigo</option>
+              <option value="green">Vert</option>
+              <option value="sky">Bleu</option>
+              <option value="violet">Violet</option>
+              <option value="teal">Teal</option>
+              <option value="orange">Orange</option>
+              <option value="rose">Rose</option>
+            </select>
+          </div>
+          <div class="form-group form-group--full">
+            <label class="form-label" for="t-desc">Description</label>
+            <input class="form-control" type="text" id="t-desc" placeholder="Rôle de ce type de personnel…"/>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" data-close="modal-type">Annuler</button>
+      <button class="btn btn--primary" id="btn-submit-type">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Enregistrer
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm -->
+<div id="modal-confirm" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="confirm-dialog">
+    <div class="confirm-dialog__icon" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></div>
+    <div>
+      <div class="confirm-dialog__title" id="confirm-title">Confirmer la suppression</div>
+      <div class="confirm-dialog__message" id="confirm-msg">Cette action est irréversible.</div>
+    </div>
+    <div class="confirm-dialog__actions">
+      <button class="btn btn--ghost" data-close="modal-confirm">Annuler</button>
+      <button class="btn btn--danger" id="btn-confirm-delete">Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+<script type="module">
+/* ═══════════════════════════════════════════════════════════════
+   DATA MOCK
+═══════════════════════════════════════════════════════════════ */
+const TYPES_DATA = [
+  { id:1, libelle:'Chauffeur',    couleur:'indigo', desc:'Conduite des véhicules de transport de passagers.' },
+  { id:2, libelle:'Mécanicien',   couleur:'orange', desc:'Entretien et réparation du parc automobile.'      },
+  { id:3, libelle:'Contrôleur',   couleur:'teal',   desc:'Vérification des billets et gestion des quais.'   },
+  { id:4, libelle:'Administratif',couleur:'violet', desc:'Gestion administrative et comptable.'              },
+  { id:5, libelle:'Agent de gare',couleur:'sky',    desc:'Accueil des passagers et vente de billets.'       },
+];
+
+const PERSONNEL_DATA = [
+  { id:1,  code:'EMP-001', prenom:'Kofi',    nom:'ASANTE',    typeId:1, sexe:'M', naissance:'1985-04-12', tel:'+225 07 11 22 33', email:'k.asante@transportapp.ci',    adresse:'Cocody, Abidjan',         embauche:'2018-03-01', salaire:180000, permis:'CI-2018-00123', actif:true,  voyages:248, conges:21 },
+  { id:2,  code:'EMP-002', prenom:'Ibrahim', nom:'DIALLO',    typeId:1, sexe:'M', naissance:'1990-07-22', tel:'+225 05 44 55 66', email:'i.diallo@transportapp.ci',    adresse:'Yopougon, Abidjan',       embauche:'2020-06-15', salaire:165000, permis:'CI-2020-00456', actif:true,  voyages:185, conges:18 },
+  { id:3,  code:'EMP-003', prenom:'Mamadou', nom:'TRAORÉ',    typeId:1, sexe:'M', naissance:'1988-11-03', tel:'+225 07 88 99 00', email:'m.traore@transportapp.ci',    adresse:'Treichville, Abidjan',    embauche:'2019-01-10', salaire:172000, permis:'CI-2019-00789', actif:true,  voyages:210, conges:20 },
+  { id:4,  code:'EMP-004', prenom:'Awa',     nom:'COULIBALY', typeId:3, sexe:'F', naissance:'1993-02-18', tel:'+225 01 23 45 67', email:'a.coulibaly@transportapp.ci', adresse:'Plateau, Abidjan',        embauche:'2021-09-01', salaire:140000, permis:null,           actif:true,  voyages:0,   conges:18 },
+  { id:5,  code:'EMP-005', prenom:'Seydou',  nom:'KONÉ',      typeId:1, sexe:'M', naissance:'1987-06-30', tel:'+225 05 77 88 99', email:'s.kone@transportapp.ci',      adresse:'Marcory, Abidjan',        embauche:'2017-05-20', salaire:190000, permis:'CI-2017-00321', actif:true,  voyages:312, conges:24 },
+  { id:6,  code:'EMP-006', prenom:'Fatouma', nom:'SORO',      typeId:5, sexe:'F', naissance:'1995-09-14', tel:'+225 07 12 34 56', email:'f.soro@transportapp.ci',      adresse:'Adjamé, Abidjan',         embauche:'2022-02-01', salaire:125000, permis:null,           actif:true,  voyages:0,   conges:15 },
+  { id:7,  code:'EMP-007', prenom:'Bakary',  nom:'DIAKITÉ',   typeId:2, sexe:'M', naissance:'1983-03-25', tel:'+225 05 55 66 77', email:'b.diakite@transportapp.ci',   adresse:'Bouaké Centre',           embauche:'2016-11-15', salaire:155000, permis:null,           actif:true,  voyages:0,   conges:22 },
+  { id:8,  code:'EMP-008', prenom:'Mariama', nom:'BAH',       typeId:4, sexe:'F', naissance:'1991-08-07', tel:'+225 01 98 76 54', email:'m.bah@transportapp.ci',       adresse:'Yamoussoukro Centre',     embauche:'2020-03-01', salaire:145000, permis:null,           actif:true,  voyages:0,   conges:18 },
+  { id:9,  code:'EMP-009', prenom:'Oumar',   nom:'BAMBA',     typeId:2, sexe:'M', naissance:'1980-12-01', tel:'+225 07 33 44 55', email:'o.bamba@transportapp.ci',     adresse:'San-Pédro',               embauche:'2015-07-01', salaire:160000, permis:null,           actif:false, voyages:0,   conges:24 },
+  { id:10, code:'EMP-010', prenom:'Rokia',   nom:'TOURÉ',     typeId:5, sexe:'F', naissance:'1997-05-19', tel:'+225 05 22 11 00', email:'r.toure@transportapp.ci',     adresse:'Korhogo',                 embauche:'2023-01-15', salaire:120000, permis:null,           actif:true,  voyages:0,   conges:12 },
+  { id:11, code:'EMP-011', prenom:'Lamine',  nom:'SANOGO',    typeId:1, sexe:'M', naissance:'1992-04-08', tel:'+225 07 66 77 88', email:'l.sanogo@transportapp.ci',    adresse:'Soubré',                  embauche:'2021-04-01', salaire:162000, permis:'CI-2021-00654', actif:true,  voyages:134, conges:18 },
+  { id:12, code:'EMP-012', prenom:'Adjara',  nom:'SYLLA',     typeId:3, sexe:'F', naissance:'1994-01-30', tel:'+225 01 55 44 33', email:'a.sylla@transportapp.ci',     adresse:'Daloa',                   embauche:'2022-08-01', salaire:138000, permis:null,           actif:false, voyages:0,   conges:15 },
+];
+
+const AFFECTATIONS_DATA = {
+  1: [
+    { titre:'Ligne Abidjan–Bouaké',       sous:'Chauffeur principal',     date:'2022-01 – présent', actif:true  },
+    { titre:'Ligne Abidjan–Yamoussoukro', sous:'Chauffeur remplaçant',    date:'2018-03 – 2021-12', actif:false },
+  ],
+  5: [
+    { titre:'Ligne Abidjan–Korhogo',      sous:'Chauffeur principal',     date:'2023-01 – présent', actif:true  },
+    { titre:'Ligne Bouaké–Korhogo',       sous:'Chauffeur',               date:'2019-06 – 2022-12', actif:false },
+    { titre:'Ligne Abidjan–Bouaké',       sous:'Chauffeur remplaçant',    date:'2017-05 – 2019-05', actif:false },
+  ],
+  7: [
+    { titre:'Atelier Abidjan',            sous:'Mécanicien chef',         date:'2020-01 – présent', actif:true  },
+    { titre:'Atelier Bouaké',             sous:'Mécanicien',              date:'2016-11 – 2019-12', actif:false },
+  ],
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════════════════════ */
+const state = {
+  activeTab:    'personnel',
+  activeFilter: 'all',
+  filterType:   '',
+  search:       '',
+  activeView:   'grid',
+  types:        TYPES_DATA.map(t=>({...t})),
+  personnel:    PERSONNEL_DATA.map(p=>({...p})),
+  openEmpId:    null,
+  editEmpId:    null,
+  editTypeId:   null,
+  confirmCb:    null,
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILS
+═══════════════════════════════════════════════════════════════ */
+const typeById  = id => state.types.find(t=>t.id===id);
+const typeLabel = id => typeById(id)?.libelle ?? '—';
+const typeColor = id => typeById(id)?.couleur ?? 'amber';
+const fmtDate   = iso => iso ? new Date(iso).toLocaleDateString('fr-FR',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+const fmtMoney  = n   => (+n||0).toLocaleString('fr-FR') + ' FCFA';
+const initiales = p   => `${p.prenom[0]}${p.nom[0]}`.toUpperCase();
+const fullName  = p   => `${p.prenom} ${p.nom}`;
+const COULEUR_GRADIENT = {
+  amber: 'linear-gradient(135deg,#d97706,#b45309)',
+  indigo:'linear-gradient(135deg,#4f46e5,#3730a3)',
+  green: 'linear-gradient(135deg,#059669,#047857)',
+  sky:   'linear-gradient(135deg,#0284c7,#0369a1)',
+  violet:'linear-gradient(135deg,#7c3aed,#6d28d9)',
+  teal:  'linear-gradient(135deg,#0d9488,#0f766e)',
+  orange:'linear-gradient(135deg,#ea580c,#c2410c)',
+  rose:  'linear-gradient(135deg,#e11d48,#be123c)',
+};
+
+function anciennete(iso) {
+  if(!iso) return 0;
+  const d = new Date(iso);
+  const n = new Date('2026-03-11');
+  return Math.floor((n - d) / (1000 * 60 * 60 * 24 * 365.25));
+}
+
+function getFiltered() {
+  const q = state.search.toLowerCase();
+  return state.personnel.filter(p => {
+    const matchFilter = state.activeFilter === 'all' ||
+      (state.activeFilter === 'actif'   &&  p.actif) ||
+      (state.activeFilter === 'inactif' && !p.actif);
+    const matchType   = !state.filterType || p.typeId === parseInt(state.filterType, 10);
+    const matchSearch = !q || fullName(p).toLowerCase().includes(q) || p.code.toLowerCase().includes(q);
+    return matchFilter && matchType && matchSearch;
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — KPI
+═══════════════════════════════════════════════════════════════ */
+function renderKPI() {
+  const ps      = state.personnel;
+  const actifs  = ps.filter(p=>p.actif);
+  const chauff  = ps.filter(p=>p.actif && p.typeId===1);
+  const pct     = ps.length ? Math.round(actifs.length/ps.length*100) : 0;
+  const avgAnc  = ps.length ? (ps.reduce((s,p)=>s+anciennete(p.embauche),0)/ps.length).toFixed(1) : '0';
+
+  document.getElementById('kpi-total').textContent       = ps.length;
+  document.getElementById('kpi-actifs').textContent      = actifs.length;
+  document.getElementById('kpi-actifs-pct').textContent  = `${pct} %`;
+  document.getElementById('kpi-chauffeurs').textContent  = chauff.length;
+  document.getElementById('kpi-anciennete').textContent  = `${avgAnc} ans`;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — Grille de cards
+═══════════════════════════════════════════════════════════════ */
+function renderGrid() {
+  const filtered = getFiltered();
+  const grid  = document.getElementById('staff-grid');
+  const empty = document.getElementById('staff-empty-grid');
+  grid.innerHTML = '';
+
+  if(filtered.length === 0){ empty.style.display='flex'; return; }
+  empty.style.display = 'none';
+
+  filtered.forEach(p => {
+    const color = typeColor(p.typeId);
+    const grad  = COULEUR_GRADIENT[color] ?? COULEUR_GRADIENT.amber;
+    const card  = document.createElement('div');
+    card.className = 'staff-card';
+    card.dataset.id = p.id;
+    card.setAttribute('role','listitem');
+    card.innerHTML = `
+      <div class="staff-card__banner" style="background:${grad}" aria-hidden="true"></div>
+      <div class="staff-card__body">
+        <div class="staff-avatar" style="background:${grad}" aria-hidden="true">${initiales(p)}</div>
+        <div>
+          <div class="staff-card__name">${fullName(p)}</div>
+          <div class="staff-card__type">${typeLabel(p.typeId)}</div>
+        </div>
+      </div>
+      <div class="staff-card__footer">
+        <span class="tag ${p.actif ? 'tag--green' : 'tag--gray'}">${p.actif ? 'Actif' : 'Inactif'}</span>
+        <div class="staff-card__actions">
+          <button class="action-btn" data-action="view" data-id="${p.id}" title="Voir la fiche" aria-label="Fiche ${fullName(p)}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="action-btn" data-action="edit" data-id="${p.id}" title="Modifier" aria-label="Modifier ${fullName(p)}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+          <button class="action-btn action-btn--danger" data-action="delete" data-id="${p.id}" title="Supprimer" aria-label="Supprimer ${fullName(p)}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+          </button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — Table
+═══════════════════════════════════════════════════════════════ */
+function renderTable() {
+  const filtered = getFiltered();
+  const tbody    = document.getElementById('staff-tbody');
+  const empty    = document.getElementById('staff-empty-table');
+  const count    = document.getElementById('table-count');
+  const info     = document.getElementById('staff-info');
+  count.textContent = `${filtered.length} employé${filtered.length>1?'s':''}`;
+  info.textContent  = `${filtered.length} résultat${filtered.length>1?'s':''}`;
+  tbody.innerHTML = '';
+
+  if(filtered.length === 0){ empty.style.display='flex'; return; }
+  empty.style.display = 'none';
+
+  filtered.forEach(p => {
+    const color = typeColor(p.typeId);
+    const grad  = COULEUR_GRADIENT[color];
+    const tr    = document.createElement('tr');
+    tr.dataset.id = p.id;
+    tr.innerHTML = `
+      <td class="cell-mono cell-dim">${p.code}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="staff-avatar staff-avatar--sm" style="background:${grad}" aria-hidden="true">${initiales(p)}</div>
+          <div>
+            <div style="font-weight:600;font-size:13px">${fullName(p)}</div>
+            <div class="cell-dim" style="margin-top:1px">${p.email || '—'}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="tag tag--${color}">${typeLabel(p.typeId)}</span></td>
+      <td class="cell-mono">${p.tel || '—'}</td>
+      <td class="cell-dim">${fmtDate(p.embauche)}</td>
+      <td><span class="tag ${p.actif ? 'tag--green' : 'tag--gray'}">${p.actif ? 'Actif' : 'Inactif'}</span></td>
+      <td>
+        <div class="row-actions" role="group">
+          <button class="action-btn" data-action="view" data-id="${p.id}" title="Voir" aria-label="Fiche ${fullName(p)}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button class="action-btn" data-action="edit" data-id="${p.id}" title="Modifier" aria-label="Modifier ${fullName(p)}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+          <button class="action-btn action-btn--danger" data-action="delete" data-id="${p.id}" title="Supprimer" aria-label="Supprimer ${fullName(p)}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+          </button>
+        </div>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderPersonnel() {
+  if(state.activeView === 'grid') renderGrid();
+  else renderTable();
+  updateFilterCounts();
+}
+
+function updateFilterCounts() {
+  const ps = state.personnel;
+  document.getElementById('cnt-all').textContent    = ps.length;
+  document.getElementById('cnt-actif').textContent  = ps.filter(p=>p.actif).length;
+  document.getElementById('cnt-inactif').textContent= ps.filter(p=>!p.actif).length;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — Types de personnel
+═══════════════════════════════════════════════════════════════ */
+const TYPE_ICONS = {
+  indigo:`<path d="M1 17l3-9h16l3 9M1 17h22M6.5 17a2 2 0 100-4 2 2 0 000 4zM17.5 17a2 2 0 100-4 2 2 0 000 4z"/>`,
+  orange:`<path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>`,
+  teal:  `<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>`,
+  violet:`<path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/>`,
+  sky:   `<path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>`,
+};
+function typeIcon(color) { return TYPE_ICONS[color] || `<circle cx="12" cy="12" r="10"/>`; }
+
+function renderTypes() {
+  const grid = document.getElementById('types-grid');
+  grid.innerHTML = '';
+
+  state.types.forEach(t => {
+    const nb   = state.personnel.filter(p=>p.typeId===t.id).length;
+    const nbAct= state.personnel.filter(p=>p.typeId===t.id && p.actif).length;
+    const grad = COULEUR_GRADIENT[t.couleur] ?? COULEUR_GRADIENT.amber;
+    const card = document.createElement('div');
+    card.className = 'type-card';
+    card.innerHTML = `
+      <div class="type-card__banner" style="background:${grad};color:#fff">
+        <div class="type-card__icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">${typeIcon(t.couleur)}</svg>
+        </div>
+        <div class="type-card__name">${t.libelle}</div>
+        ${t.desc ? `<div style="font-size:12px;opacity:.8;margin-top:4px">${t.desc}</div>` : ''}
+      </div>
+      <div class="type-card__body">
+        <div class="type-card__stat">
+          <span class="type-card__stat-label">Effectif total</span>
+          <span class="type-card__stat-value">${nb} employé${nb!==1?'s':''}</span>
+        </div>
+        <div class="type-card__stat">
+          <span class="type-card__stat-label">Actifs</span>
+          <span class="type-card__stat-value">${nbAct} / ${nb}</span>
+        </div>
+      </div>
+      <div class="type-card__footer">
+        <span class="tag" style="background:var(--color-${t.couleur}-light);color:var(--color-${t.couleur})">${t.couleur}</span>
+        <div style="display:flex;gap:4px">
+          <button class="action-btn" data-action="edit-type" data-id="${t.id}" title="Modifier" aria-label="Modifier ${t.libelle}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          </button>
+          <button class="action-btn action-btn--danger" data-action="delete-type" data-id="${t.id}" title="Supprimer" aria-label="Supprimer ${t.libelle}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+          </button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+
+  // Card + ajouter
+  const add = document.createElement('div');
+  add.className = 'type-card type-card--add';
+  add.id = 'btn-add-type-card';
+  add.setAttribute('role','button');
+  add.setAttribute('tabindex','0');
+  add.setAttribute('aria-label','Ajouter un type de personnel');
+  add.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Ajouter un type</span>`;
+  grid.appendChild(add);
+
+  syncTypeSelects();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — Organigramme
+═══════════════════════════════════════════════════════════════ */
+function renderOrg() {
+  const wrap = document.getElementById('org-wrap');
+  wrap.innerHTML = '';
+
+  // Tri par type → affiche une colonne par type avec leur équipe
+  const container = document.createElement('div');
+  container.style.cssText = 'display:flex;gap:40px;padding:20px 24px;min-width:max-content;';
+
+  state.types.forEach(t => {
+    const members = state.personnel.filter(p=>p.typeId===t.id && p.actif);
+    if(members.length === 0) return;
+
+    const col = document.createElement('div');
+    col.style.cssText = 'display:flex;flex-direction:column;align-items:center;gap:0;';
+
+    // En-tête type
+    const header = document.createElement('div');
+    header.className = 'org-node org-node--root';
+    const grad = COULEUR_GRADIENT[t.couleur];
+    header.innerHTML = `
+      <div class="staff-avatar staff-avatar--sm" style="background:${grad};margin:0 auto 8px" aria-hidden="true">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">${typeIcon(t.couleur)}</svg>
+      </div>
+      <div class="org-node__name">${t.libelle}</div>
+      <div class="org-node__title">${members.length} membre${members.length>1?'s':''}</div>`;
+    col.appendChild(header);
+
+    // Ligne verticale
+    const vLine = document.createElement('div');
+    vLine.className = 'org-v-line';
+    col.appendChild(vLine);
+
+    // Membres
+    const memberWrap = document.createElement('div');
+    memberWrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;';
+    members.forEach(p => {
+      const grad2 = COULEUR_GRADIENT[typeColor(p.typeId)];
+      const node  = document.createElement('div');
+      node.className = 'org-node';
+      node.dataset.id = p.id;
+      node.setAttribute('role','button');
+      node.setAttribute('tabindex','0');
+      node.setAttribute('aria-label',`Fiche ${fullName(p)}`);
+      node.innerHTML = `
+        <div class="staff-avatar staff-avatar--sm" style="background:${grad2};margin:0 auto 6px" aria-hidden="true">${initiales(p)}</div>
+        <div class="org-node__name">${fullName(p)}</div>
+        <div class="org-node__title">${fmtDate(p.embauche).replace(' ','\u00a0')}</div>`;
+      memberWrap.appendChild(node);
+    });
+    col.appendChild(memberWrap);
+    container.appendChild(col);
+  });
+
+  wrap.appendChild(container);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RENDER — Drawer Fiche employé
+═══════════════════════════════════════════════════════════════ */
+function openEmpDrawer(empId) {
+  const p = state.personnel.find(x=>x.id===empId);
+  if(!p) return;
+  state.openEmpId = empId;
+
+  const color = typeColor(p.typeId);
+  const grad  = COULEUR_GRADIENT[color];
+  const anc   = anciennete(p.embauche);
+
+  // Hero
+  const avatarEl = document.getElementById('dh-avatar');
+  avatarEl.textContent  = initiales(p);
+  avatarEl.style.background = grad;
+  avatarEl.style.width  = '52px';
+  avatarEl.style.height = '52px';
+  avatarEl.style.fontSize = '18px';
+
+  document.getElementById('dh-code').textContent = p.code;
+  document.getElementById('dh-name').textContent = fullName(p);
+  document.getElementById('dh-type').textContent = typeLabel(p.typeId);
+
+  const badges = document.getElementById('dh-badges');
+  badges.innerHTML = `
+    <span class="tag ${p.actif ? 'tag--green' : 'tag--gray'}">${p.actif ? 'Actif' : 'Inactif'}</span>
+    <span class="tag" style="background:var(--color-${color}-light);color:var(--color-${color})">${typeLabel(p.typeId)}</span>
+    ${p.permis ? `<span class="tag tag--sky">Permis B</span>` : ''}`;
+
+  // Stats
+  document.getElementById('ds-voyages').textContent   = p.voyages ?? 0;
+  document.getElementById('ds-anciennete').textContent= anc;
+  document.getElementById('ds-conges').textContent    = p.conges ?? '—';
+
+  // Infos perso
+  document.getElementById('di-prenom').textContent   = p.prenom;
+  document.getElementById('di-nom').textContent      = p.nom;
+  document.getElementById('di-naissance').textContent= fmtDate(p.naissance);
+  document.getElementById('di-sexe').textContent     = p.sexe === 'M' ? 'Masculin' : 'Féminin';
+  document.getElementById('di-tel').textContent      = p.tel   || '—';
+  document.getElementById('di-email').textContent    = p.email || '—';
+  document.getElementById('di-adresse').textContent  = p.adresse || '—';
+
+  // Infos pro
+  document.getElementById('di-type').textContent    = typeLabel(p.typeId);
+  document.getElementById('di-embauche').textContent= fmtDate(p.embauche);
+  document.getElementById('di-salaire').textContent = p.salaire ? fmtMoney(p.salaire) : '—';
+  document.getElementById('di-permis').textContent  = p.permis || '—';
+
+  // Timeline
+  const timeline = document.getElementById('di-timeline');
+  timeline.innerHTML = '';
+  const affs = AFFECTATIONS_DATA[empId] ?? [{ titre:'Pas d\'affectation enregistrée', sous:'', date:'', actif:false }];
+  affs.forEach((a, i) => {
+    const color2 = a.actif ? 'var(--color-green)' : 'var(--color-text-3)';
+    const item   = document.createElement('div');
+    item.className = 'timeline-item';
+    item.innerHTML = `
+      <div class="timeline-item__left">
+        <div class="timeline-item__dot ${a.actif ? 'timeline-item__dot--active' : ''}" style="color:${color2}"></div>
+        ${i < affs.length-1 ? '<div class="timeline-item__line"></div>' : ''}
+      </div>
+      <div class="timeline-item__body">
+        <div class="timeline-item__title">${a.titre}</div>
+        ${a.sous ? `<div class="timeline-item__sub">${a.sous}</div>` : ''}
+        ${a.date ? `<div class="timeline-item__date">${a.date}</div>` : ''}
+      </div>`;
+    timeline.appendChild(item);
+  });
+
+  // Boutons footer
+  document.getElementById('emp-btn-edit').dataset.id   = empId;
+  document.getElementById('emp-btn-toggle').dataset.id = empId;
+  document.getElementById('emp-btn-delete').dataset.id = empId;
+  document.getElementById('emp-toggle-label').textContent = p.actif ? 'Désactiver' : 'Activer';
+
+  document.getElementById('drawer-emp-backdrop').classList.add('is-open');
+}
+function closeEmpDrawer() {
+  document.getElementById('drawer-emp-backdrop').classList.remove('is-open');
+  state.openEmpId = null;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTIONS — Employé
+═══════════════════════════════════════════════════════════════ */
+function handleOpenCreateEmp() {
+  state.editEmpId = null;
+  document.getElementById('modal-emp-title').textContent = 'Ajouter un employé';
+  document.getElementById('modal-emp-sub').textContent   = 'Renseignez les informations du nouvel employé';
+  document.getElementById('form-emp').reset();
+  document.getElementById('e-embauche').value = '2026-03-11';
+  updateAvatarPreview();
+  syncTypeSelects();
+  openModal('modal-emp');
+}
+
+function handleOpenEditEmp(empId) {
+  const p = state.personnel.find(x=>x.id===empId);
+  if(!p) return;
+  state.editEmpId = empId;
+  document.getElementById('modal-emp-title').textContent = `Modifier ${fullName(p)}`;
+  document.getElementById('modal-emp-sub').textContent   = p.code;
+  document.getElementById('e-prenom').value    = p.prenom;
+  document.getElementById('e-nom').value       = p.nom;
+  document.getElementById('e-naissance').value = p.naissance || '';
+  document.getElementById('e-sexe').value      = p.sexe;
+  document.getElementById('e-tel').value       = p.tel   || '';
+  document.getElementById('e-email').value     = p.email || '';
+  document.getElementById('e-adresse').value   = p.adresse || '';
+  document.getElementById('e-type').value      = p.typeId;
+  document.getElementById('e-embauche').value  = p.embauche;
+  document.getElementById('e-salaire').value   = p.salaire || '';
+  document.getElementById('e-permis').value    = p.permis  || '';
+  updateAvatarPreview();
+  openModal('modal-emp');
+}
+
+function updateAvatarPreview() {
+  const prenom   = document.getElementById('e-prenom').value.trim() || '?';
+  const nom      = document.getElementById('e-nom').value.trim()    || '';
+  const typeId   = parseInt(document.getElementById('e-type').value, 10);
+  const color    = typeId ? typeColor(typeId) : 'amber';
+  const grad     = COULEUR_GRADIENT[color] ?? COULEUR_GRADIENT.amber;
+  const ini      = `${prenom[0]}${nom[0]||''}`.toUpperCase();
+  const preview  = document.getElementById('modal-avatar-preview');
+  preview.textContent = ini;
+  preview.style.background = grad;
+}
+
+function handleSubmitEmp() {
+  const prenom   = document.getElementById('e-prenom').value.trim();
+  const nom      = document.getElementById('e-nom').value.trim();
+  const typeId   = parseInt(document.getElementById('e-type').value, 10);
+  const embauche = document.getElementById('e-embauche').value;
+  if(!prenom || !nom || !typeId || !embauche) { showToast('Remplissez les champs obligatoires.', 'error'); return; }
+
+  const payload = {
+    prenom, nom, typeId, embauche,
+    naissance: document.getElementById('e-naissance').value || null,
+    sexe:      document.getElementById('e-sexe').value,
+    tel:       document.getElementById('e-tel').value.trim()   || null,
+    email:     document.getElementById('e-email').value.trim() || null,
+    adresse:   document.getElementById('e-adresse').value.trim() || null,
+    salaire:   parseInt(document.getElementById('e-salaire').value, 10) || null,
+    permis:    document.getElementById('e-permis').value.trim() || null,
+  };
+
+  if(state.editEmpId) {
+    const idx = state.personnel.findIndex(p=>p.id===state.editEmpId);
+    if(idx !== -1) state.personnel[idx] = { ...state.personnel[idx], ...payload };
+    showToast(`${prenom} ${nom} modifié.`, 'success');
+  } else {
+    const code = `EMP-${String(state.personnel.length + 1).padStart(3,'0')}`;
+    state.personnel.push({ id:Date.now(), code, actif:true, voyages:0, conges:12, ...payload });
+    showToast(`${prenom} ${nom} ajouté.`, 'success');
+  }
+
+  closeModal('modal-emp');
+  renderPersonnel(); renderKPI(); renderTypes(); renderOrg();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACTIONS — Types
+═══════════════════════════════════════════════════════════════ */
+function handleSubmitType() {
+  const libelle  = document.getElementById('t-libelle').value.trim();
+  const couleur  = document.getElementById('t-couleur').value;
+  const desc     = document.getElementById('t-desc').value.trim();
+  if(!libelle) { showToast('Libellé obligatoire.', 'error'); return; }
+
+  if(state.editTypeId) {
+    const idx = state.types.findIndex(t=>t.id===state.editTypeId);
+    if(idx !== -1) state.types[idx] = { ...state.types[idx], libelle, couleur, desc };
+    showToast(`Type "${libelle}" modifié.`, 'success');
+  } else {
+    state.types.push({ id:Date.now(), libelle, couleur, desc });
+    showToast(`Type "${libelle}" ajouté.`, 'success');
+  }
+  closeModal('modal-type');
+  renderTypes(); renderPersonnel(); renderOrg(); syncTypeSelects();
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SYNCS
+═══════════════════════════════════════════════════════════════ */
+function syncTypeSelects() {
+  // Select du formulaire employé
+  const sel  = document.getElementById('e-type');
+  const prev = sel.value;
+  while(sel.options.length > 1) sel.remove(1);
+  state.types.forEach(t => sel.add(new Option(t.libelle, t.id)));
+  if(prev) sel.value = prev;
+
+  // Select filtre toolbar
+  const fsel  = document.getElementById('filter-type');
+  const fprev = fsel.value;
+  while(fsel.options.length > 1) fsel.remove(1);
+  state.types.forEach(t => fsel.add(new Option(t.libelle, t.id)));
+  if(fprev) fsel.value = fprev;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HEADER ACTIONS
+═══════════════════════════════════════════════════════════════ */
+function updateHeaderActions() {
+  const zone = document.getElementById('header-actions');
+  zone.innerHTML = '';
+  const cfgs = {
+    personnel: [{ label:'Ajouter un employé', fn: handleOpenCreateEmp }],
+    types:     [{ label:'Nouveau type', fn: () => {
+      state.editTypeId = null;
+      document.getElementById('form-type').reset();
+      document.getElementById('modal-type-title').textContent = 'Nouveau type de personnel';
+      openModal('modal-type');
+    }}],
+    organigramme: [],
+  };
+  (cfgs[state.activeTab]||[]).forEach(cfg => {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn--primary';
+    btn.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>${cfg.label}`;
+    btn.addEventListener('click', cfg.fn);
+    zone.appendChild(btn);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODALS + TOAST
+═══════════════════════════════════════════════════════════════ */
+function openModal(id) {
+  const el = document.getElementById(id);
+  el.classList.add('is-open');
+  setTimeout(()=>el.querySelector('button,input,select,textarea')?.focus(), 60);
+}
+function closeModal(id) { document.getElementById(id)?.classList.remove('is-open'); }
+
+function showToast(msg, type='default') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast toast--${type}`;
+  t.setAttribute('role','status');
+  const ico = type==='success' ? '<path d="M20 6L9 17l-5-5"/>'
+            : type==='error'   ? '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
+            : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>';
+  t.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true">${ico}</svg>${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>{t.classList.add('is-leaving');t.addEventListener('animationend',()=>t.remove(),{once:true});}, 3500);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENTS — Onglets
+═══════════════════════════════════════════════════════════════ */
+document.querySelectorAll('.module-tab').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.module-tab').forEach(b=>{b.classList.remove('is-active');b.setAttribute('aria-selected','false');});
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('is-active'));
+    btn.classList.add('is-active'); btn.setAttribute('aria-selected','true');
+    state.activeTab = btn.dataset.tab;
+    document.getElementById(`panel-${state.activeTab}`).classList.add('is-active');
+    updateHeaderActions();
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENTS — Filtres, recherche, vue
+═══════════════════════════════════════════════════════════════ */
+function debounce(fn,ms=250){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms);};}
+
+document.querySelectorAll('[data-filter]').forEach(b=>{
+  b.addEventListener('click',()=>{
+    document.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('is-active'));
+    b.classList.add('is-active'); state.activeFilter=b.dataset.filter; renderPersonnel();
+  });
+});
+document.getElementById('filter-type').addEventListener('change',e=>{state.filterType=e.target.value;renderPersonnel();});
+document.getElementById('search-personnel').addEventListener('input',debounce(e=>{state.search=e.target.value;renderPersonnel();}));
+
+document.querySelectorAll('[data-view]').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('is-active'));
+    btn.classList.add('is-active'); state.activeView=btn.dataset.view;
+    document.getElementById('view-grid').style.display  = state.activeView==='grid'  ? '' : 'none';
+    document.getElementById('view-table').style.display = state.activeView==='table' ? '' : 'none';
+    renderPersonnel();
+  });
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENTS — Grille & table (délégation)
+═══════════════════════════════════════════════════════════════ */
+function handlePersonnelAction(action, id) {
+  if(action==='view')   { openEmpDrawer(id); }
+  if(action==='edit')   { handleOpenEditEmp(id); }
+  if(action==='delete') {
+    const p = state.personnel.find(x=>x.id===id);
+    document.getElementById('confirm-title').textContent = `Supprimer ${fullName(p)} ?`;
+    document.getElementById('confirm-msg').textContent   = `${p.code} sera supprimé définitivement.`;
+    state.confirmCb = () => {
+      state.personnel = state.personnel.filter(x=>x.id!==id);
+      if(state.openEmpId===id) closeEmpDrawer();
+      renderPersonnel(); renderKPI(); renderTypes(); renderOrg();
+      showToast(`${fullName(p)} supprimé.`, 'success');
+    };
+    openModal('modal-confirm');
+  }
+}
+
+document.getElementById('staff-grid').addEventListener('click', e=>{
+  const btn = e.target.closest('[data-action]');
+  if(btn) { handlePersonnelAction(btn.dataset.action, parseInt(btn.dataset.id,10)); return; }
+  const card = e.target.closest('.staff-card[data-id]');
+  if(card && !e.target.closest('button')) openEmpDrawer(parseInt(card.dataset.id,10));
+});
+
+document.getElementById('staff-tbody').addEventListener('click', e=>{
+  const btn = e.target.closest('[data-action]');
+  if(btn) { e.stopPropagation(); handlePersonnelAction(btn.dataset.action, parseInt(btn.dataset.id,10)); return; }
+  const tr = e.target.closest('tr[data-id]');
+  if(tr) openEmpDrawer(parseInt(tr.dataset.id,10));
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENTS — Types (délégation)
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('types-grid').addEventListener('click', e=>{
+  if(e.target.closest('#btn-add-type-card')) {
+    state.editTypeId=null;
+    document.getElementById('modal-type-title').textContent='Nouveau type de personnel';
+    document.getElementById('form-type').reset(); openModal('modal-type'); return;
+  }
+  const btn = e.target.closest('[data-action]');
+  if(!btn) return;
+  const id  = parseInt(btn.dataset.id, 10);
+  if(btn.dataset.action==='edit-type') {
+    const t = state.types.find(x=>x.id===id);
+    state.editTypeId = id;
+    document.getElementById('modal-type-title').textContent = 'Modifier le type';
+    document.getElementById('t-libelle').value = t.libelle;
+    document.getElementById('t-couleur').value = t.couleur;
+    document.getElementById('t-desc').value    = t.desc || '';
+    openModal('modal-type');
+  }
+  if(btn.dataset.action==='delete-type') {
+    const inUse = state.personnel.some(p=>p.typeId===id);
+    if(inUse){ showToast('Impossible : des employés utilisent ce type.','error'); return; }
+    const t = state.types.find(x=>x.id===id);
+    document.getElementById('confirm-title').textContent = `Supprimer "${t?.libelle}" ?`;
+    document.getElementById('confirm-msg').textContent   = 'Ce type sera supprimé définitivement.';
+    state.confirmCb = () => {
+      state.types = state.types.filter(x=>x.id!==id);
+      renderTypes(); renderPersonnel(); renderOrg();
+      showToast('Type supprimé.','success');
+    };
+    openModal('modal-confirm');
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENTS — Organigramme (clic sur node)
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('org-wrap').addEventListener('click', e=>{
+  const node = e.target.closest('.org-node[data-id]');
+  if(node) openEmpDrawer(parseInt(node.dataset.id, 10));
+});
+document.getElementById('org-wrap').addEventListener('keydown', e=>{
+  if(e.key==='Enter'||e.key===' '){
+    const node = e.target.closest('.org-node[data-id]');
+    if(node){ e.preventDefault(); openEmpDrawer(parseInt(node.dataset.id,10)); }
+  }
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENTS — Drawer employé
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('emp-btn-edit').addEventListener('click',e=>{
+  closeEmpDrawer(); handleOpenEditEmp(parseInt(e.currentTarget.dataset.id,10));
+});
+document.getElementById('emp-btn-toggle').addEventListener('click',e=>{
+  const id = parseInt(e.currentTarget.dataset.id,10);
+  const p  = state.personnel.find(x=>x.id===id);
+  if(!p) return;
+  p.actif = !p.actif;
+  showToast(`${fullName(p)} ${p.actif ? 'activé' : 'désactivé'}.`, 'success');
+  closeEmpDrawer(); renderPersonnel(); renderKPI(); renderTypes(); renderOrg();
+});
+document.getElementById('emp-btn-delete').addEventListener('click',e=>{
+  const id = parseInt(e.currentTarget.dataset.id,10);
+  handlePersonnelAction('delete', id);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENTS — Formulaire employé (preview avatar live)
+═══════════════════════════════════════════════════════════════ */
+['e-prenom','e-nom','e-type'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', updateAvatarPreview);
+  document.getElementById(id).addEventListener('change', updateAvatarPreview);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   EVENTS — Modals soumettre + fermetures génériques
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('btn-submit-emp').addEventListener('click',  handleSubmitEmp);
+document.getElementById('btn-submit-type').addEventListener('click', handleSubmitType);
+
+document.getElementById('btn-confirm-delete').addEventListener('click',()=>{
+  if(state.confirmCb){ state.confirmCb(); state.confirmCb=null; }
+  closeModal('modal-confirm');
+});
+
+document.querySelectorAll('[data-close-drawer]').forEach(btn=>{
+  btn.addEventListener('click',()=>{ if(btn.dataset.closeDrawer==='emp') closeEmpDrawer(); });
+});
+document.getElementById('drawer-emp-backdrop').addEventListener('click',e=>{if(e.target===e.currentTarget)closeEmpDrawer();});
+
+document.addEventListener('click',e=>{
+  const cid=e.target.closest('[data-close]')?.dataset.close;
+  if(cid) closeModal(cid);
+});
+['modal-emp','modal-type','modal-confirm'].forEach(id=>{
+  document.getElementById(id).addEventListener('click',e=>{if(e.target===e.currentTarget)closeModal(id);});
+});
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  ['modal-emp','modal-type','modal-confirm'].forEach(id=>{
+    if(document.getElementById(id).classList.contains('is-open')) closeModal(id);
+  });
+  if(document.getElementById('drawer-emp-backdrop').classList.contains('is-open')) closeEmpDrawer();
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════════════════════ */
+syncTypeSelects();
+renderKPI();
+renderPersonnel();
+renderTypes();
+renderOrg();
+updateHeaderActions();
+</script>
+</body>
+</html>

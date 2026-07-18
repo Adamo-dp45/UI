@@ -1,0 +1,87 @@
+.reviews {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+
+    .text-title {
+        color: var(--text-title);
+    }
+}
+
+.reviews_body {
+    display: contents; /* Permet de rendre cette div invisible en faisant en sorte que les éléments enfants de cette div soit comme des enfants directe du parent suivant */
+}
+
+.reviews_recap {
+    font-weight: 500;
+    border-radius: 20px;
+    border: 1px solid var(--blue-border);
+    background-color: var(--blue-light);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    align-self: stretch; /* Ou width:100% */
+    padding: 20px;
+    line-height: 1;
+
+    strong {
+        font-weight: 600;
+    }
+
+    .stars {
+        margin-top: 10px;
+    }
+}
+
+.reviews_ratings {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+    align-self: stretch;
+    background: var(--contrast-light);
+    border-radius: 20px;
+}
+
+.reviews_rating {
+    display: grid;
+    grid-template-columns: 75px 1fr 50px;
+    gap: 10px;
+    font-size: 1.125rem;
+    align-items: center;
+}
+
+.reviews_progress {
+    background-color: var(--contrast-progress);
+    height: 6px;
+    border-radius: 6px;
+
+    div {
+        background-color: var(--contrast);
+        height: 100%;
+        border-radius: 6px;
+    }
+}
+
+@media (min-width: 1100px) {
+    .reviews {
+        padding: 60px;
+        display: grid;
+        grid-template-columns: 444px 658px;
+        align-items: flex-start;
+        justify-content: space-between;
+    }
+    .reviews_body {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .reviews_ratings {
+        padding: 2rem;
+        gap: 1.5rem;
+        align-self: flex-start;
+    }
+}

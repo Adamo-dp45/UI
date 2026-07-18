@@ -1,0 +1,210 @@
+@use "./reset.scss";
+
+:root {
+    --dark: #000;
+    --space: 8px;
+}
+
+// --- Imbriquation --- //
+.table {
+    width: 100%;
+
+    td {
+        background-color: aquamarine;
+    }
+
+    th {
+        height: 20px;
+    }
+
+    thead th {
+        color: blue;
+    }
+}
+
+.bt {
+    padding: 5px 12px;
+    color: #fff;
+    background: {
+        color: blue;
+        size: cover;
+    } 
+
+    &:hover { // & : Désigne le selecteur
+        background-color: rgb(253, 135, 135);
+    }
+}
+
+// --- Héritage --- //
+.bt-herite {
+    @extend .bt; // Notre selecteur hérite du selecteur .atn
+    background-color: darkred;
+    &:hover {
+        background: rgb(141, 141, 255);
+    }
+} // Ou --
+
+%btn { // Ce selecteur n'est pas compiler
+    padding: 20px;
+    max-width: 200px;
+}
+
+.smart {
+    @extend %btn;
+}
+
+// --- Varibale --- //
+$primary: blue;
+$class: '.stripe';
+$base-font-size: 18px !default;
+$medium: 758px !default; // default : Si elle n'est pas redéfini on prend cette valeur
+$medium-up: "(only screen and (min-width: #{$medium}))";
+
+table #{$class} {
+    width: 100%;
+}
+
+body {
+    font-size: $base-font-size;
+    color: darken(#000000, 90); // darken : Fonction assombrir une couleur
+    // color: lighten(#000000, 90); -- Eclairssir une couleur
+    // color: lightness($color: #000000); -- Dégré de luminosité d'une couleur
+}
+
+@media #{$medium-up} { // Convertir une variable dans pun selecteur
+}
+
+// --- Mixin --- //
+@mixin rotate($rotation: 10deg) {
+    @include transform(rotate($rotation));
+}
+
+@mixin transform($transform) {
+    -ms-transform: $transform;
+    -o-transform: $transform;
+    transform: $transform;
+}
+
+@mixin before() {
+    &::before {
+        content: 'before';
+    }
+}
+
+$breakpoints: (
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px
+);
+
+@mixin up($breakpoint) {
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+        @content;
+    }
+}
+
+.card {
+    padding: 20px 20px;
+    margin: 20px 20px;
+    border-radius: 3px;
+    box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+
+    @include rotate(); // Inclure un mixin, va les rajouter dans mon selecteur
+    @include transform(rotate(10deg));
+    @include up(md) {
+        padding: 2rem;
+    };
+    @include before();
+}
+
+.card::after {
+    content: '';
+    width: 0;
+    height: 0;
+    border-top: 10px solid red;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    position: absolute;
+    bottom: -10px;
+    left: calc(50% - 10px);
+}
+
+// --- Fonction --- //
+@function space($i) { // Permet de multiplier l'espace
+    @return calc(#{$i} * var(--space));
+}
+
+@function strip-unit($number) { // Fonction sur google - Pour pouvoir diviser des unités de mésure différentes
+    @if type-of($number) == 'number' and not unitless($number) {
+        @return $number / ($number * 0 + 1);
+    }
+    @return $number;
+}
+
+@function rem($size, $base: $base-font-size) { // Unité de mésure en rem
+    @return 1rem * $size / strip-unit($base);
+}
+
+@function em($size, $base: $base-font-size) { // Unité de mésure en em
+    @return 1em * $size / strip-unit($base);
+}
+
+.card {
+    padding: rem(50);
+}
+
+// --- Condition --- //
+$theme: dark;
+
+.bt {
+    @if ($theme == dark) {
+    } @else {
+    }
+
+    // @if (2 > 1 and 3 < 4 and not 4 < 6) {}
+
+    @if(lightness($primary) > 50%) { // Si la couleur est trop éclairé on change la couleur du texte
+        color: #000;
+    }
+
+    @debug lightness($primary); // Affiche en console la valeur
+}
+
+// --- Boucle --- //
+@for $i from 1 through 4 {
+    .mt-#{$i} {
+        margin: 0 ($i * .25rem);
+    }
+}
+
+$animals: lion, chameau, mouton;
+@each $animal in $animals {
+    .icon-#{$animal} {
+        background: url(img/#{$animal}.png);
+    }
+}
+
+$categories: // On peut mettre la valeur entre ()
+    chien #CCC,
+    chat #fb0000,
+    poisson #FFF000; 
+
+@each $category in $categories { // Ou récupérer la cléf ainsi $category, $color
+    .#{nth($category, 1)} { // nth : Pour obtenir un élément, ici le premier
+        background: nth($category, 2); // Ici le deuxième
+    }
+}
+
+// --- Commandes et options sass --- //
+/*
+    ./scss/dart-sass/sass scss/sass/style.scss style.css : Compiler
+    ./scss/dart-sass/sass scss/sass/style.scss style.css --watch : '--watch' permet de recompiler à chaque fois qu'il y'a une modification de notre fichier
+    ./scss/dart-sass/sass scss/sass/style.scss style.css --style=compressed --no-source-map : '--style' pour générer avec un sytle particulé ici comprèssé, '--no-source-map' sans le fichier map
+
+    --load-path : Permet à sass de chercher les fichiers dans d'autres chemins
+    --[no-]stop-on-error : Permet de stoper la compilation dès qu'il y'a une erreur
+    -i ou --interactive : Permet de faire fonctionner le script de manière intéractive, taper dans terminal
+    -c ou --[no-]color : Pour la couleur
+    -q ou --[no-]quiet : Permet de cacher les erreurs
+*/

@@ -1,0 +1,19 @@
+.stars {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    color: var(--price);
+
+    & > * {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+
+@media (min-width: 1100px) {
+    .stars > * {
+        width: 24px;
+        height: 24px;
+    }
+}

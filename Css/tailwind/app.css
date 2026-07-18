@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+    --color-dusk: #FFF; /* -- Permet de rajouter une nouvelle couleur
+        - Si on n'a déjà une pallette de couleur on peut supprimer celle utilisées par 'tailwind', aussi pour d'autres règles
+            --color-*: initial -- Avant nos variables
+    */
+}
+@source "./*.php"; /* Va scanner les fichiers pour trouver les règles, par défaut il scanne tous les fichiers qu'il connaît comme le html,twig.. mais pas le php */
+
+@utility demo { /* Permet de créer une class utilitaire et ne sera mis dans le css que si elle est utilisé */
+    @apply .bg-danger; /* On aura une nouvelle class 'demo' qui ne sera pas généré dans le css final tant qu'elle n'est pas utilisé, 'bg-danger' provient de '@theme' */
+
+    @variant md { /* Si on n'est sur le media 'md' */
+        @apply bg-gray-200;
+    }
+}
+
+@utility stack-* {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * --value(integer)); /* 'spacing' vient de tailwind, '--value..' la valeur de l'étoile 'st.-*' */
+}
+/*
+    - On n'a des '@variant' existante comme 'dark', 'hover'.. et on peut en créer
+    - !! des fonctions comme '--spacing(4)', '--alpha(var(--color-red-50) / 50%)'
+
+    - On n'a '@config "../../tailwind.config.js"' pour charger notre configuration si on n'est sur de vieux projet
+    - !! '@plugin' pour charger de nouvelles extensions
+*/
+
+.input { /* On créer une class 'input' et on lui donne ces class de tailwind, ne fonctionne pas avec les règles avec : */
+    @apply border py-2
+}
+
+/*
+    @screen md {
+        .input { hover:text-dark }
+    }
+*/
+
+/*
+ * Daisyui
+*/
+@plugin "daisyui";

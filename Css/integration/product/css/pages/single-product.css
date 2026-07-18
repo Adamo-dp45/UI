@@ -1,0 +1,193 @@
+.product-page_header {
+    position: relative;
+    background-color: var(--contrast-light);
+    border-radius: 24px;
+    margin-bottom: 0.875rem;
+}
+
+.product-page_image {
+    width: 100%;
+    height: auto;
+    border-radius: 24px;
+    margin-bottom: 18px;
+}
+
+.image-slider {
+    padding-inline: .5rem;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    --spacing: 10px;
+
+    .btn-icon {
+        width: 30px;
+        height: 30px;
+        flex: none;
+    }
+}
+
+.image-slider_wrapper {
+    display: flex;
+    overflow: auto;
+    gap: var(--spacing);
+    scroll-snap-type: x proximity;
+    padding-bottom: 0.25rem;
+    margin-bottom: -0.25rem;
+
+    img {
+        display: block; /* Pour éviter l'espace en bas qui crée le décalage */
+        width: 100%;
+        height: auto;
+        border-radius: 12px;
+    }
+
+    button {
+        scroll-snap-align: center;
+        width: calc((100% - 3 * 10px) / 4); /* Ici on veut 4 éléments de 10px qui est la taille du gap */
+        flex: none; /* Pour éviter de le dimensionner en fonction du nombre d'éléments  */
+        padding: 2px;
+        border: 2px solid var(--text-inverse);
+        border-radius: 14px;
+        background-color: var(--text-inverse);
+    }
+
+    button:hover {
+        border-color: var(--contrast);
+    }
+
+    button[aria-current="true"] {
+        border-color: var(--price);
+    }
+}
+
+.product-page_detail {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.44rem;
+}
+
+.product-page_review {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: normal;
+}
+
+.product-page_price del {
+    display: block;
+    margin-top: 4px;
+    font-weight: normal;
+}
+
+.product-page_price-quantity {
+    display: flex;
+    justify-content: space-between;
+}
+
+.product-page_infos {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.product-page_quantity {
+    display: flex;
+    background-color: var(--text-inverse);
+    padding: 8px 12px;
+    width: max-content;
+    border-radius: 60px;
+    align-items: center;
+    font-size: 1.125rem;
+    font-weight: 600;
+
+    span {
+        width: 40px;
+        height: 40px;
+        border-radius: 40px;
+        display: grid;
+        place-items: center;
+        background-color: var(--contrast-light);
+    }
+
+    svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    button {
+        display: grid;
+        place-items: center;
+        gap: 0.75rem;
+    }
+}
+
+
+.product-page_text {
+    margin-top: 0.875rem;
+    margin-bottom: 100px;
+
+    .section-title {
+        margin-bottom: 0.875rem;
+    }
+    .section-title + * { /* On annule la marge du p qui est adjacent au section-title à cause de la fusion des marges */
+        margin-top: 0;
+    }
+    p {
+        margin-top: 1em;
+    }
+}
+
+.product-page .reviews {
+    margin-block: 100px;
+}
+
+@media (min-width: 1100px) {
+    .product-page_header {
+        display: grid;
+        align-items: center;
+        grid-template-columns: 850fr 580fr;
+        gap: min(100px, 6vw);
+        margin-bottom: 294px;
+    }
+    .product-page_image {
+        margin-bottom: 0;
+    }
+    .product-page_detail {
+        gap: 3.125rem;
+        padding: 2rem 2rem 2rem 0;
+    }
+    .product-page_header .image-slider {
+        position: absolute;
+        bottom: -172px;
+    }
+    .image-slider {
+        --spacing: 28px;
+    }
+    .image-slider_wrapper {
+        width: calc(130px * 4 + var(--spacing) * 3);
+        overflow: hidden; /* Car on s'imagine utilisé les flèches pour faire défiler le slider */
+    }
+    .image-slider_wrapper button {
+        width: 130px;
+        height: 130px;
+        padding: 4px;
+    }
+    .image-slider .btn-icon {
+        width: 60px;
+        height: 60px;
+    }
+    .product-page_infos {
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        .text-title {
+            width: 100%;
+        }
+    }
+    .product-page_text {
+        .section-title {
+            margin-bottom: 1.6875rem;
+        }
+    }
+}

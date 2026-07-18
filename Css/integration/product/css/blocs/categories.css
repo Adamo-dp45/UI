@@ -1,0 +1,58 @@
+.categories {
+    p {
+        margin-top: 0.75rem;
+        margin-bottom: 1.25rem;
+    }
+
+    /* '.section-title' dans layout */
+}
+
+.categories-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.category-link {
+    border: solid 1px var(--category-border);
+    border-radius: 30px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.625rem;
+    font-weight: 600;
+
+    svg {
+        width: 40px;
+        height: 40px;
+    }
+
+    &:hover {
+        border-color: var(--contrast);
+    }
+}
+
+.category-link_icon {
+    width: 90px;
+    height: 90px;
+    border-radius: 90px;
+    background-color: var(--contrast-light);
+    display: grid;
+    place-items: center;
+}
+
+@media (min-width: 1000px) {
+    .categories {
+        display: grid;
+        grid-template-columns: 593fr 885fr; /* On peut utiliser les largeurs pour en faire des fractionnement */
+        gap: 80px;
+    }
+    .categories-grid {
+        gap: 2rem;
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    .categories p {
+        margin-top: 1.125rem;
+    }
+}

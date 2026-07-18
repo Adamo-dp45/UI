@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="fr" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>shadcn/ui — Form Components Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─────────────────────────────────────────────
+       CSS VARIABLES — shadcn/ui New York v4 tokens
+    ───────────────────────────────────────────── */
+    :root {
+      --background: #ffffff;
+      --foreground: #09090b;
+      --card: #ffffff;
+      --card-foreground: #09090b;
+      --popover: #ffffff;
+      --popover-foreground: #09090b;
+      --primary: #18181b;
+      --primary-foreground: #fafafa;
+      --secondary: #f4f4f5;
+      --secondary-foreground: #18181b;
+      --muted: #f4f4f5;
+      --muted-foreground: #71717a;
+      --accent: #f4f4f5;
+      --accent-foreground: #18181b;
+      --destructive: #ef4444;
+      --destructive-foreground: #fafafa;
+      --border: #e4e4e7;
+      --input: #e4e4e7;
+      --ring: #18181b;
+      --radius: 0.5rem;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-mono: 'Geist Mono', monospace;
+    }
+
+    html.dark {
+      --background: #09090b;
+      --foreground: #fafafa;
+      --card: #09090b;
+      --card-foreground: #fafafa;
+      --popover: #09090b;
+      --popover-foreground: #fafafa;
+      --primary: #fafafa;
+      --primary-foreground: #18181b;
+      --secondary: #27272a;
+      --secondary-foreground: #fafafa;
+      --muted: #27272a;
+      --muted-foreground: #a1a1aa;
+      --accent: #27272a;
+      --accent-foreground: #fafafa;
+      --destructive: #7f1d1d;
+      --destructive-foreground: #fafafa;
+      --border: #27272a;
+      --input: #27272a;
+      --ring: #d4d4d8;
+    }
+
+    /* ─────────────────────────────────────────────
+       RESET & BASE
+    ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--background);
+      color: var(--foreground);
+      min-height: 100vh;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color .2s, color .2s;
+    }
+
+    /* ─────────────────────────────────────────────
+       LAYOUT
+    ───────────────────────────────────────────── */
+    .page-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      border-bottom: 1px solid var(--border);
+      background-color: var(--background);
+      backdrop-filter: blur(8px);
+    }
+    .page-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      height: 3.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-weight: 600;
+      font-size: .875rem;
+      color: var(--foreground);
+      text-decoration: none;
+    }
+    .logo svg { width: 20px; height: 20px; }
+    .badge {
+      font-size: .625rem;
+      font-weight: 600;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      background: var(--primary);
+      color: var(--primary-foreground);
+      padding: .15em .5em;
+      border-radius: 9999px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 1.5rem;
+    }
+    .page-title {
+      font-size: 2rem;
+      font-weight: 700;
+      letter-spacing: -.04em;
+      margin-bottom: .5rem;
+    }
+    .page-subtitle {
+      font-size: .9375rem;
+      color: var(--muted-foreground);
+      margin-bottom: 3rem;
+    }
+
+    /* grid de sections */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+    .grid-wide {
+      grid-column: 1 / -1;
+    }
+
+    /* ─────────────────────────────────────────────
+       CARD
+    ───────────────────────────────────────────── */
+    .card {
+      border: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 2px);
+      background: var(--card);
+      color: var(--card-foreground);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 1.25rem 1.5rem .75rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--muted);
+    }
+    .card-title {
+      font-size: .75rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    .card-body { padding: 1.5rem; }
+    .card-body > * + * { margin-top: 1rem; }
+
+    /* ─────────────────────────────────────────────
+       FORM ELEMENTS — exact shadcn tokens
+    ───────────────────────────────────────────── */
+
+    /* Label */
+    label {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      line-height: 1;
+      color: var(--foreground);
+      margin-bottom: .375rem;
+      cursor: default;
+    }
+    label .optional {
+      font-size: .75rem;
+      font-weight: 400;
+      color: var(--muted-foreground);
+      margin-left: .25rem;
+    }
+    .form-description {
+      font-size: .8125rem;
+      color: var(--muted-foreground);
+      margin-top: .25rem;
+    }
+    .form-message {
+      font-size: .8125rem;
+      font-weight: 400;
+      margin-top: .375rem;
+    }
+    .form-message.error { color: var(--destructive); }
+    .form-message.success { color: #16a34a; }
+
+    /* ── Input ── */
+    .input {
+      display: inline-block;
+      height: 2.25rem;
+      width: 100%;
+      border-radius: var(--radius);
+      border: 1px solid var(--input);
+      background-color: transparent;
+      padding: .5rem .75rem;
+      font-size: .875rem;
+      font-family: var(--font-sans);
+      color: var(--foreground);
+      line-height: 1.25rem;
+      transition: box-shadow .15s ease, border-color .15s ease;
+      outline: none;
+    }
+    .input::placeholder { color: var(--muted-foreground); }
+    .input:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+    }
+    .input:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+    }
+    .input.input-error {
+      border-color: var(--destructive);
+    }
+    .input.input-error:focus {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--destructive) 20%, transparent);
+    }
+
+    /* ── Textarea ── */
+    textarea.input {
+      height: auto;
+      min-height: 5rem;
+      resize: vertical;
+      padding: .625rem .75rem;
+    }
+
+    /* ── Input group (avec icône ou addon) ── */
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-wrapper .input { width: 100%; }
+    .input-icon-left  { position: absolute; left: .625rem; color: var(--muted-foreground); width: 1rem; height: 1rem; pointer-events: none; }
+    .input-icon-right { position: absolute; right: .625rem; color: var(--muted-foreground); width: 1rem; height: 1rem; pointer-events: none; }
+    .input-wrapper.has-left  .input { padding-left: 2.25rem; }
+    .input-wrapper.has-right .input { padding-right: 2.25rem; }
+
+    /* ── Input addon ── */
+    .input-group {
+      display: flex;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--input);
+    }
+    .input-group .input {
+      border: none;
+      border-radius: 0;
+      flex: 1;
+      box-shadow: none;
+    }
+    .input-group .input:focus {
+      box-shadow: none;
+      border: none;
+    }
+    .input-group:focus-within {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+    }
+    .input-addon {
+      display: flex;
+      align-items: center;
+      padding: 0 .75rem;
+      font-size: .875rem;
+      color: var(--muted-foreground);
+      background: var(--muted);
+      border-right: 1px solid var(--input);
+      white-space: nowrap;
+      user-select: none;
+    }
+    .input-addon.right {
+      border-right: none;
+      border-left: 1px solid var(--input);
+    }
+
+    /* ── Select ── */
+    .select-wrapper {
+      position: relative;
+    }
+    select.input {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      padding-right: 2.25rem;
+    }
+    .select-arrow {
+      position: absolute;
+      right: .75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--muted-foreground);
+    }
+
+    /* ── Checkbox ── */
+    .checkbox-wrapper {
+      display: flex;
+      align-items: flex-start;
+      gap: .625rem;
+    }
+    .checkbox-wrapper label {
+      margin-bottom: 0;
+      cursor: pointer;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+    input[type="checkbox"].checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1rem;
+      height: 1rem;
+      min-width: 1rem;
+      border-radius: .25rem;
+      border: 1px solid var(--primary);
+      background: var(--background);
+      cursor: pointer;
+      position: relative;
+      margin-top: .125rem;
+      transition: background .1s, box-shadow .15s;
+    }
+    input[type="checkbox"].checkbox:checked {
+      background: var(--primary);
+    }
+    input[type="checkbox"].checkbox:checked::after {
+      content: '';
+      position: absolute;
+      left: 2.5px;
+      top: .5px;
+      width: 9px;
+      height: 5.5px;
+      border-left: 1.75px solid var(--primary-foreground);
+      border-bottom: 1.75px solid var(--primary-foreground);
+      transform: rotate(-48deg);
+    }
+    input[type="checkbox"].checkbox:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+    }
+    input[type="checkbox"].checkbox:indeterminate {
+      background: var(--primary);
+    }
+    input[type="checkbox"].checkbox:indeterminate::after {
+      content: '';
+      position: absolute;
+      left: 2.5px;
+      top: 6px;
+      width: 9px;
+      height: 0;
+      border-bottom: 2px solid var(--primary-foreground);
+    }
+
+    /* ── Radio ── */
+    .radio-group { display: flex; flex-direction: column; gap: .625rem; }
+    .radio-wrapper {
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+    }
+    .radio-wrapper label {
+      margin-bottom: 0;
+      cursor: pointer;
+      font-weight: 400;
+    }
+    input[type="radio"].radio {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1rem;
+      height: 1rem;
+      border-radius: 9999px;
+      border: 1px solid var(--primary);
+      background: var(--background);
+      cursor: pointer;
+      position: relative;
+      transition: box-shadow .15s;
+    }
+    input[type="radio"].radio:checked {
+      background: var(--background);
+      border-color: var(--primary);
+    }
+    input[type="radio"].radio:checked::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: .5rem;
+      height: .5rem;
+      border-radius: 9999px;
+      background: var(--primary);
+    }
+    input[type="radio"].radio:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+    }
+
+    /* ── Switch ── */
+    .switch-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .switch-label-group { display: flex; flex-direction: column; gap: .125rem; }
+    .switch-label { font-size: .875rem; font-weight: 500; }
+    .switch-desc  { font-size: .8125rem; color: var(--muted-foreground); }
+    .switch {
+      display: inline-flex;
+      align-items: center;
+      width: 2.75rem;
+      height: 1.5rem;
+      border-radius: 9999px;
+      background: var(--input);
+      border: none;
+      cursor: pointer;
+      padding: .125rem;
+      transition: background .2s;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .switch.on { background: var(--primary); }
+    .switch-thumb {
+      display: block;
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 9999px;
+      background: white;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+      transition: transform .2s cubic-bezier(.4,0,.2,1);
+    }
+    .switch.on .switch-thumb { transform: translateX(1.25rem); }
+
+    /* ── Slider ── */
+    .slider-track {
+      width: 100%;
+      height: .375rem;
+      border-radius: 9999px;
+      background: var(--secondary);
+      position: relative;
+      cursor: pointer;
+      margin: .75rem 0;
+    }
+    .slider-range {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      border-radius: 9999px;
+      background: var(--primary);
+    }
+    input[type="range"].slider {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      height: .375rem;
+      cursor: pointer;
+      border-radius: 9999px;
+    }
+    input[type="range"].slider::-webkit-slider-runnable-track {
+      height: .375rem;
+      border-radius: 9999px;
+      background: var(--secondary);
+    }
+    input[type="range"].slider::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 9999px;
+      background: var(--background);
+      border: 2px solid var(--primary);
+      margin-top: -.4375rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,.15);
+      transition: box-shadow .15s;
+    }
+    input[type="range"].slider:focus { outline: none; }
+    input[type="range"].slider:focus::-webkit-slider-thumb {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+    }
+    input[type="range"].slider::-moz-range-track {
+      height: .375rem;
+      border-radius: 9999px;
+      background: var(--secondary);
+    }
+    input[type="range"].slider::-moz-range-thumb {
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 9999px;
+      background: var(--background);
+      border: 2px solid var(--primary);
+      box-shadow: 0 1px 3px rgba(0,0,0,.15);
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .375rem;
+      white-space: nowrap;
+      border-radius: var(--radius);
+      font-size: .875rem;
+      font-weight: 500;
+      font-family: var(--font-sans);
+      line-height: 1;
+      transition: background .15s, opacity .15s, box-shadow .15s, color .15s;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      text-decoration: none;
+    }
+    .btn:focus-visible {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+    }
+    .btn:disabled { pointer-events: none; opacity: .5; }
+
+    /* sizes */
+    .btn-sm  { height: 2rem;    padding: 0 .75rem;  font-size: .8125rem; }
+    .btn-md  { height: 2.25rem; padding: 0 1rem; }
+    .btn-lg  { height: 2.5rem;  padding: 0 1.5rem;  font-size: .9375rem; }
+    .btn-icon{ height: 2.25rem; width: 2.25rem; padding: 0; }
+
+    /* variants */
+    .btn-default  { background: var(--primary); color: var(--primary-foreground); }
+    .btn-default:hover { opacity: .9; }
+
+    .btn-secondary{ background: var(--secondary); color: var(--secondary-foreground); }
+    .btn-secondary:hover { background: color-mix(in srgb, var(--secondary) 80%, var(--foreground) 20%); }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--foreground);
+      border: 1px solid var(--input);
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .btn-outline:hover { background: var(--accent); }
+
+    .btn-ghost  { background: transparent; color: var(--foreground); }
+    .btn-ghost:hover { background: var(--accent); }
+
+    .btn-destructive{ background: var(--destructive); color: var(--destructive-foreground); }
+    .btn-destructive:hover { opacity: .9; }
+
+    .btn-link { background: transparent; color: var(--foreground); text-decoration: underline; text-underline-offset: 3px; padding: 0; height: auto; }
+    .btn-link:hover { opacity: .8; }
+
+    /* ── File Input ── */
+    .file-input-wrapper {
+      position: relative;
+    }
+    input[type="file"].file-input {
+      font-size: .875rem;
+      font-family: var(--font-sans);
+      width: 100%;
+      padding: 1.5rem;
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--muted);
+      color: var(--muted-foreground);
+      cursor: pointer;
+      outline: none;
+      transition: border-color .15s, background .15s;
+    }
+    input[type="file"].file-input::file-selector-button {
+      font-family: var(--font-sans);
+      font-size: .8125rem;
+      font-weight: 500;
+      color: var(--secondary-foreground);
+      background: var(--secondary);
+      border: none;
+      border-radius: calc(var(--radius) - 2px);
+      padding: .375rem .75rem;
+      margin-right: .75rem;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    input[type="file"].file-input::file-selector-button:hover { opacity: .8; }
+    input[type="file"].file-input:focus {
+      border-color: var(--ring);
+    }
+
+    /* ── OTP / PIN Input ── */
+    .otp-group {
+      display: flex;
+      gap: .5rem;
+    }
+    .otp-sep {
+      display: flex;
+      align-items: center;
+      color: var(--muted-foreground);
+      font-size: 1.125rem;
+    }
+    .otp-input {
+      width: 2.75rem;
+      height: 2.75rem;
+      text-align: center;
+      font-size: 1rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      border: 1px solid var(--input);
+      border-radius: var(--radius);
+      background: var(--background);
+      color: var(--foreground);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .otp-input:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+    }
+
+    /* ── Tags / Combobox ── */
+    .tag-input {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .375rem;
+      padding: .375rem .5rem;
+      min-height: 2.25rem;
+      border: 1px solid var(--input);
+      border-radius: var(--radius);
+      cursor: text;
+      transition: box-shadow .15s, border-color .15s;
+    }
+    .tag-input:focus-within {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      background: var(--secondary);
+      color: var(--secondary-foreground);
+      border-radius: calc(var(--radius) - 2px);
+      padding: .1875rem .5rem;
+      font-size: .8125rem;
+      font-weight: 500;
+    }
+    .tag-remove {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: .875rem;
+      height: .875rem;
+      border-radius: 9999px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      padding: 0;
+      transition: background .1s, color .1s;
+    }
+    .tag-remove:hover { background: var(--destructive); color: white; }
+    .tag-input input {
+      border: none;
+      outline: none;
+      background: transparent;
+      font-size: .875rem;
+      font-family: var(--font-sans);
+      color: var(--foreground);
+      flex: 1;
+      min-width: 80px;
+      padding: .125rem .25rem;
+    }
+    .tag-input input::placeholder { color: var(--muted-foreground); }
+
+    /* ── Separator ── */
+    .separator { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+
+    /* ── Form group ── */
+    .form-field { display: flex; flex-direction: column; }
+
+    /* ── Toggle Group ── */
+    .toggle-group {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      background: var(--muted);
+      border-radius: var(--radius);
+      padding: .25rem;
+    }
+    .toggle-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 2rem;
+      padding: 0 .75rem;
+      border-radius: calc(var(--radius) - 2px);
+      font-size: .875rem;
+      font-weight: 500;
+      border: none;
+      background: transparent;
+      color: var(--muted-foreground);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      font-family: var(--font-sans);
+    }
+    .toggle-item:hover { background: var(--background); color: var(--foreground); }
+    .toggle-item.active { background: var(--background); color: var(--foreground); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+
+    /* ── Date/Time ── */
+    input[type="date"].input,
+    input[type="time"].input,
+    input[type="datetime-local"].input {
+      font-family: var(--font-sans);
+      color-scheme: light;
+    }
+    html.dark input[type="date"].input,
+    html.dark input[type="time"].input,
+    html.dark input[type="datetime-local"].input {
+      color-scheme: dark;
+    }
+
+    /* ── Kbd / Shortcut ── */
+    kbd {
+      display: inline-flex;
+      align-items: center;
+      gap: .125rem;
+      border-radius: .25rem;
+      border: 1px solid var(--border);
+      background: var(--background);
+      padding: .125rem .375rem;
+      font-family: var(--font-mono);
+      font-size: .75rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+    }
+
+    /* ── Badge ── */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 9999px;
+      padding: .1875rem .625rem;
+      font-size: .75rem;
+      font-weight: 500;
+      line-height: 1;
+    }
+    .pill-default    { background: var(--primary); color: var(--primary-foreground); }
+    .pill-secondary  { background: var(--secondary); color: var(--secondary-foreground); border: 1px solid var(--border); }
+    .pill-destructive{ background: var(--destructive); color: var(--destructive-foreground); }
+    .pill-outline    { background: transparent; border: 1px solid var(--border); color: var(--foreground); }
+
+    /* ─────────────────────────────────────────────
+       DARK MODE TOGGLE
+    ───────────────────────────────────────────── */
+    #theme-toggle {
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      font-size: .8125rem;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .375rem .75rem;
+      cursor: pointer;
+      transition: color .15s, background .15s;
+      font-family: var(--font-sans);
+    }
+    #theme-toggle:hover { background: var(--accent); color: var(--foreground); }
+
+    /* ─────────────────────────────────────────────
+       SECTION HEADERS
+    ───────────────────────────────────────────── */
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: -.025em;
+      margin-bottom: .25rem;
+      margin-top: 3rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-title:first-child { margin-top: 0; }
+
+    /* ─────────────────────────────────────────────
+       UTILITY
+    ───────────────────────────────────────────── */
+    .flex     { display: flex; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: .5rem; }
+    .gap-3 { gap: .75rem; }
+    .mt-2 { margin-top: .5rem; }
+    .mt-4 { margin-top: 1rem; }
+    .flex-1 { flex: 1; }
+    .w-full { width: 100%; }
+    .text-sm { font-size: .875rem; }
+    .text-muted { color: var(--muted-foreground); }
+    .font-mono { font-family: var(--font-mono); }
+
+    /* ─────────────────────────────────────────────
+       INPUT SEARCH WITH CMD
+    ───────────────────────────────────────────── */
+    .search-wrap { position: relative; }
+    .search-wrap .input { padding-left: 2.25rem; padding-right: 5rem; }
+    .search-icon { position: absolute; left: .75rem; top: 50%; transform: translateY(-50%); color: var(--muted-foreground); }
+    .search-kbd { position: absolute; right: .75rem; top: 50%; transform: translateY(-50%); display: flex; gap: .25rem; pointer-events: none; }
+
+    /* ─────────────────────────────────────────────
+       FORM EXAMPLE COMPLET
+    ───────────────────────────────────────────── */
+    .form-example {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ─────────────────────────────────────────────
+       NUMBER INPUT
+    ───────────────────────────────────────────── */
+    input[type="number"].input::-webkit-inner-spin-button,
+    input[type="number"].input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    input[type="number"].input { -moz-appearance: textfield; }
+    .number-input-wrap { position: relative; display: flex; align-items: center; }
+    .number-input-wrap .input { padding-right: 2.5rem; }
+    .number-spin { position: absolute; right: 0; top: 0; height: 100%; display: flex; flex-direction: column; border-left: 1px solid var(--input); }
+    .number-spin button {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      color: var(--muted-foreground);
+      padding: 0 .5rem;
+      transition: background .1s;
+    }
+    .number-spin button:hover { background: var(--muted); color: var(--foreground); }
+    .number-spin button:first-child { border-bottom: 1px solid var(--input); border-radius: 0 calc(var(--radius) - 1px) 0 0; }
+    .number-spin button:last-child { border-radius: 0 0 calc(var(--radius) - 1px) 0; }
+
+    /* ─────────────────────────────────────────────
+       PROGRESS
+    ───────────────────────────────────────────── */
+    .progress-track {
+      width: 100%;
+      height: .5rem;
+      border-radius: 9999px;
+      background: var(--secondary);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 9999px;
+      background: var(--primary);
+      transition: width .4s ease;
+    }
+
+    /* ─────────────────────────────────────────────
+       SCROLLBAR
+    ───────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <div class="page-header-inner">
+      <a class="logo" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect width="8" height="8" x="2" y="2" rx="1"/><rect width="8" height="8" x="14" y="2" rx="1"/>
+          <rect width="8" height="8" x="2" y="14" rx="1"/><rect width="8" height="8" x="14" y="14" rx="1"/>
+        </svg>
+        shadcn/ui
+        <span class="badge">Components</span>
+      </a>
+      <button id="theme-toggle" onclick="toggleTheme()">
+        <svg id="sun-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+        </svg>
+        <svg id="moon-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+        </svg>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+    <h1 class="page-title">Form Components</h1>
+    <p class="page-subtitle">Reproduction fidèle du style shadcn/ui — tous les composants de formulaire, thèmes clair &amp; sombre.</p>
+
+    <!-- ── INPUTS ─────────────────────────────── -->
+    <h2 class="section-title">Input</h2>
+    <div class="grid">
+
+      <!-- Default -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Default</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label for="i1">Email</label>
+            <input id="i1" class="input" type="email" placeholder="m@example.com" />
+          </div>
+          <div class="form-field">
+            <label for="i2">Password</label>
+            <input id="i2" class="input" type="password" placeholder="••••••••" />
+            <span class="form-description">Minimum 8 characters.</span>
+          </div>
+          <div class="form-field">
+            <label for="i3">Username <span class="optional">(optional)</span></label>
+            <input id="i3" class="input" type="text" placeholder="shadcn" />
+          </div>
+        </div>
+      </div>
+
+      <!-- States -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">States</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label>Default</label>
+            <input class="input" type="text" placeholder="Placeholder..." />
+          </div>
+          <div class="form-field">
+            <label>Filled</label>
+            <input class="input" type="text" value="shadcn/ui" />
+          </div>
+          <div class="form-field">
+            <label>Disabled</label>
+            <input class="input" type="text" placeholder="Disabled input" disabled />
+          </div>
+          <div class="form-field">
+            <label>Error</label>
+            <input class="input input-error" type="text" value="invalid@" />
+            <span class="form-message error">Please enter a valid email address.</span>
+          </div>
+          <div class="form-field">
+            <label>Success</label>
+            <input class="input" type="text" value="Valid username" style="border-color:#16a34a;" />
+            <span class="form-message success">Username is available!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- With Icons -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">With Icons &amp; Addons</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label>Search</label>
+            <div class="search-wrap">
+              <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input class="input" type="text" placeholder="Search..." />
+              <div class="search-kbd">
+                <kbd>⌘</kbd><kbd>K</kbd>
+              </div>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>URL</label>
+            <div class="input-group">
+              <span class="input-addon">https://</span>
+              <input class="input" type="text" placeholder="example.com" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Price</label>
+            <div class="input-group">
+              <span class="input-addon">$</span>
+              <input class="input" type="number" placeholder="0.00" />
+              <span class="input-addon right">USD</span>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Email with icon</label>
+            <div class="input-wrapper has-left">
+              <svg class="input-icon-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <input class="input" type="email" placeholder="you@email.com" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Textarea -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Textarea</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label for="ta1">Bio</label>
+            <textarea id="ta1" class="input" rows="3" placeholder="Tell us about yourself..."></textarea>
+            <span class="form-description">Max. 160 characters.</span>
+          </div>
+          <div class="form-field">
+            <label>Disabled</label>
+            <textarea class="input" rows="2" disabled placeholder="Cannot edit this..."></textarea>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── SELECT ─────────────────────────────── -->
+    <h2 class="section-title">Select</h2>
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Select</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label for="sel1">Country</label>
+            <div class="select-wrapper">
+              <select id="sel1" class="input">
+                <option value="" disabled selected>Select a country…</option>
+                <option>France</option>
+                <option>Côte d'Ivoire</option>
+                <option>Canada</option>
+                <option>Senegal</option>
+                <option>United States</option>
+              </select>
+              <svg class="select-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="sel2">Role</label>
+            <div class="select-wrapper">
+              <select id="sel2" class="input">
+                <option>Member</option>
+                <option>Admin</option>
+                <option>Owner</option>
+              </select>
+              <svg class="select-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Disabled</label>
+            <div class="select-wrapper">
+              <select class="input" disabled>
+                <option>Cannot select</option>
+              </select>
+              <svg class="select-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tags Input -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Tags Input</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label>Technologies</label>
+            <div class="tag-input" onclick="document.getElementById('tag-inp').focus()">
+              <span class="tag">React <button class="tag-remove" onclick="this.parentElement.remove()">✕</button></span>
+              <span class="tag">TypeScript <button class="tag-remove" onclick="this.parentElement.remove()">✕</button></span>
+              <span class="tag">Tailwind <button class="tag-remove" onclick="this.parentElement.remove()">✕</button></span>
+              <input id="tag-inp" type="text" placeholder="Add tag…" />
+            </div>
+            <span class="form-description">Press Enter to add a tag.</span>
+          </div>
+          <div class="form-field" style="margin-top:1rem">
+            <label>Empty state</label>
+            <div class="tag-input">
+              <input type="text" placeholder="Type and press Enter…" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── CHECKBOX & RADIO ───────────────────── -->
+    <h2 class="section-title">Checkbox &amp; Radio</h2>
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Checkbox</span></div>
+        <div class="card-body">
+          <div class="checkbox-wrapper">
+            <input type="checkbox" class="checkbox" id="cb1" checked />
+            <label for="cb1">Accept terms and conditions</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" class="checkbox" id="cb2" />
+            <label for="cb2">Subscribe to newsletter</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" class="checkbox" id="cb3" disabled />
+            <label for="cb3" style="opacity:.5">Disabled option</label>
+          </div>
+          <div class="checkbox-wrapper">
+            <input type="checkbox" class="checkbox" id="cb4" />
+            <label for="cb4">
+              I agree to the <a href="#" style="color:var(--foreground);text-decoration:underline;text-underline-offset:3px;">privacy policy</a>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Radio Group</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label style="margin-bottom:.625rem">Notifications</label>
+            <div class="radio-group">
+              <div class="radio-wrapper">
+                <input type="radio" class="radio" name="notif" id="r1" checked />
+                <label for="r1">All new messages</label>
+              </div>
+              <div class="radio-wrapper">
+                <input type="radio" class="radio" name="notif" id="r2" />
+                <label for="r2">Direct messages &amp; mentions</label>
+              </div>
+              <div class="radio-wrapper">
+                <input type="radio" class="radio" name="notif" id="r3" />
+                <label for="r3">Nothing</label>
+              </div>
+              <div class="radio-wrapper">
+                <input type="radio" class="radio" name="notif" id="r4" disabled />
+                <label for="r4" style="opacity:.5">Custom (unavailable)</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── SWITCH ─────────────────────────────── -->
+    <h2 class="section-title">Switch</h2>
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Switch</span></div>
+        <div class="card-body">
+          <div class="switch-wrapper">
+            <div class="switch-label-group">
+              <span class="switch-label">Email notifications</span>
+              <span class="switch-desc">Receive emails about your account.</span>
+            </div>
+            <button class="switch on" role="switch" aria-checked="true" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on'))">
+              <span class="switch-thumb"></span>
+            </button>
+          </div>
+          <hr class="separator">
+          <div class="switch-wrapper">
+            <div class="switch-label-group">
+              <span class="switch-label">Marketing emails</span>
+              <span class="switch-desc">Receive emails about new products.</span>
+            </div>
+            <button class="switch" role="switch" aria-checked="false" onclick="this.classList.toggle('on'); this.setAttribute('aria-checked', this.classList.contains('on'))">
+              <span class="switch-thumb"></span>
+            </button>
+          </div>
+          <hr class="separator">
+          <div class="switch-wrapper">
+            <div class="switch-label-group">
+              <span class="switch-label">Security emails</span>
+              <span class="switch-desc" style="color:var(--muted-foreground)">Always sent.</span>
+            </div>
+            <button class="switch on" role="switch" aria-checked="true" disabled style="opacity:.5;cursor:not-allowed">
+              <span class="switch-thumb"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toggle Group -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Toggle Group</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label>Text alignment</label>
+            <div class="toggle-group mt-2">
+              <button class="toggle-item active" onclick="selectToggle(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" x2="3" y1="6" y2="6"/><line x1="15" x2="3" y1="12" y2="12"/><line x1="17" x2="3" y1="18" y2="18"/></svg>
+              </button>
+              <button class="toggle-item" onclick="selectToggle(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" x2="3" y1="6" y2="6"/><line x1="17" x2="7" y1="12" y2="12"/><line x1="21" x2="3" y1="18" y2="18"/></svg>
+              </button>
+              <button class="toggle-item" onclick="selectToggle(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" x2="3" y1="6" y2="6"/><line x1="21" x2="7" y1="12" y2="12"/><line x1="21" x2="3" y1="18" y2="18"/></svg>
+              </button>
+              <button class="toggle-item" onclick="selectToggle(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="21" x2="3" y1="6" y2="6"/><line x1="17" x2="7" y1="12" y2="12"/><line x1="21" x2="3" y1="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="form-field mt-4">
+            <label>View mode</label>
+            <div class="toggle-group mt-2">
+              <button class="toggle-item active" onclick="selectToggle(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+              </button>
+              <button class="toggle-item" onclick="selectToggle(this)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── SLIDER ─────────────────────────────── -->
+    <h2 class="section-title">Slider</h2>
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Slider</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <div class="flex justify-between items-center">
+              <label style="margin-bottom:0">Volume</label>
+              <span class="text-sm text-muted font-mono" id="vol-val">75%</span>
+            </div>
+            <input type="range" class="slider mt-2" min="0" max="100" value="75"
+              oninput="document.getElementById('vol-val').textContent = this.value + '%'" />
+          </div>
+          <div class="form-field">
+            <div class="flex justify-between items-center">
+              <label style="margin-bottom:0">Opacity</label>
+              <span class="text-sm text-muted font-mono" id="op-val">40%</span>
+            </div>
+            <input type="range" class="slider mt-2" min="0" max="100" value="40"
+              oninput="document.getElementById('op-val').textContent = this.value + '%'" />
+          </div>
+          <div class="form-field">
+            <label style="margin-bottom:.5rem">Disabled</label>
+            <input type="range" class="slider" min="0" max="100" value="60" disabled style="opacity:.5;cursor:not-allowed" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Number Input -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Number Input</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label>Quantity</label>
+            <div class="number-input-wrap">
+              <input id="num1" type="number" class="input" value="1" min="0" max="99" />
+              <div class="number-spin">
+                <button onclick="let i=document.getElementById('num1');i.value=+i.value+1">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                </button>
+                <button onclick="let i=document.getElementById('num1');i.value=Math.max(0,+i.value-1)">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Team size</label>
+            <div class="number-input-wrap">
+              <input id="num2" type="number" class="input" value="5" min="1" />
+              <div class="number-spin">
+                <button onclick="let i=document.getElementById('num2');i.value=+i.value+1">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
+                </button>
+                <button onclick="let i=document.getElementById('num2');i.value=Math.max(1,+i.value-1)">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── DATE / TIME ────────────────────────── -->
+    <h2 class="section-title">Date &amp; Time</h2>
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Date / Time / DateTime</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label for="dt1">Date</label>
+            <input id="dt1" type="date" class="input" value="2026-03-20" />
+          </div>
+          <div class="form-field">
+            <label for="dt2">Time</label>
+            <input id="dt2" type="time" class="input" value="09:30" />
+          </div>
+          <div class="form-field">
+            <label for="dt3">Date &amp; Time</label>
+            <input id="dt3" type="datetime-local" class="input" />
+          </div>
+          <div class="form-field">
+            <label for="dt4">Month</label>
+            <input id="dt4" type="month" class="input" />
+          </div>
+        </div>
+      </div>
+
+      <!-- OTP / PIN -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">OTP / PIN Input</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label>Verification code</label>
+            <span class="form-description">Enter the 6-digit code from your authenticator.</span>
+            <div class="otp-group mt-2">
+              <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" oninput="otpNext(this)" />
+              <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" oninput="otpNext(this)" />
+              <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" oninput="otpNext(this)" />
+              <span class="otp-sep">—</span>
+              <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" oninput="otpNext(this)" />
+              <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" oninput="otpNext(this)" />
+              <input class="otp-input" type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" oninput="otpNext(this)" />
+            </div>
+          </div>
+          <div class="form-field" style="margin-top:1.25rem">
+            <label>PIN (4 digits)</label>
+            <div class="otp-group">
+              <input class="otp-input" type="password" maxlength="1" inputmode="numeric" oninput="otpNext(this)" />
+              <input class="otp-input" type="password" maxlength="1" inputmode="numeric" oninput="otpNext(this)" />
+              <input class="otp-input" type="password" maxlength="1" inputmode="numeric" oninput="otpNext(this)" />
+              <input class="otp-input" type="password" maxlength="1" inputmode="numeric" oninput="otpNext(this)" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── FILE INPUT ─────────────────────────── -->
+    <h2 class="section-title">File Input</h2>
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">File Input</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <label>Profile picture</label>
+            <input type="file" class="file-input" accept="image/*" />
+          </div>
+          <div class="form-field">
+            <label>Documents</label>
+            <input type="file" class="file-input" accept=".pdf,.docx" multiple />
+            <span class="form-description">PDF or DOCX, max 10 MB.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Progress</span></div>
+        <div class="card-body">
+          <div class="form-field">
+            <div class="flex justify-between items-center">
+              <label style="margin-bottom:0">Uploading…</label>
+              <span class="text-sm text-muted font-mono">68%</span>
+            </div>
+            <div class="progress-track mt-2">
+              <div class="progress-fill" style="width:68%"></div>
+            </div>
+          </div>
+          <div class="form-field" style="margin-top:1rem">
+            <div class="flex justify-between items-center">
+              <label style="margin-bottom:0">Storage used</label>
+              <span class="text-sm text-muted font-mono">2.3 / 5 GB</span>
+            </div>
+            <div class="progress-track mt-2">
+              <div class="progress-fill" style="width:46%"></div>
+            </div>
+          </div>
+          <div class="form-field" style="margin-top:1rem">
+            <div class="flex justify-between items-center">
+              <label style="margin-bottom:0">Complete</label>
+              <span class="text-sm font-mono" style="color:#16a34a">100%</span>
+            </div>
+            <div class="progress-track mt-2">
+              <div class="progress-fill" style="width:100%;background:#16a34a"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── BUTTONS ────────────────────────────── -->
+    <h2 class="section-title">Buttons</h2>
+    <div class="grid">
+
+      <div class="card">
+        <div class="card-header"><span class="card-title">Variants</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem">
+          <div class="flex gap-2" style="flex-wrap:wrap">
+            <button class="btn btn-default btn-md">Default</button>
+            <button class="btn btn-secondary btn-md">Secondary</button>
+            <button class="btn btn-outline btn-md">Outline</button>
+            <button class="btn btn-ghost btn-md">Ghost</button>
+            <button class="btn btn-destructive btn-md">Destructive</button>
+            <button class="btn btn-link btn-md">Link</button>
+          </div>
+          <hr class="separator" style="margin:.25rem 0">
+          <div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap">
+            <button class="btn btn-default btn-sm">Small</button>
+            <button class="btn btn-default btn-md">Default</button>
+            <button class="btn btn-default btn-lg">Large</button>
+            <button class="btn btn-default btn-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            </button>
+          </div>
+          <hr class="separator" style="margin:.25rem 0">
+          <div class="flex gap-2" style="flex-wrap:wrap">
+            <button class="btn btn-default btn-md" disabled>Disabled</button>
+            <button class="btn btn-outline btn-md" style="gap:.5rem">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin" id="loader-icon" style="display:none"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+              <span id="btn-load-label">Click to load</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="card">
+        <div class="card-header"><span class="card-title">Badge / Pill</span></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem">
+          <div class="flex gap-2" style="flex-wrap:wrap;align-items:center">
+            <span class="pill pill-default">Default</span>
+            <span class="pill pill-secondary">Secondary</span>
+            <span class="pill pill-destructive">Destructive</span>
+            <span class="pill pill-outline">Outline</span>
+          </div>
+          <div class="flex gap-2" style="flex-wrap:wrap;align-items:center">
+            <span class="pill pill-secondary" style="background:color-mix(in srgb,#16a34a 15%,transparent);color:#16a34a;border-color:color-mix(in srgb,#16a34a 30%,transparent)">Active</span>
+            <span class="pill pill-secondary" style="background:color-mix(in srgb,#f59e0b 15%,transparent);color:#d97706;border-color:color-mix(in srgb,#f59e0b 30%,transparent)">Pending</span>
+            <span class="pill pill-secondary" style="background:color-mix(in srgb,#3b82f6 15%,transparent);color:#2563eb;border-color:color-mix(in srgb,#3b82f6 30%,transparent)">In Review</span>
+            <span class="pill pill-secondary" style="background:color-mix(in srgb,#ef4444 15%,transparent);color:#dc2626;border-color:color-mix(in srgb,#ef4444 30%,transparent)">Rejected</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── COMPLETE FORM ───────────────────────── -->
+    <h2 class="section-title">Complete Form Example</h2>
+    <div class="grid">
+      <div class="card grid-wide" style="max-width:560px">
+        <div class="card-header">
+          <span class="card-title">Create Account</span>
+        </div>
+        <div class="card-body">
+          <div class="form-example">
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+              <div class="form-field">
+                <label for="fn">First name</label>
+                <input id="fn" class="input" type="text" placeholder="Adamo" />
+              </div>
+              <div class="form-field">
+                <label for="ln">Last name</label>
+                <input id="ln" class="input" type="text" placeholder="Koné" />
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="em">Email</label>
+              <div class="input-wrapper has-left">
+                <svg class="input-icon-left" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                <input id="em" class="input" type="email" placeholder="m@example.com" />
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="pw">Password</label>
+              <input id="pw" class="input" type="password" placeholder="••••••••" />
+              <span class="form-description">Min. 8 characters, including a number.</span>
+            </div>
+
+            <div class="form-field">
+              <label for="role-sel">Role</label>
+              <div class="select-wrapper">
+                <select id="role-sel" class="input">
+                  <option value="" disabled selected>Select your role…</option>
+                  <option>Developer</option>
+                  <option>Designer</option>
+                  <option>Manager</option>
+                  <option>Other</option>
+                </select>
+                <svg class="select-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label for="bio-f">Bio <span class="optional">(optional)</span></label>
+              <textarea id="bio-f" class="input" rows="3" placeholder="Tell us about yourself…"></textarea>
+            </div>
+
+            <div class="checkbox-wrapper">
+              <input type="checkbox" class="checkbox" id="tos" />
+              <label for="tos">I agree to the <a href="#" style="color:var(--foreground);text-decoration:underline;text-underline-offset:3px;">terms of service</a> and <a href="#" style="color:var(--foreground);text-decoration:underline;text-underline-offset:3px;">privacy policy</a></label>
+            </div>
+
+            <div style="display:flex;gap:.75rem;justify-content:flex-end;margin-top:.25rem">
+              <button class="btn btn-outline btn-md">Cancel</button>
+              <button class="btn btn-default btn-md">Create account</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+  <script>
+    /* ── Dark mode toggle ── */
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.classList.toggle('dark');
+      document.getElementById('sun-icon').style.display  = isDark ? 'none'  : '';
+      document.getElementById('moon-icon').style.display = isDark ? ''      : 'none';
+      document.getElementById('theme-label').textContent = isDark ? 'Light mode' : 'Dark mode';
+    }
+
+    /* ── Toggle group (single select) ── */
+    function selectToggle(btn) {
+      const group = btn.closest('.toggle-group');
+      group.querySelectorAll('.toggle-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    /* ── OTP auto-focus next ── */
+    function otpNext(input) {
+      if (input.value.length >= 1) {
+        const all = Array.from(input.closest('.otp-group').querySelectorAll('.otp-input'));
+        const idx = all.indexOf(input);
+        if (idx < all.length - 1) all[idx + 1].focus();
+      }
+    }
+    /* OTP backspace navigation */
+    document.querySelectorAll('.otp-input').forEach(inp => {
+      inp.addEventListener('keydown', e => {
+        if (e.key === 'Backspace' && !inp.value) {
+          const all = Array.from(inp.closest('.otp-group').querySelectorAll('.otp-input'));
+          const idx = all.indexOf(inp);
+          if (idx > 0) { all[idx - 1].focus(); all[idx - 1].value = ''; }
+        }
+      });
+    });
+
+    /* ── Loading button demo ── */
+    document.querySelector('#btn-load-label')?.closest('button')?.addEventListener('click', function() {
+      const icon = document.getElementById('loader-icon');
+      const label = document.getElementById('btn-load-label');
+      icon.style.display = '';
+      icon.style.animation = 'spin 1s linear infinite';
+      label.textContent = 'Loading...';
+      this.disabled = true;
+      setTimeout(() => {
+        icon.style.display = 'none';
+        label.textContent = 'Loaded ✓';
+        this.disabled = false;
+      }, 2000);
+    });
+
+    /* CSS spin animation */
+    const style = document.createElement('style');
+    style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>shadcn/ui — Skeleton, Spinner & Table</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ─── */
+    :root {
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --destructive-foreground: oklch(0.985 0 0);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --radius: 0.625rem;
+    }
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.985 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.396 0.141 25.723);
+      --destructive-foreground: oklch(0.985 0 0);
+      --border: oklch(1 0 0 / 0.1);
+      --input: oklch(1 0 0 / 0.15);
+      --ring: oklch(0.556 0 0);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+      font-size: 14px; line-height: 1.5;
+      background-color: var(--background); color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* ══════════════════════════════════════════════════
+       SKELETON
+       animate-pulse rounded-md bg-primary/10
+       — exact shadcn source
+    ══════════════════════════════════════════════════ */
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+
+    .skeleton {
+      border-radius: calc(var(--radius) - 2px);
+      background-color: color-mix(in oklab, var(--primary) 10%, var(--background));
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+    /* Convenience size helpers */
+    .sk-text  { height: 1rem;    width: 100%; }
+    .sk-text-sm { height: 0.75rem; width: 100%; }
+    .sk-title { height: 1.25rem; width: 60%; }
+    .sk-circle { border-radius: 9999px; }
+    .sk-avatar { width: 2.5rem; height: 2.5rem; border-radius: 9999px; }
+    .sk-avatar-sm { width: 2rem; height: 2rem; border-radius: 9999px; }
+    .sk-btn   { height: 2.5rem; width: 6rem; }
+    .sk-btn-sm{ height: 2.25rem; width: 5rem; }
+    .sk-badge { height: 1.375rem; width: 4rem; border-radius: 9999px; }
+    .sk-input { height: 2.5rem; width: 100%; }
+    .sk-card  { height: 8rem; width: 100%; }
+    .sk-image { height: 12rem; width: 100%; }
+    .sk-full  { width: 100%; }
+    .sk-3-4   { width: 75%; }
+    .sk-1-2   { width: 50%; }
+    .sk-1-4   { width: 25%; }
+    .sk-1-3   { width: 33%; }
+    .sk-2-3   { width: 66%; }
+
+    /* ══════════════════════════════════════════════════
+       SPINNER
+       Not in core shadcn but the de-facto pattern used
+       inside Button loading states, everywhere.
+    ══════════════════════════════════════════════════ */
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .spinner {
+      display: inline-block;
+      border-radius: 9999px;
+      border-style: solid;
+      border-color: transparent;
+      border-top-color: currentColor;
+      animation: spin 0.75s linear infinite;
+      flex-shrink: 0;
+    }
+    /* Sizes */
+    .spinner-xs  { width: 0.75rem; height: 0.75rem; border-width: 1.5px; }
+    .spinner-sm  { width: 1rem;    height: 1rem;    border-width: 2px; }
+    .spinner-md  { width: 1.5rem;  height: 1.5rem;  border-width: 2px; }
+    .spinner-lg  { width: 2rem;    height: 2rem;    border-width: 2.5px; }
+    .spinner-xl  { width: 2.5rem;  height: 2.5rem;  border-width: 3px; }
+
+    /* SVG arc spinner (closer to Lucide's Loader2) */
+    @keyframes spin-svg { to { transform: rotate(360deg); } }
+    .spinner-svg {
+      animation: spin-svg 1s linear infinite;
+      display: inline-block; flex-shrink: 0;
+    }
+    .spinner-svg.xs  { width: 0.75rem; height: 0.75rem; }
+    .spinner-svg.sm  { width: 1rem;    height: 1rem; }
+    .spinner-svg.md  { width: 1.5rem;  height: 1.5rem; }
+    .spinner-svg.lg  { width: 2rem;    height: 2rem; }
+    .spinner-svg.xl  { width: 2.5rem;  height: 2.5rem; }
+
+    /* Dots spinner */
+    @keyframes bounce-dot {
+      0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+      40%           { transform: scale(1); opacity: 1; }
+    }
+    .spinner-dots { display: inline-flex; align-items: center; gap: 0.25rem; }
+    .spinner-dots span {
+      width: 0.4rem; height: 0.4rem;
+      border-radius: 9999px;
+      background-color: currentColor;
+      animation: bounce-dot 1.4s ease-in-out infinite both;
+    }
+    .spinner-dots span:nth-child(1) { animation-delay: -0.32s; }
+    .spinner-dots span:nth-child(2) { animation-delay: -0.16s; }
+    .spinner-dots span:nth-child(3) { animation-delay: 0s; }
+    .spinner-dots.sm span { width: 0.3rem; height: 0.3rem; }
+    .spinner-dots.lg span { width: 0.5rem; height: 0.5rem; gap: 0.35rem; }
+
+    /* ══════════════════════════════════════════════════
+       TABLE
+       w-full caption-bottom text-sm
+    ══════════════════════════════════════════════════ */
+
+    /* Table wrapper — to handle overflow */
+    .table-wrap {
+      position: relative; width: 100%; overflow-x: auto;
+    }
+
+    /* Table: w-full caption-bottom text-sm */
+    .table {
+      width: 100%;
+      caption-side: bottom;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    /* TableHeader: [&_tr]:border-b */
+    .table thead tr {
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* TableBody: [&_tr:last-child]:border-0 */
+    .table tbody tr:last-child {
+      border-bottom: none;
+    }
+    .table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background-color 0.1s;
+    }
+
+    /* Hoverable rows */
+    .table.hoverable tbody tr:hover {
+      background-color: var(--muted);
+    }
+
+    /* TableRow: border-b transition-colors
+       hover:bg-muted/50 data-[state=selected]:bg-muted */
+    .table tbody tr.selected {
+      background-color: var(--muted);
+    }
+
+    /* TableHead: h-12 px-4 text-left align-middle font-medium
+       text-muted-foreground [&:has([role=checkbox])]:pr-0 */
+    .table th {
+      height: 3rem;
+      padding: 0 1rem;
+      text-align: left;
+      vertical-align: middle;
+      font-weight: 500;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+    }
+    .table th.right { text-align: right; }
+    .table th.center { text-align: center; }
+
+    /* TableCell: p-4 align-middle [&:has([role=checkbox])]:pr-0 */
+    .table td {
+      padding: 1rem;
+      vertical-align: middle;
+    }
+    .table td.right { text-align: right; }
+    .table td.center { text-align: center; }
+    .table td.mono { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 0.8125rem; }
+
+    /* TableCaption: mt-4 text-sm text-muted-foreground */
+    .table caption {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      text-align: center;
+    }
+
+    /* Sortable header */
+    .table th.sortable {
+      cursor: pointer; user-select: none;
+    }
+    .table th.sortable:hover { color: var(--foreground); }
+    .sort-icon {
+      display: inline-flex; align-items: center; gap: 0.25rem;
+    }
+    .sort-icon svg { width: 0.875rem; height: 0.875rem; color: var(--muted-foreground); vertical-align: middle; }
+    .table th.sort-asc .sort-icon svg,
+    .table th.sort-desc .sort-icon svg { color: var(--foreground); }
+
+    /* Striped variant */
+    .table.striped tbody tr:nth-child(even) {
+      background-color: var(--muted);
+    }
+
+    /* Compact variant */
+    .table.compact th { height: 2.5rem; padding: 0 0.75rem; }
+    .table.compact td { padding: 0.625rem 0.75rem; }
+
+    /* ─── SHARED PRIMITIVES ─── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.5rem; white-space: nowrap;
+      border-radius: calc(var(--radius) - 2px);
+      font-size: 0.875rem; font-weight: 500; font-family: inherit;
+      border: none; cursor: pointer; outline: none;
+      transition: background-color 0.15s, color 0.15s, opacity 0.15s;
+      height: 2.5rem; padding: 0.5rem 1rem;
+    }
+    .btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    .btn:disabled { pointer-events: none; opacity: 0.5; }
+    .btn svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+    .btn-default { background-color: var(--primary); color: var(--primary-foreground); }
+    .btn-default:hover { opacity: 0.9; }
+    .btn-outline { background-color: transparent; border: 1px solid var(--border); color: var(--foreground); }
+    .btn-outline:hover { background-color: var(--accent); }
+    .btn-ghost { background-color: transparent; color: var(--foreground); }
+    .btn-ghost:hover { background-color: var(--accent); }
+    .btn-sm { height: 2.25rem; padding: 0 0.75rem; border-radius: calc(var(--radius) - 4px); }
+    .btn-icon-sm { height: 2.25rem; width: 2.25rem; padding: 0; border-radius: calc(var(--radius) - 4px); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      border-radius: 9999px; border: 1px solid transparent;
+      padding: 0.125rem 0.625rem;
+      font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+    }
+    .badge-default   { background-color: var(--primary); color: var(--primary-foreground); }
+    .badge-secondary { background-color: var(--secondary); color: var(--secondary-foreground); }
+    .badge-outline   { border-color: var(--border); color: var(--foreground); }
+    .badge-green { background-color: oklch(0.92 0.07 142); color: oklch(0.38 0.14 142); }
+    .dark .badge-green { background-color: oklch(0.28 0.06 142); color: oklch(0.72 0.14 142); }
+    .badge-yellow { background-color: oklch(0.95 0.08 90); color: oklch(0.42 0.13 80); }
+    .dark .badge-yellow { background-color: oklch(0.3 0.06 80); color: oklch(0.82 0.14 80); }
+    .badge-red { background-color: color-mix(in oklab, var(--destructive) 15%, var(--background)); color: var(--destructive); }
+    .badge-blue { background-color: oklch(0.93 0.05 250); color: oklch(0.35 0.12 250); }
+    .dark .badge-blue { background-color: oklch(0.28 0.07 250); color: oklch(0.75 0.1 250); }
+    .badge-dot { width: 0.4rem; height: 0.4rem; border-radius: 9999px; background-color: currentColor; }
+
+    /* ─── LAYOUT ─── */
+    .page { min-height: 100vh; background-color: var(--background); padding: 2rem 1rem 4rem; }
+    .container { max-width: 900px; margin: 0 auto; }
+    .page-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+      margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .page-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; }
+    .page-subtitle { font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.25rem; }
+    .section-title { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 0.2rem; margin-top: 2.5rem; }
+    .section-title:first-of-type { margin-top: 0; }
+    .section-sub { font-size: 0.8125rem; color: var(--muted-foreground); margin-bottom: 1rem; }
+    .preview { border: 1px solid var(--border); border-radius: var(--radius); background-color: var(--card); overflow: hidden; }
+    .preview-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 1rem; padding: 1.25rem 1.5rem; }
+    .preview-row + .preview-row { border-top: 1px solid var(--border); }
+    .row-label { font-size: 0.75rem; font-weight: 500; color: var(--muted-foreground); width: 6rem; flex-shrink: 0; padding-top: 0.25rem; }
+    .sep { height: 1px; background-color: var(--border); margin: 2.5rem 0 0; }
+    .theme-toggle {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background-color: var(--secondary); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.375rem 0.75rem;
+      font-size: 0.8125rem; font-weight: 500; cursor: pointer;
+      color: var(--foreground); font-family: inherit; white-space: nowrap;
+    }
+    .theme-toggle:hover { background-color: var(--accent); }
+    .page-footer {
+      text-align: center; padding: 2rem 0 0.5rem;
+      border-top: 1px solid var(--border); margin-top: 3rem;
+      font-size: 0.75rem; color: var(--muted-foreground);
+    }
+    code {
+      font-family: 'Geist Mono', ui-monospace, monospace; font-size: 0.8125rem;
+      background-color: var(--muted); padding: 0.125rem 0.375rem; border-radius: 4px;
+    }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 640px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+    .sub-heading {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 0.875rem;
+    }
+    .avatar {
+      width: 2rem; height: 2rem; border-radius: 9999px;
+      background-color: var(--muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6875rem; font-weight: 600;
+      color: var(--muted-foreground); flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span style="font-weight:600">shadcn/ui</span>
+        </div>
+        <h1 class="page-title">Skeleton, Spinner &amp; Table</h1>
+        <p class="page-subtitle">Loading placeholders, activity indicators, and structured data display.</p>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <svg id="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg id="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </div>
+
+    <!-- ══ SKELETON ══ -->
+    <h2 class="section-title">Skeleton</h2>
+    <p class="section-sub">Use to show a placeholder while content is loading. <code>animate-pulse rounded-md bg-primary/10</code></p>
+
+    <div class="preview">
+
+      <!-- Building blocks -->
+      <div class="preview-row" style="flex-direction:column;gap:1.5rem">
+        <div>
+          <p class="sub-heading">Building blocks</p>
+          <div style="display:flex;flex-direction:column;gap:0.625rem;max-width:20rem">
+            <div class="skeleton sk-text sk-3-4"></div>
+            <div class="skeleton sk-text sk-full"></div>
+            <div class="skeleton sk-text sk-1-2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Skeleton cards grid -->
+      <div class="preview-row" style="flex-direction:column">
+        <p class="sub-heading">Card skeletons</p>
+        <div class="grid3">
+
+          <!-- Card skeleton: avatar + text -->
+          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;display:flex;flex-direction:column;gap:1rem">
+            <div style="display:flex;align-items:center;gap:0.75rem">
+              <div class="skeleton sk-avatar"></div>
+              <div style="flex:1;display:flex;flex-direction:column;gap:0.5rem">
+                <div class="skeleton sk-text" style="width:60%;height:0.875rem"></div>
+                <div class="skeleton sk-text" style="width:40%;height:0.75rem"></div>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.5rem">
+              <div class="skeleton sk-text"></div>
+              <div class="skeleton sk-text sk-3-4"></div>
+              <div class="skeleton sk-text sk-1-2"></div>
+            </div>
+            <div class="skeleton sk-btn"></div>
+          </div>
+
+          <!-- Article / post skeleton -->
+          <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column">
+            <div class="skeleton" style="height:9rem;border-radius:0"></div>
+            <div style="padding:1rem;display:flex;flex-direction:column;gap:0.625rem">
+              <div class="skeleton sk-badge"></div>
+              <div class="skeleton sk-text sk-3-4" style="height:1.125rem"></div>
+              <div class="skeleton sk-text"></div>
+              <div class="skeleton sk-text sk-2-3"></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.25rem">
+                <div style="display:flex;align-items:center;gap:0.5rem">
+                  <div class="skeleton sk-avatar-sm"></div>
+                  <div class="skeleton sk-text" style="width:5rem;height:0.75rem"></div>
+                </div>
+                <div class="skeleton sk-text" style="width:3.5rem;height:0.75rem"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats card skeleton -->
+          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;display:flex;flex-direction:column;gap:0.875rem">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div class="skeleton sk-text" style="width:7rem;height:0.75rem"></div>
+              <div class="skeleton" style="width:1rem;height:1rem;border-radius:2px"></div>
+            </div>
+            <div class="skeleton" style="width:9rem;height:2rem;border-radius:calc(var(--radius)-2px)"></div>
+            <div class="skeleton sk-text" style="width:8rem;height:0.75rem"></div>
+            <div style="height:0.5rem;background:var(--border);border-radius:9999px;overflow:hidden">
+              <div class="skeleton" style="width:68%;height:100%;border-radius:9999px"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Skeleton table -->
+      <div class="preview-row" style="flex-direction:column">
+        <p class="sub-heading">Table skeleton</p>
+        <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+          <!-- thead mock -->
+          <div style="display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr;gap:0;border-bottom:1px solid var(--border);padding:0 1rem;height:3rem;align-items:center;gap:1rem">
+            <div class="skeleton" style="width:1rem;height:1rem;border-radius:2px"></div>
+            <div class="skeleton sk-text" style="width:4rem;height:0.75rem"></div>
+            <div class="skeleton sk-text" style="width:5rem;height:0.75rem"></div>
+            <div class="skeleton sk-text" style="width:4rem;height:0.75rem"></div>
+            <div class="skeleton sk-text" style="width:3rem;height:0.75rem;margin-left:auto"></div>
+          </div>
+          <!-- rows -->
+          <div id="sk-table-rows" style="display:flex;flex-direction:column"></div>
+        </div>
+      </div>
+
+      <!-- Simulate loading toggle -->
+      <div class="preview-row" style="border-top:1px solid var(--border);align-items:center;gap:1rem">
+        <p class="sub-heading" style="margin-bottom:0">Live demo</p>
+        <button class="btn btn-outline btn-sm" onclick="toggleLoading()">
+          <svg id="loading-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <span id="loading-btn-text">Simulate loading</span>
+        </button>
+        <div id="live-demo" style="flex:1;max-width:22rem">
+          <!-- loaded state -->
+          <div id="loaded-state" style="display:flex;align-items:center;gap:0.75rem">
+            <div class="avatar">SD</div>
+            <div>
+              <p style="font-size:0.875rem;font-weight:500">Sofia Davis</p>
+              <p style="font-size:0.75rem;color:var(--muted-foreground)">sofia@example.com</p>
+            </div>
+          </div>
+          <!-- skeleton state -->
+          <div id="skeleton-state" style="display:none;align-items:center;gap:0.75rem">
+            <div class="skeleton sk-avatar"></div>
+            <div style="flex:1;display:flex;flex-direction:column;gap:0.4rem">
+              <div class="skeleton sk-text" style="width:55%;height:0.875rem"></div>
+              <div class="skeleton sk-text" style="width:70%;height:0.75rem"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ SPINNER ══ -->
+    <div class="sep"></div>
+    <h2 class="section-title" style="margin-top:2rem">Spinner</h2>
+    <p class="section-sub">Activity indicators for loading states. Used inline in buttons and as standalone page loaders.</p>
+
+    <div class="preview">
+
+      <!-- CSS border spinners -->
+      <div class="preview-row">
+        <span class="row-label">Border</span>
+        <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <div class="spinner spinner-xs"></div>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">xs</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <div class="spinner spinner-sm"></div>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">sm</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <div class="spinner spinner-md"></div>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">md</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <div class="spinner spinner-lg"></div>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">lg</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <div class="spinner spinner-xl"></div>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">xl</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lucide Loader2-style SVG spinners -->
+      <div class="preview-row">
+        <span class="row-label">SVG (Loader2)</span>
+        <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <svg class="spinner-svg xs" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">xs</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <svg class="spinner-svg sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">sm</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <svg class="spinner-svg md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">md</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <svg class="spinner-svg lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">lg</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <svg class="spinner-svg xl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">xl</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dots -->
+      <div class="preview-row">
+        <span class="row-label">Dots</span>
+        <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <div class="spinner-dots sm"><span></span><span></span><span></span></div>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">sm</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <div class="spinner-dots"><span></span><span></span><span></span></div>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">md</span>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0.375rem">
+            <div class="spinner-dots lg"><span></span><span></span><span></span></div>
+            <span style="font-size:0.6875rem;color:var(--muted-foreground)">lg</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- In buttons -->
+      <div class="preview-row">
+        <span class="row-label">In buttons</span>
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap">
+          <button class="btn btn-default" disabled>
+            <svg class="spinner-svg sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Please wait
+          </button>
+          <button class="btn btn-outline" disabled>
+            <svg class="spinner-svg sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Loading…
+          </button>
+          <button class="btn btn-secondary" disabled>
+            <div class="spinner spinner-sm"></div>
+            Saving
+          </button>
+          <button class="btn btn-ghost" disabled style="gap:0.375rem">
+            <div class="spinner-dots sm"><span></span><span></span><span></span></div>
+            Processing
+          </button>
+        </div>
+      </div>
+
+      <!-- Coloured spinners -->
+      <div class="preview-row">
+        <span class="row-label">Colours</span>
+        <div style="display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap">
+          <div class="spinner spinner-md" style="border-top-color:oklch(0.6 0.19 142)" title="Success"></div>
+          <div class="spinner spinner-md" style="border-top-color:oklch(0.577 0.245 27.325)" title="Destructive"></div>
+          <div class="spinner spinner-md" style="border-top-color:oklch(0.5 0.18 65)" title="Warning"></div>
+          <div class="spinner spinner-md" style="border-top-color:oklch(0.5 0.12 250)" title="Info"></div>
+          <svg class="spinner-svg md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:oklch(0.6 0.19 142)"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <svg class="spinner-svg md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:oklch(0.577 0.245 27.325)"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <svg class="spinner-svg md" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:oklch(0.5 0.12 250)"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        </div>
+      </div>
+
+      <!-- Full page loader mockup -->
+      <div class="preview-row" style="flex-direction:column">
+        <span class="row-label" style="width:auto;margin-bottom:0.75rem">Page loader</span>
+        <div style="height:8rem;border:1px solid var(--border);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.875rem;background:var(--muted)">
+          <svg class="spinner-svg xl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted-foreground)"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <p style="font-size:0.875rem;color:var(--muted-foreground)">Loading your dashboard…</p>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ TABLE ══ -->
+    <div class="sep"></div>
+    <h2 class="section-title" style="margin-top:2rem">Table</h2>
+    <p class="section-sub">A responsive table component. <code>w-full caption-bottom text-sm</code></p>
+
+    <div class="preview">
+
+      <!-- Default table -->
+      <div class="preview-row" style="flex-direction:column">
+        <p class="sub-heading">Default — invoices</p>
+        <div class="table-wrap">
+          <table class="table hoverable">
+            <caption>A list of your recent invoices.</caption>
+            <thead>
+              <tr>
+                <th>Invoice</th>
+                <th>Status</th>
+                <th>Method</th>
+                <th class="right">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="font-medium" style="font-weight:500">INV001</td>
+                <td><span class="badge badge-outline">Paid</span></td>
+                <td>Credit Card</td>
+                <td class="right mono">250.00</td>
+              </tr>
+              <tr>
+                <td class="font-medium" style="font-weight:500">INV002</td>
+                <td><span class="badge badge-outline">Pending</span></td>
+                <td>PayPal</td>
+                <td class="right mono">150.00</td>
+              </tr>
+              <tr>
+                <td class="font-medium" style="font-weight:500">INV003</td>
+                <td><span class="badge badge-outline">Unpaid</span></td>
+                <td>Bank Transfer</td>
+                <td class="right mono">350.00</td>
+              </tr>
+              <tr>
+                <td class="font-medium" style="font-weight:500">INV004</td>
+                <td><span class="badge badge-outline">Paid</span></td>
+                <td>Credit Card</td>
+                <td class="right mono">450.00</td>
+              </tr>
+              <tr>
+                <td class="font-medium" style="font-weight:500">INV005</td>
+                <td><span class="badge badge-outline">Paid</span></td>
+                <td>PayPal</td>
+                <td class="right mono">550.00</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Rich table with badges, avatars, actions -->
+      <div class="preview-row" style="flex-direction:column">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem">
+          <p class="sub-heading" style="margin-bottom:0">Voyages — with badges &amp; actions</p>
+          <div style="display:flex;gap:0.5rem">
+            <button class="btn btn-outline btn-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              Filters
+            </button>
+            <button class="btn btn-default btn-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              New voyage
+            </button>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table class="table hoverable" id="voyages-table">
+            <thead>
+              <tr>
+                <th style="padding-left:1rem;width:2.5rem">
+                  <input type="checkbox" id="check-all" onchange="toggleAllRows(this)" style="cursor:pointer" />
+                </th>
+                <th class="sortable" onclick="sortTable('voyages-table',1,this)">
+                  <span class="sort-icon">Route <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></span>
+                </th>
+                <th class="sortable" onclick="sortTable('voyages-table',2,this)">
+                  <span class="sort-icon">Date <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg></span>
+                </th>
+                <th>Bus</th>
+                <th>Status</th>
+                <th class="right">Seats</th>
+                <th class="right">Revenue</th>
+                <th class="center" style="width:3rem"></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding-left:1rem"><input type="checkbox" class="row-check" onchange="updateCheckAll()" style="cursor:pointer" /></td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:0.125rem">
+                    <span style="font-weight:500">Abidjan → Yamoussoukro</span>
+                    <span style="font-size:0.75rem;color:var(--muted-foreground)">07:30 → 11:00</span>
+                  </div>
+                </td>
+                <td style="color:var(--muted-foreground);font-size:0.8125rem">22 mar. 2026</td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:0.125rem">
+                    <span style="font-weight:500;font-size:0.8125rem;font-family:'Geist Mono',monospace">CI-5934-AB</span>
+                    <span style="font-size:0.75rem;color:var(--muted-foreground)">Mercedes Sprinter</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-green"><span class="badge-dot"></span>En route</span></td>
+                <td class="right"><span style="font-size:0.875rem">32/36</span></td>
+                <td class="right mono" style="font-weight:600">400 000</td>
+                <td class="center">
+                  <button class="btn btn-ghost btn-icon-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                  </button>
+                </td>
+              </tr>
+              <tr class="selected">
+                <td style="padding-left:1rem"><input type="checkbox" class="row-check" checked onchange="updateCheckAll()" style="cursor:pointer" /></td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:0.125rem">
+                    <span style="font-weight:500">Abidjan → Bouaké</span>
+                    <span style="font-size:0.75rem;color:var(--muted-foreground)">09:00 → 14:30</span>
+                  </div>
+                </td>
+                <td style="color:var(--muted-foreground);font-size:0.8125rem">22 mar. 2026</td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:0.125rem">
+                    <span style="font-weight:500;font-size:0.8125rem;font-family:'Geist Mono',monospace">CI-1122-CD</span>
+                    <span style="font-size:0.75rem;color:var(--muted-foreground)">Yutong ZK6122</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-yellow"><span class="badge-dot"></span>Boarding</span></td>
+                <td class="right"><span style="font-size:0.875rem">48/54</span></td>
+                <td class="right mono" style="font-weight:600">899 400</td>
+                <td class="center">
+                  <button class="btn btn-ghost btn-icon-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-left:1rem"><input type="checkbox" class="row-check" onchange="updateCheckAll()" style="cursor:pointer" /></td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:0.125rem">
+                    <span style="font-weight:500">Man → Abidjan</span>
+                    <span style="font-size:0.75rem;color:var(--muted-foreground)">06:00 → 13:45</span>
+                  </div>
+                </td>
+                <td style="color:var(--muted-foreground);font-size:0.8125rem">22 mar. 2026</td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:0.125rem">
+                    <span style="font-weight:500;font-size:0.8125rem;font-family:'Geist Mono',monospace">CI-7788-EF</span>
+                    <span style="font-size:0.75rem;color:var(--muted-foreground)">King Long XMQ</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-secondary"><span class="badge-dot" style="background:var(--muted-foreground)"></span>Scheduled</span></td>
+                <td class="right"><span style="font-size:0.875rem">12/54</span></td>
+                <td class="right mono" style="font-weight:600;color:var(--muted-foreground)">176 400</td>
+                <td class="center">
+                  <button class="btn btn-ghost btn-icon-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-left:1rem"><input type="checkbox" class="row-check" onchange="updateCheckAll()" style="cursor:pointer" /></td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:0.125rem">
+                    <span style="font-weight:500">Abidjan → San Pedro</span>
+                    <span style="font-size:0.75rem;color:var(--muted-foreground)">11:00 → 15:30</span>
+                  </div>
+                </td>
+                <td style="color:var(--muted-foreground);font-size:0.8125rem">23 mar. 2026</td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:0.125rem">
+                    <span style="font-weight:500;font-size:0.8125rem;font-family:'Geist Mono',monospace">CI-3344-GH</span>
+                    <span style="font-size:0.75rem;color:var(--muted-foreground)">Mercedes Sprinter</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-red"><span class="badge-dot"></span>Cancelled</span></td>
+                <td class="right"><span style="font-size:0.875rem;text-decoration:line-through;opacity:0.5">0/36</span></td>
+                <td class="right mono" style="font-weight:600;opacity:0.4;text-decoration:line-through">0</td>
+                <td class="center">
+                  <button class="btn btn-ghost btn-icon-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding-left:1rem"><input type="checkbox" class="row-check" onchange="updateCheckAll()" style="cursor:pointer" /></td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:0.125rem">
+                    <span style="font-weight:500">Bouaké → Korhogo</span>
+                    <span style="font-size:0.75rem;color:var(--muted-foreground)">08:00 → 12:00</span>
+                  </div>
+                </td>
+                <td style="color:var(--muted-foreground);font-size:0.8125rem">23 mar. 2026</td>
+                <td>
+                  <div style="display:flex;flex-direction:column;gap:0.125rem">
+                    <span style="font-weight:500;font-size:0.8125rem;font-family:'Geist Mono',monospace">CI-5566-IJ</span>
+                    <span style="font-size:0.75rem;color:var(--muted-foreground)">Yutong ZK6122</span>
+                  </div>
+                </td>
+                <td><span class="badge badge-blue"><span class="badge-dot"></span>Arrived</span></td>
+                <td class="right"><span style="font-size:0.875rem">54/54</span></td>
+                <td class="right mono" style="font-weight:600">1 058 400</td>
+                <td class="center">
+                  <button class="btn btn-ghost btn-icon-sm">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- footer row -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding-top:0.875rem;flex-wrap:wrap;gap:0.5rem">
+          <p style="font-size:0.8125rem;color:var(--muted-foreground)" id="selection-count">1 of 5 row(s) selected.</p>
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <button class="btn btn-outline btn-sm" disabled>Previous</button>
+            <button class="btn btn-outline btn-sm">Next</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Compact + striped -->
+      <div class="preview-row" style="flex-direction:column">
+        <p class="sub-heading">Compact &amp; striped</p>
+        <div class="table-wrap">
+          <table class="table compact striped">
+            <thead>
+              <tr>
+                <th>Passenger</th>
+                <th>Ticket #</th>
+                <th>Seat</th>
+                <th class="right">Amount (XOF)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="font-weight:500">Sofia Davis</td><td class="mono">#10042</td><td class="mono">14A</td><td class="right mono">12 500</td></tr>
+              <tr><td style="font-weight:500">Jackson Lee</td><td class="mono">#10043</td><td class="mono">7B</td><td class="right mono">12 500</td></tr>
+              <tr><td style="font-weight:500">Isabella Nguyen</td><td class="mono">#10044</td><td class="mono">22C</td><td class="right mono">12 500</td></tr>
+              <tr><td style="font-weight:500">William Kim</td><td class="mono">#10045</td><td class="mono">3D</td><td class="right mono">12 500</td></tr>
+              <tr><td style="font-weight:500">Charlotte Miller</td><td class="mono">#10046</td><td class="mono">18A</td><td class="right mono">12 500</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="page-footer">
+      shadcn/ui Skeleton, Spinner &amp; Table — Pixel-perfect HTML preview · Real CSS variables &amp; design tokens
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ── Theme ── */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.classList.contains('dark');
+    html.classList.toggle('dark', !isDark);
+    document.getElementById('icon-sun').style.display  = isDark ? 'block' : 'none';
+    document.getElementById('icon-moon').style.display = isDark ? 'none'  : 'block';
+    document.getElementById('theme-label').textContent = isDark ? 'Dark mode' : 'Light mode';
+  }
+
+  /* ── Skeleton table rows ── */
+  (function buildSkRows() {
+    const container = document.getElementById('sk-table-rows');
+    for (let i = 0; i < 4; i++) {
+      const row = document.createElement('div');
+      row.style.cssText = 'display:grid;grid-template-columns:2rem 1fr 1fr 1fr 1fr;gap:1rem;padding:0 1rem;align-items:center;height:3.25rem;border-bottom:1px solid var(--border)';
+      if (i === 3) row.style.borderBottom = 'none';
+      const widths = [
+        ['1rem', '1rem'],
+        ['70%', '0.875rem'],
+        ['55%', '0.75rem'],
+        ['45%', '0.75rem'],
+        ['40%', '0.75rem'],
+      ];
+      widths.forEach(([w, h]) => {
+        const cell = document.createElement('div');
+        cell.className = 'skeleton';
+        cell.style.cssText = `width:${w};height:${h};border-radius:calc(var(--radius)-2px)`;
+        if (w === '1rem') { cell.style.width = '1rem'; cell.style.height = '1rem'; cell.style.borderRadius = '2px'; }
+        row.appendChild(cell);
+      });
+      container.appendChild(row);
+    }
+  })();
+
+  /* ── Loading toggle ── */
+  let loadingTimer;
+  function toggleLoading() {
+    const btn = event.currentTarget;
+    const icon = document.getElementById('loading-icon');
+    const label = document.getElementById('loading-btn-text');
+    const loaded = document.getElementById('loaded-state');
+    const skel   = document.getElementById('skeleton-state');
+
+    loaded.style.display = 'none';
+    skel.style.display = 'flex';
+    icon.style.display = 'block';
+    icon.style.animation = 'spin-svg 1s linear infinite';
+    label.textContent = 'Loading…';
+    btn.disabled = true;
+
+    clearTimeout(loadingTimer);
+    loadingTimer = setTimeout(() => {
+      loaded.style.display = 'flex';
+      skel.style.display = 'none';
+      icon.style.display = 'none';
+      label.textContent = 'Simulate loading';
+      btn.disabled = false;
+    }, 2500);
+  }
+
+  /* ── Table: checkbox all ── */
+  function toggleAllRows(master) {
+    document.querySelectorAll('.row-check').forEach(cb => {
+      cb.checked = master.checked;
+      cb.closest('tr').classList.toggle('selected', master.checked);
+    });
+    updateCount();
+  }
+  function updateCheckAll() {
+    const all  = document.querySelectorAll('.row-check');
+    const checked = document.querySelectorAll('.row-check:checked');
+    const master = document.getElementById('check-all');
+    event.target.closest('tr').classList.toggle('selected', event.target.checked);
+    master.indeterminate = checked.length > 0 && checked.length < all.length;
+    master.checked = checked.length === all.length;
+    updateCount();
+  }
+  function updateCount() {
+    const checked = document.querySelectorAll('.row-check:checked').length;
+    const total   = document.querySelectorAll('.row-check').length;
+    document.getElementById('selection-count').textContent = `${checked} of ${total} row(s) selected.`;
+  }
+
+  /* ── Table: sort ── */
+  function sortTable(tableId, colIdx, th) {
+    const table = document.getElementById(tableId);
+    const tbody = table.querySelector('tbody');
+    const rows  = Array.from(tbody.querySelectorAll('tr'));
+    const asc   = !th.classList.contains('sort-asc');
+
+    table.querySelectorAll('th.sortable').forEach(h => h.classList.remove('sort-asc','sort-desc'));
+    th.classList.add(asc ? 'sort-asc' : 'sort-desc');
+
+    rows.sort((a, b) => {
+      const at = a.cells[colIdx]?.textContent.trim() ?? '';
+      const bt = b.cells[colIdx]?.textContent.trim() ?? '';
+      return asc ? at.localeCompare(bt) : bt.localeCompare(at);
+    });
+    rows.forEach(r => tbody.appendChild(r));
+  }
+</script>
+</body>
+</html>

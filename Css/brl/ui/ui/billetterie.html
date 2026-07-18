@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="fr" class="">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Billetterie — TransportApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ═══════════════════════════════════════════════════════════
+   DESIGN TOKENS — dashboard + teal accent pour Billetterie
+═══════════════════════════════════════════════════════════ */
+:root {
+  --color-bg:          #f5f5f3;
+  --color-surface:     #fff;
+  --color-surface-2:   #f0efed;
+  --color-surface-3:   #e8e7e4;
+  --color-surface-4:   #dfdedd;
+  --color-border:      #e4e3e0;
+  --color-border-2:    #cccbc7;
+  --color-text:        #171715;
+  --color-text-2:      #5e5e5a;
+  --color-text-3:      #96968f;
+  --color-text-4:      #bbbbb3;
+  --color-amber:       #d97706;
+  --color-amber-light: #fef3c7;
+  --color-amber-dark:  #92400e;
+  --color-amber-glow:  rgba(217,119,6,.18);
+  --color-green:       #059669;
+  --color-green-light: #d1fae5;
+  --color-red:         #dc2626;
+  --color-red-light:   #fee2e2;
+  --color-sky:         #0284c7;
+  --color-sky-light:   #dbeafe;
+  --color-violet:      #7c3aed;
+  --color-violet-light:#ede9fe;
+  --color-orange:      #ea580c;
+  --color-orange-light:#ffedd5;
+  /* Accent Teal — module Billetterie */
+  --color-teal:        #0f766e;
+  --color-teal-light:  #ccfbf1;
+  --color-teal-dark:   #0d9488;
+  --color-teal-glow:   rgba(15,118,110,.15);
+  --sidebar-width:     252px;
+  --header-height:     60px;
+  --radius-xs:  4px;
+  --radius-sm:  7px;
+  --radius:    11px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl:22px;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:    0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,.16), 0 8px 20px rgba(0,0,0,.08);
+  --ease: cubic-bezier(.4,0,.2,1);
+  --duration-fast: 150ms;
+  --duration-slow: 260ms;
+}
+
+.theme-dark {
+  --color-bg:          #0d0d0c;
+  --color-surface:     #191917;
+  --color-surface-2:   #212120;
+  --color-surface-3:   #282826;
+  --color-surface-4:   #303030;
+  --color-border:      #2b2b28;
+  --color-border-2:    #3c3c38;
+  --color-text:        #eaeae6;
+  --color-text-2:      #97978f;
+  --color-text-3:      #5c5c56;
+  --color-text-4:      #3a3a36;
+  --color-amber:       #f59e0b;
+  --color-amber-light: #261f09;
+  --color-amber-dark:  #fbbf24;
+  --color-amber-glow:  rgba(245,158,11,.15);
+  --color-green:       #10b981;
+  --color-green-light: #092018;
+  --color-red:         #f87171;
+  --color-red-light:   #220d0d;
+  --color-sky:         #38bdf8;
+  --color-sky-light:   #051523;
+  --color-violet:      #a78bfa;
+  --color-violet-light:#130d27;
+  --color-orange:      #fb923c;
+  --color-orange-light:#1f1008;
+  --color-teal:        #14b8a6;
+  --color-teal-light:  #042f2e;
+  --color-teal-dark:   #0d9488;
+  --color-teal-glow:   rgba(20,184,166,.15);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,.7);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+svg { display: block; flex-shrink: 0; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: 2px solid var(--color-amber); outline-offset: 2px; border-radius: var(--radius-xs); }
+
+
+/* ═══════════════════════════
+   BARRE PREVIEW
+═══════════════════════════ */
+#preview-nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  z-index: 999;
+  background: var(--color-text);
+  display: flex; align-items: center;
+  height: 44px; padding: 0 16px; gap: 6px;
+}
+.pnav-label  { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.3); white-space: nowrap; flex-shrink: 0; }
+.pnav-module { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: #5eead4; white-space: nowrap; flex-shrink: 0; }
+.pnav-sep    { width: 1px; height: 18px; background: rgba(255,255,255,.1); flex-shrink: 0; margin: 0 6px; }
+.pnav-tabs   { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.pnav-tabs::-webkit-scrollbar { display: none; }
+.pnav-tab { font-size: 12px; font-weight: 600; color: rgba(255,255,255,.4); padding: 5px 11px; border-radius: var(--radius-sm); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background var(--duration-fast), color var(--duration-fast); border: none; background: none; font-family: inherit; }
+.pnav-tab:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); }
+.pnav-tab.is-active { background: var(--color-teal); color: #fff; }
+.pnav-theme { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.4); padding: 4px 10px; border-radius: var(--radius-sm); cursor: pointer; flex-shrink: 0; transition: background var(--duration-fast); border: none; background: none; font-family: inherit; }
+.pnav-theme:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); }
+
+
+/* ═══════════════════════════
+   APP SHELL
+═══════════════════════════ */
+#app-wrap    { padding-top: 44px; height: 100vh; }
+.app-shell   { display: flex; height: calc(100vh - 44px); overflow: hidden; }
+.page-view   { display: none; width: 100%; height: 100%; }
+.page-view.is-active { display: flex; }
+
+/* Sidebar fictive */
+.sidebar { width: var(--sidebar-width); height: 100%; background: var(--color-surface); border-right: 1px solid var(--color-border); display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; }
+.sidebar__logo { display: flex; align-items: center; gap: 11px; height: var(--header-height); padding: 0 16px; border-bottom: 1px solid var(--color-border); flex-shrink: 0; }
+.sidebar__logo-mark { width: 32px; height: 32px; border-radius: 10px; background: var(--color-amber); display: flex; align-items: center; justify-content: center; color: #fff; box-shadow: 0 2px 10px var(--color-amber-glow); flex-shrink: 0; }
+.sidebar__app-name    { font-size: 14.5px; font-weight: 700; letter-spacing: -.35px; line-height: 1.2; }
+.sidebar__app-tagline { font-size: 10.5px; color: var(--color-text-3); margin-top: 1px; }
+.sidebar__nav { flex: 1; overflow-y: auto; padding: 8px 8px 12px; scrollbar-width: none; }
+.sidebar__nav::-webkit-scrollbar { display: none; }
+.nav-group__label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--color-text-4); padding: 16px 10px 5px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13.5px; font-weight: 500; color: var(--color-text-2); cursor: pointer; transition: background var(--duration-fast), color var(--duration-fast); }
+.nav-item:hover { background: var(--color-surface-2); color: var(--color-text); }
+.nav-item.is-active { background: var(--color-teal-light); color: var(--color-teal); }
+.nav-item svg { width: 17px; height: 17px; flex-shrink: 0; }
+.nav-subitem { display: flex; align-items: center; gap: 8px; padding: 5px 10px 5px 36px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; color: var(--color-text-3); cursor: pointer; transition: color var(--duration-fast), background var(--duration-fast); }
+.nav-subitem:hover { color: var(--color-text); background: var(--color-surface-2); }
+.nav-subitem.is-active { color: var(--color-teal); font-weight: 600; }
+.nav-subitem__dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: .45; flex-shrink: 0; }
+.nav-subitem.is-active .nav-subitem__dot { opacity: 1; }
+.sidebar__footer { border-top: 1px solid var(--color-border); padding: 8px; flex-shrink: 0; }
+.user-button { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--radius); cursor: pointer; transition: background var(--duration-fast); }
+.user-button:hover { background: var(--color-surface-2); }
+.avatar { border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; background: linear-gradient(135deg, var(--color-amber), var(--color-amber-dark)); }
+.avatar--sm   { width: 28px; height: 28px; font-size: 10.5px; }
+.avatar--md   { width: 32px; height: 32px; font-size: 11.5px; }
+.avatar--teal { background: linear-gradient(135deg, var(--color-teal), var(--color-teal-dark)); }
+.user-button__name { font-size: 13px; font-weight: 600; }
+.user-button__role { font-size: 11px; color: var(--color-text-3); margin-top: 1px; }
+
+/* Main */
+.main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+
+/* Header */
+.app-header { height: var(--header-height); flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px; background: var(--color-surface); border-bottom: 1px solid var(--color-border); }
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--color-text-2); }
+.breadcrumb a { color: var(--color-text-2); transition: color var(--duration-fast); }
+.breadcrumb a:hover { color: var(--color-text); }
+.breadcrumb b { font-weight: 600; color: var(--color-text); }
+.breadcrumb__sep { color: var(--color-text-4); }
+.header-spacer  { flex: 1; }
+.header-divider { width: 1px; height: 22px; background: var(--color-border); margin: 0 4px; flex-shrink: 0; }
+.icon-btn { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); color: var(--color-text-2); background: var(--color-surface-2); border: 1px solid var(--color-border); transition: background var(--duration-fast); position: relative; flex-shrink: 0; }
+.icon-btn:hover { background: var(--color-surface-3); }
+.notification-dot { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: var(--color-red); border: 1.5px solid var(--color-surface); }
+.header-avatar-btn { display: flex; align-items: center; gap: 8px; padding: 4px 8px 4px 4px; border-radius: var(--radius); cursor: pointer; transition: background var(--duration-fast); }
+.header-avatar-btn:hover { background: var(--color-surface-2); }
+.header-avatar-btn__name { font-size: 13px; font-weight: 600; }
+
+/* Page content */
+.page-content { flex: 1; overflow-y: auto; padding: 28px 28px 48px; scrollbar-width: thin; scrollbar-color: var(--color-surface-4) transparent; background: var(--color-bg); }
+.page-content::-webkit-scrollbar { width: 5px; }
+.page-content::-webkit-scrollbar-thumb { background: var(--color-surface-4); border-radius: 99px; }
+
+
+/* ═══════════════════════════
+   PAGE HEADER
+═══════════════════════════ */
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; gap: 16px; }
+.page-header__title    { font-size: 22px; font-weight: 700; letter-spacing: -.55px; line-height: 1.2; }
+.page-header__subtitle { font-size: 13px; color: var(--color-text-3); margin-top: 5px; }
+.page-header__actions  { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+
+/* ═══════════════════════════
+   BOUTONS
+═══════════════════════════ */
+.btn { display: inline-flex; align-items: center; gap: 7px; padding: 8px 16px; border-radius: var(--radius); font-size: 13.5px; font-weight: 600; white-space: nowrap; cursor: pointer; transition: opacity var(--duration-fast), background var(--duration-fast), box-shadow var(--duration-fast); font-family: inherit; border: none; }
+.btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.btn--sm { padding: 6px 13px; font-size: 12.5px; }
+.btn--sm svg { width: 12px; height: 12px; }
+.btn--primary { background: var(--color-teal); color: #fff; box-shadow: 0 2px 8px var(--color-teal-glow); }
+.btn--primary:hover { opacity: .9; box-shadow: 0 4px 16px var(--color-teal-glow); }
+.btn--ghost   { background: var(--color-surface); color: var(--color-text-2); border: 1px solid var(--color-border); }
+.btn--ghost:hover   { background: var(--color-surface-2); color: var(--color-text); }
+.btn--danger  { background: var(--color-red-light); color: var(--color-red); border: 1px solid transparent; }
+.btn--danger:hover  { background: var(--color-red); color: #fff; }
+.btn-icon { width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center; background: var(--color-surface-2); color: var(--color-text-2); border: 1px solid var(--color-border); border-radius: var(--radius-sm); cursor: pointer; transition: background var(--duration-fast), color var(--duration-fast); flex-shrink: 0; }
+.btn-icon:hover { background: var(--color-surface-3); color: var(--color-text); }
+.btn-icon svg { width: 14px; height: 14px; }
+.btn-icon--danger:hover { background: var(--color-red-light); color: var(--color-red); }
+
+
+/* ═══════════════════════════
+   CARD
+═══════════════════════════ */
+.card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+
+
+/* ═══════════════════════════
+   KPI CARDS
+═══════════════════════════ */
+.stats-grid     { display: grid; gap: 12px; margin-bottom: 20px; }
+.stats-grid--4  { grid-template-columns: repeat(4, 1fr); }
+.stats-grid--3  { grid-template-columns: repeat(3, 1fr); }
+.stat-card      { padding: 16px; }
+.stat-card__icon  { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+.stat-card__value { font-size: 26px; font-weight: 700; letter-spacing: -.6px; line-height: 1; }
+.stat-card__label { font-size: 12px; color: var(--color-text-3); margin-top: 5px; }
+
+
+/* ═══════════════════════════
+   TAGS & PILLS
+═══════════════════════════ */
+.tag { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; padding: 2.5px 8px; border-radius: 99px; white-space: nowrap; }
+.tag--green  { background: var(--color-green-light);  color: var(--color-green); }
+.tag--red    { background: var(--color-red-light);    color: var(--color-red); }
+.tag--amber  { background: var(--color-amber-light);  color: var(--color-amber); }
+.tag--sky    { background: var(--color-sky-light);    color: var(--color-sky); }
+.tag--violet { background: var(--color-violet-light); color: var(--color-violet); }
+.tag--orange { background: var(--color-orange-light); color: var(--color-orange); }
+.tag--teal   { background: var(--color-teal-light);   color: var(--color-teal); }
+
+.status-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
+.status-pill__dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+
+
+/* ═══════════════════════════
+   FILTRES
+═══════════════════════════ */
+.filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.search-field { display: flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); width: 240px; }
+.search-field:focus-within { border-color: var(--color-border-2); }
+.search-field input { border: none; background: transparent; outline: none; font-family: inherit; font-size: 13px; color: var(--color-text); flex: 1; min-width: 0; }
+.search-field input::placeholder { color: var(--color-text-4); }
+.filter-select { height: 36px; padding: 0 32px 0 12px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius); font-family: inherit; font-size: 13px; color: var(--color-text-2); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2396968f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+.filter-spacer { flex: 1; }
+.result-count { font-size: 12.5px; color: var(--color-text-3); }
+.result-count b { color: var(--color-text); font-weight: 600; }
+
+
+/* ═══════════════════════════
+   DATA TABLE
+═══════════════════════════ */
+.table-wrap { overflow-x: auto; border-radius: var(--radius-lg); }
+table.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.data-table thead tr { border-bottom: 1px solid var(--color-border); }
+table.data-table th { padding: 13px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--color-text-3); white-space: nowrap; background: var(--color-surface); border-bottom: 1px solid var(--color-border); }
+table.data-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-border); background: var(--color-surface); vertical-align: middle; }
+table.data-table tbody tr:last-child td { border-bottom: none; }
+table.data-table tbody tr:hover td { background: var(--color-surface-2); }
+.cell--mono    { font-family: 'DM Mono', monospace; }
+.cell--bold    { font-weight: 600; }
+.cell--muted   { color: var(--color-text-2); font-size: 12.5px; }
+.cell--dim     { color: var(--color-text-3); font-size: 12px; }
+.cell--actions { display: flex; align-items: center; gap: 4px; justify-content: flex-end; }
+.cell--teal    { color: var(--color-teal); font-weight: 700; cursor: pointer; }
+
+/* Row check */
+.row-check { width: 16px; height: 16px; border: 1.5px solid var(--color-border-2); border-radius: var(--radius-xs); cursor: pointer; appearance: none; transition: border-color var(--duration-fast), background var(--duration-fast); flex-shrink: 0; }
+.row-check:checked { background: var(--color-teal); border-color: var(--color-teal); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='8' fill='none'%3E%3Cpath d='M1 4l3 3 5-6' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: center; }
+
+/* Siège badge */
+.seat-badge { width: 26px; height: 26px; border-radius: 50%; background: var(--color-teal-light); color: var(--color-teal); font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; }
+.seat-badge--violet { background: var(--color-violet-light); color: var(--color-violet); }
+.seat-badge--muted  { background: var(--color-surface-3); color: var(--color-text-3); }
+
+/* Pagination */
+.pagination { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-top: 1px solid var(--color-border); background: var(--color-surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.pagination__info { font-size: 12.5px; color: var(--color-text-3); }
+.pagination__info b { color: var(--color-text); font-weight: 600; }
+.pagination__btns { display: flex; align-items: center; gap: 3px; }
+.page-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; background: none; border: 1px solid transparent; color: var(--color-text-2); transition: background var(--duration-fast), color var(--duration-fast); font-family: inherit; }
+.page-btn:hover { background: var(--color-surface-2); color: var(--color-text); }
+.page-btn.is-active { background: var(--color-teal); color: #fff; border-color: var(--color-teal); font-weight: 700; }
+.page-btn:disabled { opacity: .3; cursor: not-allowed; }
+.page-btn svg { width: 14px; height: 14px; }
+
+
+/* ═══════════════════════════
+   TICKET PHYSIQUE
+═══════════════════════════ */
+.ticket { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,.08); max-width: 440px; }
+
+.ticket__head { padding: 20px 22px 16px; background: linear-gradient(135deg, var(--color-teal), color-mix(in srgb, var(--color-teal) 60%, var(--color-sky))); color: #fff; }
+.ticket__logo   { font-size: 11px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; opacity: .7; margin-bottom: 4px; }
+.ticket__ref    { font-size: 11px; font-family: 'DM Mono', monospace; opacity: .6; margin-bottom: 10px; }
+.ticket__route  { font-size: 20px; font-weight: 700; letter-spacing: -.4px; display: flex; align-items: center; gap: 8px; }
+.ticket__arr    { opacity: .8; }
+
+.ticket__sep { display: flex; align-items: center; margin: 0 -1px; position: relative; z-index: 1; }
+.ticket__notch { width: 20px; height: 20px; border-radius: 50%; background: var(--color-bg); border: 1px solid var(--color-border); flex-shrink: 0; }
+.ticket__dash  { flex: 1; border-top: 2px dashed var(--color-border); }
+
+.ticket__body { padding: 16px 22px; }
+.ticket__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.ticket__field { display: flex; flex-direction: column; gap: 3px; }
+.ticket__label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-3); }
+.ticket__value { font-size: 14px; font-weight: 600; }
+.ticket__value--mono  { font-family: 'DM Mono', monospace; }
+.ticket__value--teal  { color: var(--color-teal); font-family: 'DM Mono', monospace; }
+
+.ticket__foot { padding: 12px 22px; border-top: 1px solid var(--color-border); background: var(--color-surface-2); display: flex; align-items: center; justify-content: space-between; }
+.ticket__foot-label  { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-3); }
+.ticket__foot-value  { font-size: 13px; font-weight: 600; margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+/* QR Code simulé */
+.qr-box { width: 48px; height: 48px; background: var(--color-text); border-radius: var(--radius-xs); display: flex; align-items: center; justify-content: center; }
+
+
+/* ═══════════════════════════
+   ONGLETS FICHE
+═══════════════════════════ */
+.detail-tabs { display: flex; padding: 0 22px; border-bottom: 1px solid var(--color-border); background: var(--color-surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0; gap: 2px; }
+.detail-tab { padding: 14px 16px; font-size: 13px; font-weight: 600; color: var(--color-text-3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color var(--duration-fast), border-color var(--duration-fast); white-space: nowrap; }
+.detail-tab:hover { color: var(--color-text); }
+.detail-tab.is-active { color: var(--color-teal); border-bottom-color: var(--color-teal); }
+
+
+/* ═══════════════════════════
+   LAYOUT FICHE / FORM
+═══════════════════════════ */
+.detail-layout { display: grid; grid-template-columns: 1fr 296px; gap: 20px; align-items: start; }
+.form-layout-2 { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+.form-layout-recap { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+
+.detail-section { padding: 22px; border-bottom: 1px solid var(--color-border); }
+.detail-section:last-child { border-bottom: none; }
+.detail-section__title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-3); margin-bottom: 16px; }
+.detail-grid   { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.detail-field__label { font-size: 11.5px; font-weight: 600; color: var(--color-text-3); margin-bottom: 4px; }
+.detail-field__value { font-size: 14px; font-weight: 500; }
+.detail-field__value--mono { font-family: 'DM Mono', monospace; font-size: 13px; }
+.detail-field__value--teal { color: var(--color-teal); cursor: pointer; }
+
+.meta-card { padding: 18px; }
+.meta-card__title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-3); margin-bottom: 14px; }
+.meta-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--color-border); }
+.meta-row:last-child { border-bottom: none; padding-bottom: 0; }
+.meta-row__key { color: var(--color-text-3); }
+.meta-row__val { font-weight: 500; font-family: 'DM Mono', monospace; font-size: 12.5px; }
+
+.actions-card { padding: 16px; }
+.actions-card__title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-3); margin-bottom: 12px; }
+.action-btn { display: flex; align-items: center; gap: 9px; padding: 8px 10px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; color: var(--color-text-2); cursor: pointer; transition: background var(--duration-fast), color var(--duration-fast); border: 1px solid var(--color-border); background: var(--color-surface); width: 100%; text-align: left; font-family: inherit; margin-bottom: 6px; }
+.action-btn:last-child { margin-bottom: 0; }
+.action-btn:hover { background: var(--color-surface-2); color: var(--color-text); }
+.action-btn--danger { color: var(--color-red); border-color: var(--color-red-light); }
+.action-btn--danger:hover { background: var(--color-red-light); }
+.action-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+
+/* ═══════════════════════════
+   FORMULAIRES
+═══════════════════════════ */
+.form-section { padding: 18px 22px; border-bottom: 1px solid var(--color-border); }
+.form-section:last-child { border-bottom: none; }
+.form-section__title { font-size: 14px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+.step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--color-teal); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+.field-grid { display: grid; gap: 16px; margin-bottom: 16px; }
+.field-grid:last-child { margin-bottom: 0; }
+.field-grid--2 { grid-template-columns: repeat(2, 1fr); }
+.field-grid--3 { grid-template-columns: repeat(3, 1fr); }
+.field-grid--3-span2 { grid-template-columns: 1fr 1fr 1fr; }
+
+.fgroup { display: flex; flex-direction: column; gap: 5px; }
+.fgroup label { font-size: 12.5px; font-weight: 600; color: var(--color-text-2); }
+.fgroup .req  { color: var(--color-red); }
+.fgroup .hint { font-size: 11.5px; color: var(--color-text-3); margin-top: 2px; }
+
+.field-input, .field-select, .field-textarea {
+  height: 38px; padding: 0 12px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-sm); font-family: inherit; font-size: 13.5px; color: var(--color-text); transition: border-color var(--duration-fast), box-shadow var(--duration-fast); width: 100%;
+}
+.field-textarea { height: auto; padding: 10px 12px; resize: vertical; min-height: 80px; line-height: 1.6; }
+.field-input::placeholder, .field-textarea::placeholder { color: var(--color-text-4); }
+.field-input:hover, .field-select:hover, .field-textarea:hover { border-color: var(--color-border-2); }
+.field-input:focus, .field-select:focus, .field-textarea:focus { outline: none; border-color: var(--color-teal); box-shadow: 0 0 0 3px var(--color-teal-glow); }
+.field-input--readonly { background: var(--color-surface-2); color: var(--color-text-3); }
+.field-select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2396968f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+.theme-dark .field-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235c5c56' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+
+/* Toggle */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+.toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+.toggle-row__info { flex: 1; }
+.toggle-row__name { font-size: 13.5px; font-weight: 500; }
+.toggle-row__desc { font-size: 12px; color: var(--color-text-3); margin-top: 2px; }
+.toggle-switch { width: 36px; height: 20px; border-radius: 99px; background: var(--color-surface-3); border: 2px solid var(--color-border); cursor: pointer; position: relative; flex-shrink: 0; transition: background var(--duration-fast), border-color var(--duration-fast); }
+.toggle-switch::after { content: ''; position: absolute; left: 2px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--color-text-3); transition: transform .2s var(--ease), background .2s; }
+.toggle-switch.is-on { background: var(--color-teal); border-color: var(--color-teal); }
+.toggle-switch.is-on::after { transform: translateX(16px); background: #fff; }
+
+/* Footer formulaire */
+.form-footer { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--color-border); background: var(--color-surface); }
+.form-footer__spacer { flex: 1; }
+.form-footer__hint   { font-size: 12.5px; color: var(--color-text-3); }
+
+/* Badge non sauvegardé */
+.unsaved-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--color-teal); background: var(--color-teal-light); padding: 6px 12px; border-radius: var(--radius-sm); }
+
+
+/* ═══════════════════════════
+   VENTE RAPIDE — voyage sélectionné
+═══════════════════════════ */
+.voyage-selected { padding: 14px 22px; background: var(--color-teal-light); border-bottom: 1px solid rgba(15,118,110,.15); display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.voyage-selected__route { font-size: 15px; font-weight: 700; }
+.voyage-selected__route span { color: var(--color-teal); }
+.voyage-selected__meta { font-size: 12.5px; color: var(--color-teal-dark); }
+.voyage-selected__places { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--color-teal-dark); }
+.voyage-selected__places b { color: var(--color-teal); }
+
+/* Affichage prix */
+.price-display { height: 38px; display: flex; align-items: center; padding: 0 12px; background: var(--color-teal-light); border: 1.5px solid var(--color-teal-dark); border-radius: var(--radius-sm); font-size: 18px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--color-teal); }
+
+
+/* ═══════════════════════════
+   SÉLECTEUR DE SIÈGES
+═══════════════════════════ */
+.seat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; max-width: 200px; }
+.seat { width: 38px; height: 38px; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; cursor: pointer; border: 1.5px solid var(--color-border); color: var(--color-text-2); transition: all var(--duration-fast); font-family: 'DM Mono', monospace; background: none; font-family: inherit; }
+.seat:hover:not(.seat--taken) { border-color: var(--color-teal); color: var(--color-teal); background: var(--color-teal-light); }
+.seat--taken    { background: var(--color-surface-3); color: var(--color-text-4); cursor: not-allowed; border-color: var(--color-border); }
+.seat--selected { background: var(--color-teal); color: #fff; border-color: var(--color-teal); }
+
+.seat-legend { display: flex; flex-direction: column; gap: 8px; }
+.seat-legend__item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; }
+.seat-legend__dot { width: 18px; height: 18px; border-radius: var(--radius-xs); flex-shrink: 0; }
+.seat-legend__dot--selected { background: var(--color-teal); }
+.seat-legend__dot--taken    { background: var(--color-surface-3); border: 1.5px solid var(--color-border); }
+.seat-legend__dot--free     { border: 1.5px solid var(--color-border); }
+
+.selected-seat-box { margin-top: 14px; padding: 10px 12px; background: var(--color-teal-light); border-radius: var(--radius-sm); }
+.selected-seat-box__label { font-size: 11px; color: var(--color-text-3); text-transform: uppercase; letter-spacing: .08em; }
+.selected-seat-box__num   { font-size: 22px; font-weight: 700; font-family: 'DM Mono', monospace; color: var(--color-teal); margin-top: 2px; }
+
+
+/* ═══════════════════════════
+   CAISSE — ventilation
+═══════════════════════════ */
+.payment-bar { margin-bottom: 14px; }
+.payment-bar:last-child { margin-bottom: 0; }
+.payment-bar__header { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+.payment-bar__name   { font-weight: 600; }
+.payment-bar__track  { height: 6px; background: var(--color-surface-3); border-radius: 99px; }
+.payment-bar__fill   { height: 100%; border-radius: 99px; }
+.payment-bar__pct    { font-size: 11px; color: var(--color-text-3); margin-top: 3px; }
+
+.caisse-net { margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--color-border); }
+.caisse-net__label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--color-text-3); }
+.caisse-net__value { font-size: 24px; font-weight: 700; letter-spacing: -.5px; color: var(--color-teal); margin-top: 4px; }
+
+
+/* ═══════════════════════════
+   MODALS
+═══════════════════════════ */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 800; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity .2s var(--ease); }
+.modal-backdrop.is-open { opacity: 1; pointer-events: auto; }
+.modal { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-xl); width: min(500px, calc(100vw - 32px)); transform: translateY(12px) scale(.97); transition: transform .22s var(--ease); }
+.modal-backdrop.is-open .modal { transform: translateY(0) scale(1); }
+.modal__header  { padding: 22px 22px 0; display: flex; align-items: center; gap: 14px; }
+.modal__icon    { width: 44px; height: 44px; border-radius: 12px; background: var(--color-teal-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.modal__icon svg { width: 20px; height: 20px; color: var(--color-teal); }
+.modal__icon--danger { background: var(--color-red-light); }
+.modal__icon--danger svg { color: var(--color-red); }
+.modal__icon--cash { background: var(--color-teal-light); }
+.modal__icon--cash svg { color: var(--color-teal); }
+.modal__title    { font-size: 17px; font-weight: 700; letter-spacing: -.35px; }
+.modal__subtitle { font-size: 13px; color: var(--color-text-3); margin-top: 3px; }
+.modal__body    { padding: 16px 22px; }
+.modal__body p  { font-size: 13.5px; color: var(--color-text-2); line-height: 1.6; }
+.modal__footer  { padding: 0 22px 22px; display: flex; justify-content: flex-end; gap: 8px; }
+
+/* Récap dans modal */
+.modal-recap { padding: 16px; background: var(--color-surface-2); border-radius: var(--radius); margin-bottom: 14px; }
+
+
+/* ═══════════════════════════
+   TOASTS
+═══════════════════════════ */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 900; display: flex; flex-direction: column; gap: 8px; }
+.toast { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--color-text); color: var(--color-surface); border-radius: var(--radius-lg); box-shadow: 0 8px 32px rgba(0,0,0,.2); font-size: 13.5px; font-weight: 500; min-width: 280px; max-width: 360px; animation: toast-in .25s var(--ease); }
+@keyframes toast-in { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.toast__icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.toast__icon svg { width: 12px; height: 12px; }
+.toast--ok .toast__icon { background: var(--color-green); }
+.toast--err .toast__icon { background: var(--color-red); }
+.toast__close { margin-left: auto; color: rgba(255,255,255,.4); cursor: pointer; flex-shrink: 0; font-size: 14px; }
+.toast__close:hover { color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     BARRE PREVIEW
+════════════════════════════════════════════ -->
+<nav id="preview-nav">
+  <span class="pnav-label">Preview</span>
+  <span class="pnav-module">Billetterie</span>
+  <div class="pnav-sep"></div>
+  <div class="pnav-tabs">
+    <button class="pnav-tab is-active" onclick="showPage('ticket-list',this)">Tickets — Liste</button>
+    <button class="pnav-tab"           onclick="showPage('ticket-show',this)">Ticket — Fiche</button>
+    <button class="pnav-tab"           onclick="showPage('ticket-new', this)">Vente rapide</button>
+    <button class="pnav-tab"           onclick="showPage('ticket-bulk',this)">Vente groupée</button>
+    <button class="pnav-tab"           onclick="showPage('caisse',     this)">Caisse du jour</button>
+  </div>
+  <button class="pnav-theme" onclick="toggleDark()">
+    <svg id="icon-sun" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <svg id="icon-moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    Dark
+  </button>
+</nav>
+
+<div id="app-wrap">
+
+<template id="sidebar-tpl">
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-mark" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/></svg>
+      </div>
+      <div>
+        <div class="sidebar__app-name">TransportApp</div>
+        <div class="sidebar__app-tagline">Billetterie</div>
+      </div>
+    </div>
+    <div class="sidebar__nav">
+      <div class="nav-group__label">Principal</div>
+      <div class="nav-item"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</div>
+      <div class="nav-group__label">Billetterie</div>
+      <div class="nav-item is-active"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Billets</div>
+      <div class="nav-subitem is-active"><span class="nav-subitem__dot"></span>Tous les billets</div>
+      <div class="nav-subitem"><span class="nav-subitem__dot"></span>Vente rapide</div>
+      <div class="nav-subitem"><span class="nav-subitem__dot"></span>Vente groupée</div>
+      <div class="nav-subitem"><span class="nav-subitem__dot"></span>Caisse du jour</div>
+      <div class="nav-group__label">Autres modules</div>
+      <div class="nav-item"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Exploitation</div>
+      <div class="nav-item"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M1 17l3-9h16l3 9M1 17h22M6.5 17a2 2 0 100-4 2 2 0 000 4zM17.5 17a2 2 0 100-4 2 2 0 000 4z"/></svg>Flotte</div>
+      <div class="nav-item"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 8l-9-6-9 6v8l9 6 9-6V8z"/></svg>Stock</div>
+    </div>
+    <div class="sidebar__footer">
+      <div class="user-button">
+        <div class="avatar avatar--sm avatar--teal">AD</div>
+        <div><div class="user-button__name">Admin Principal</div><div class="user-button__role">Super Admin</div></div>
+      </div>
+    </div>
+  </aside>
+</template>
+
+
+<!-- ════════════════════════════════════════════
+     PAGE : TICKETS — LISTE
+════════════════════════════════════════════ -->
+<div class="app-shell page-view is-active" id="page-ticket-list">
+  <div id="sb-ticket-list"></div>
+  <div class="main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#">Billetterie</a><svg class="breadcrumb__sep" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b>Tous les billets</b></nav>
+      <div class="header-spacer"></div>
+      <button class="icon-btn" aria-label="Notifications"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span class="notification-dot"></span></button>
+      <div class="header-divider"></div>
+      <div class="header-avatar-btn"><div class="avatar avatar--md avatar--teal">AD</div><span class="header-avatar-btn__name">Admin</span></div>
+    </header>
+    <div class="page-content">
+      <div class="page-header">
+        <div><h1 class="page-header__title">Billets vendus</h1><p class="page-header__subtitle">Aujourd'hui, <b style="color:var(--color-text)">samedi 07 mars 2026</b></p></div>
+        <div class="page-header__actions">
+          <button class="btn btn--ghost" onclick="showPage('caisse',document.querySelectorAll('.pnav-tab')[4])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Caisse du jour</button>
+          <button class="btn btn--ghost" onclick="showPage('ticket-bulk',document.querySelectorAll('.pnav-tab')[3])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Vente groupée</button>
+          <button class="btn btn--primary" onclick="showPage('ticket-new',document.querySelectorAll('.pnav-tab')[2])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Vendre un billet</button>
+        </div>
+      </div>
+
+      <!-- KPI -->
+      <div class="stats-grid stats-grid--4">
+        <div class="card stat-card">
+          <div class="stat-card__icon" style="background:var(--color-teal-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div>
+          <div class="stat-card__value">218</div>
+          <div class="stat-card__label">Billets aujourd'hui</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card__icon" style="background:var(--color-green-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <div class="stat-card__value" style="color:var(--color-teal)">763 000</div>
+          <div class="stat-card__label">FCFA recettes</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card__icon" style="background:var(--color-red-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+          <div class="stat-card__value" style="color:var(--color-red)">4</div>
+          <div class="stat-card__label">Annulés</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card__icon" style="background:var(--color-amber-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="stat-card__value" style="color:var(--color-amber)">12</div>
+          <div class="stat-card__label">Non embarqués</div>
+        </div>
+      </div>
+
+      <!-- Filtres -->
+      <div class="filter-bar">
+        <div class="search-field"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;color:var(--color-text-3)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input placeholder="N° billet, passager, voyage…"></div>
+        <select class="filter-select"><option>Tous les trajets</option><option>Abidjan → Yamoussoukro</option><option>Abidjan → Bouaké</option><option>Abidjan → Daloa</option></select>
+        <select class="filter-select"><option>Tous les statuts</option><option>Vendu</option><option>Embarqué</option><option>Annulé</option><option>Remboursé</option></select>
+        <select class="filter-select"><option>Toutes catégories</option><option>Adulte</option><option>Enfant</option><option>VIP</option></select>
+        <input type="date" value="2026-03-07" class="filter-select" style="width:auto;padding:0 12px">
+        <div class="filter-spacer"></div>
+        <span class="result-count"><b>218</b> billets</span>
+      </div>
+
+      <!-- Tableau -->
+      <div class="card">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px"><input type="checkbox" class="row-check"></th>
+                <th>N° Billet</th>
+                <th>Passager</th>
+                <th>Voyage</th>
+                <th>Trajet</th>
+                <th>Catégorie</th>
+                <th>Siège</th>
+                <th>Prix (FCFA)</th>
+                <th>Statut</th>
+                <th style="width:90px;text-align:right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox" class="row-check" checked></td>
+                <td><span class="cell--mono cell--teal" onclick="showPage('ticket-show',document.querySelectorAll('.pnav-tab')[1])">TK-03410001</span></td>
+                <td><div class="cell--bold">Kouassi Jean-Marc</div><div class="cell--dim">+225 07 01 23 45</div></td>
+                <td class="cell--mono cell--dim">VOY-2026-0341</td>
+                <td><span style="font-size:13px;font-weight:600">ABJ <span style="color:var(--color-teal)">→</span> YKR</span></td>
+                <td><span class="tag tag--teal">Adulte</span></td>
+                <td><span class="seat-badge">01</span></td>
+                <td class="cell--mono" style="font-weight:700;color:var(--color-teal)">3 500</td>
+                <td><span class="status-pill tag--green"><span class="status-pill__dot"></span>Embarqué</span></td>
+                <td><div class="cell--actions">
+                  <button class="btn-icon" onclick="showPage('ticket-show',document.querySelectorAll('.pnav-tab')[1])" aria-label="Voir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="btn-icon" onclick="showToast('ok','Billet imprimé.')" aria-label="Imprimer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="row-check"></td>
+                <td><span class="cell--mono cell--teal" onclick="showPage('ticket-show',document.querySelectorAll('.pnav-tab')[1])">TK-03410002</span></td>
+                <td><div class="cell--bold">Diabaté Fatoumata</div><div class="cell--dim">+225 05 67 89 10</div></td>
+                <td class="cell--mono cell--dim">VOY-2026-0341</td>
+                <td><span style="font-size:13px;font-weight:600">ABJ <span style="color:var(--color-teal)">→</span> YKR</span></td>
+                <td><span class="tag tag--teal">Adulte</span></td>
+                <td><span class="seat-badge">02</span></td>
+                <td class="cell--mono" style="font-weight:700;color:var(--color-teal)">3 500</td>
+                <td><span class="status-pill tag--green"><span class="status-pill__dot"></span>Embarqué</span></td>
+                <td><div class="cell--actions">
+                  <button class="btn-icon" onclick="showPage('ticket-show',document.querySelectorAll('.pnav-tab')[1])" aria-label="Voir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="btn-icon" onclick="showToast('ok','Billet imprimé.')" aria-label="Imprimer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="row-check"></td>
+                <td><span class="cell--mono" style="color:var(--color-amber);font-weight:700;cursor:pointer" onclick="showPage('ticket-show',document.querySelectorAll('.pnav-tab')[1])">TK-03420001</span></td>
+                <td><div class="cell--bold">N'Goran Serge</div><div class="cell--dim">+225 01 45 67 89</div></td>
+                <td class="cell--mono cell--dim">VOY-2026-0342</td>
+                <td><span style="font-size:13px;font-weight:600">ABJ <span style="color:var(--color-teal)">→</span> BKÉ</span></td>
+                <td><span class="tag tag--violet">VIP</span></td>
+                <td><span class="seat-badge seat-badge--violet">01</span></td>
+                <td class="cell--mono" style="font-weight:700;color:var(--color-violet)">7 500</td>
+                <td><span class="status-pill tag--amber"><span class="status-pill__dot"></span>Vendu</span></td>
+                <td><div class="cell--actions">
+                  <button class="btn-icon" onclick="showPage('ticket-show',document.querySelectorAll('.pnav-tab')[1])" aria-label="Voir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="btn-icon" onclick="showToast('ok','Billet imprimé.')" aria-label="Imprimer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></button>
+                </div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="row-check"></td>
+                <td><span class="cell--mono" style="color:var(--color-red);font-weight:700;cursor:pointer" onclick="showPage('ticket-show',document.querySelectorAll('.pnav-tab')[1])">TK-03430002</span></td>
+                <td><div class="cell--bold">Touré Aminata</div><div class="cell--dim">+225 07 22 33 44</div></td>
+                <td class="cell--mono cell--dim">VOY-2026-0343</td>
+                <td><span style="font-size:13px;font-weight:600">ABJ <span style="color:var(--color-teal)">→</span> DLO</span></td>
+                <td><span class="tag tag--green">Enfant</span></td>
+                <td><span class="seat-badge seat-badge--muted">03</span></td>
+                <td class="cell--mono" style="font-weight:700;color:var(--color-red)">2 500</td>
+                <td><span class="status-pill tag--red"><span class="status-pill__dot"></span>Annulé</span></td>
+                <td><div class="cell--actions">
+                  <button class="btn-icon" onclick="showPage('ticket-show',document.querySelectorAll('.pnav-tab')[1])" aria-label="Voir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                  <button class="btn-icon" onclick="showToast('ok','Billet imprimé.')" aria-label="Imprimer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg></button>
+                </div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span class="pagination__info">Affichage <b>1–10</b> sur <b>218</b></span>
+          <div class="pagination__btns">
+            <button class="page-btn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <button class="page-btn is-active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">…</button>
+            <button class="page-btn">22</button>
+            <button class="page-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     PAGE : TICKET — FICHE
+════════════════════════════════════════════ -->
+<div class="app-shell page-view" id="page-ticket-show">
+  <div id="sb-ticket-show"></div>
+  <div class="main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#" onclick="showPage('ticket-list',document.querySelectorAll('.pnav-tab')[0]);return false">Billets</a><svg class="breadcrumb__sep" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b>TK-03410001</b></nav>
+      <div class="header-spacer"></div>
+      <button class="btn btn--ghost btn--sm" onclick="showPage('ticket-list',document.querySelectorAll('.pnav-tab')[0])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Retour</button>
+      <button class="btn btn--primary btn--sm" onclick="showToast('ok','Billet imprimé.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimer</button>
+    </header>
+    <div class="page-content">
+      <div class="detail-layout">
+        <div style="display:flex;flex-direction:column;gap:20px">
+
+          <!-- VISUEL BILLET -->
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--color-text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px">Aperçu du billet</div>
+            <div class="ticket">
+              <div class="ticket__head">
+                <div class="ticket__logo">TransportApp CI</div>
+                <div class="ticket__ref">TK-03410001 · Siège 01</div>
+                <div class="ticket__route">
+                  Abidjan
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  <span class="ticket__arr">Yamoussoukro</span>
+                </div>
+              </div>
+              <div class="ticket__sep"><div class="ticket__notch"></div><div class="ticket__dash"></div><div class="ticket__notch"></div></div>
+              <div class="ticket__body">
+                <div class="ticket__grid">
+                  <div class="ticket__field"><div class="ticket__label">Passager</div><div class="ticket__value">Kouassi Jean-Marc</div></div>
+                  <div class="ticket__field"><div class="ticket__label">Date</div><div class="ticket__value ticket__value--mono">07/03/2026</div></div>
+                  <div class="ticket__field"><div class="ticket__label">Départ</div><div class="ticket__value ticket__value--mono">06:00</div></div>
+                  <div class="ticket__field"><div class="ticket__label">Voyage</div><div class="ticket__value ticket__value--mono" style="font-size:12px">VOY-2026-0341</div></div>
+                  <div class="ticket__field"><div class="ticket__label">Catégorie</div><div class="ticket__value">Adulte</div></div>
+                  <div class="ticket__field"><div class="ticket__label">Prix</div><div class="ticket__value ticket__value--teal">3 500 FCFA</div></div>
+                </div>
+              </div>
+              <div class="ticket__foot">
+                <div>
+                  <div class="ticket__foot-label">Véhicule</div>
+                  <div class="ticket__foot-value">CI-123-AB</div>
+                </div>
+                <div>
+                  <div class="ticket__foot-label" style="margin-bottom:4px">QR Code</div>
+                  <div class="qr-box">
+                    <svg width="36" height="36" viewBox="0 0 36 36" fill="var(--color-surface)">
+                      <rect x="2" y="2" width="14" height="14"/>
+                      <rect x="4" y="4" width="10" height="10" fill="var(--color-text)"/>
+                      <rect x="6" y="6" width="6" height="6"/>
+                      <rect x="20" y="2" width="14" height="14"/>
+                      <rect x="22" y="4" width="10" height="10" fill="var(--color-text)"/>
+                      <rect x="24" y="6" width="6" height="6"/>
+                      <rect x="2" y="20" width="14" height="14"/>
+                      <rect x="4" y="22" width="10" height="10" fill="var(--color-text)"/>
+                      <rect x="6" y="24" width="6" height="6"/>
+                      <rect x="20" y="20" width="4" height="4"/>
+                      <rect x="26" y="20" width="4" height="4"/>
+                      <rect x="32" y="20" width="2" height="4"/>
+                      <rect x="20" y="26" width="6" height="4"/>
+                      <rect x="28" y="26" width="2" height="6"/>
+                      <rect x="32" y="24" width="2" height="2"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- INFOS ONGLETS -->
+          <div class="card">
+            <div class="detail-tabs">
+              <div class="detail-tab is-active" onclick="switchTab(this,'tab-pass')">Passager</div>
+              <div class="detail-tab" onclick="switchTab(this,'tab-voyage')">Voyage associé</div>
+              <div class="detail-tab" onclick="switchTab(this,'tab-hist')">Historique</div>
+            </div>
+
+            <div id="tab-pass">
+              <div class="detail-section" style="border-bottom:none">
+                <div class="detail-grid">
+                  <div><div class="detail-field__label">Nom complet</div><div class="detail-field__value">Kouassi Jean-Marc</div></div>
+                  <div><div class="detail-field__label">Téléphone</div><div class="detail-field__value">+225 07 01 23 45</div></div>
+                  <div><div class="detail-field__label">Catégorie</div><div class="detail-field__value">Adulte</div></div>
+                  <div><div class="detail-field__label">Siège</div><div class="detail-field__value detail-field__value--mono">01</div></div>
+                  <div><div class="detail-field__label">Prix payé</div><div class="detail-field__value detail-field__value--teal" style="font-family:'DM Mono',monospace">3 500 FCFA</div></div>
+                  <div><div class="detail-field__label">Mode de paiement</div><div class="detail-field__value">Espèces</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-voyage" style="display:none">
+              <div class="detail-section" style="border-bottom:none">
+                <div class="detail-grid">
+                  <div><div class="detail-field__label">Voyage</div><div class="detail-field__value detail-field__value--teal">VOY-2026-0341</div></div>
+                  <div><div class="detail-field__label">Date</div><div class="detail-field__value">07/03/2026</div></div>
+                  <div><div class="detail-field__label">Trajet</div><div class="detail-field__value">Abidjan → Yamoussoukro</div></div>
+                  <div><div class="detail-field__label">Départ</div><div class="detail-field__value detail-field__value--mono">06:00</div></div>
+                  <div><div class="detail-field__label">Arrivée prévue</div><div class="detail-field__value detail-field__value--mono">09:00</div></div>
+                  <div><div class="detail-field__label">Véhicule</div><div class="detail-field__value detail-field__value--teal" style="font-family:'DM Mono',monospace">CI-123-AB</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div id="tab-hist" style="display:none">
+              <div class="detail-section" style="border-bottom:none">
+                <div style="display:flex;flex-direction:column;gap:12px">
+                  <div style="display:flex;gap:12px;align-items:flex-start">
+                    <div style="width:8px;height:8px;border-radius:50%;background:var(--color-green);margin-top:5px;flex-shrink:0"></div>
+                    <div><div style="font-size:13.5px;font-weight:600">Embarquement confirmé</div><div style="font-size:12px;color:var(--color-text-3);margin-top:2px;font-family:'DM Mono',monospace">07/03/2026 · 05:58</div></div>
+                  </div>
+                  <div style="display:flex;gap:12px;align-items:flex-start">
+                    <div style="width:8px;height:8px;border-radius:50%;background:var(--color-teal);margin-top:5px;flex-shrink:0"></div>
+                    <div><div style="font-size:13.5px;font-weight:600">Billet vendu au guichet</div><div style="font-size:12px;color:var(--color-text-3);margin-top:2px;font-family:'DM Mono',monospace">06/03/2026 · 16:42 · Agent : Konan A.</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card meta-card">
+            <div class="meta-card__title">Statut billet</div>
+            <div style="margin-bottom:12px"><span class="status-pill tag--green"><span class="status-pill__dot"></span>Embarqué</span></div>
+            <div class="meta-row"><span class="meta-row__key">Référence</span><span class="meta-row__val">TK-03410001</span></div>
+            <div class="meta-row"><span class="meta-row__key">Émis le</span><span class="meta-row__val">06/03/2026</span></div>
+            <div class="meta-row"><span class="meta-row__key">Par</span><span style="font-size:12.5px;font-weight:500">Konan A.</span></div>
+          </div>
+          <div class="card" style="padding:16px">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-3);margin-bottom:6px">Montant</div>
+            <div style="font-size:28px;font-weight:700;letter-spacing:-.5px;color:var(--color-teal)">3 500</div>
+            <div style="font-size:12px;color:var(--color-text-3)">FCFA · Espèces</div>
+          </div>
+          <div class="card actions-card">
+            <div class="actions-card__title">Actions</div>
+            <button class="action-btn" onclick="showToast('ok','Billet imprimé.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimer le billet</button>
+            <button class="action-btn" onclick="showToast('ok','SMS envoyé.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Envoyer par SMS</button>
+            <button class="action-btn" onclick="showToast('ok','Embarquement confirmé.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Confirmer embarquement</button>
+            <button class="action-btn action-btn--danger" onclick="openModal('annul-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Annuler / Rembourser</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     PAGE : VENTE RAPIDE
+════════════════════════════════════════════ -->
+<div class="app-shell page-view" id="page-ticket-new">
+  <div id="sb-ticket-new"></div>
+  <div class="main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#" onclick="showPage('ticket-list',document.querySelectorAll('.pnav-tab')[0]);return false">Billets</a><svg class="breadcrumb__sep" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b>Vente rapide</b></nav>
+      <div class="header-spacer"></div>
+      <span class="unsaved-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Non sauvegardé</span>
+      <button class="btn btn--ghost btn--sm" style="margin-left:8px" onclick="showPage('ticket-list',document.querySelectorAll('.pnav-tab')[0])">Annuler</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header"><div><h1 class="page-header__title">Vente rapide — 1 billet</h1><p class="page-header__subtitle">Point de vente guichet</p></div></div>
+
+      <div class="form-layout-2">
+        <div>
+          <!-- Étape 1 -->
+          <div class="card" style="overflow:hidden;margin-bottom:14px">
+            <div class="form-section">
+              <div class="form-section__title"><span class="step-num">1</span>Sélectionner le voyage</div>
+              <div class="field-grid field-grid--2">
+                <div class="fgroup"><label>Date du voyage <span class="req">*</span></label><input class="field-input" type="date" value="2026-03-07"></div>
+                <div class="fgroup"><label>Trajet <span class="req">*</span></label>
+                  <select class="field-select">
+                    <option selected>Abidjan → Yamoussoukro · 06:00</option>
+                    <option>Abidjan → Yamoussoukro · 09:30</option>
+                    <option>Abidjan → Bouaké · 07:30</option>
+                    <option>Abidjan → Daloa · 08:00</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="voyage-selected">
+              <div class="voyage-selected__route">Abidjan <span>→</span> Yamoussoukro</div>
+              <div class="voyage-selected__meta"><b class="cell--mono">06:00 → 09:00</b> · VOY-2026-0341 · CI-123-AB</div>
+              <div class="voyage-selected__places"><b>4</b> places disponibles</div>
+            </div>
+          </div>
+
+          <!-- Étape 2 -->
+          <div class="card" style="overflow:hidden;margin-bottom:14px">
+            <div class="form-section">
+              <div class="form-section__title"><span class="step-num">2</span>Informations passager</div>
+              <div class="field-grid" style="grid-template-columns:1fr 1fr 160px;margin-bottom:14px">
+                <div class="fgroup" style="grid-column:span 1"><label>Nom complet <span class="req">*</span></label><input class="field-input" placeholder="Prénom Nom"></div>
+                <div class="fgroup"><label>Téléphone</label><input class="field-input" placeholder="+225 07…"></div>
+                <div class="fgroup"></div>
+              </div>
+              <div class="field-grid" style="grid-template-columns:1fr 1fr 1fr">
+                <div class="fgroup"><label>Catégorie <span class="req">*</span></label>
+                  <select class="field-select" id="cat-select" onchange="updatePrice(this)">
+                    <option value="3500" selected>Adulte — 3 500 FCFA</option>
+                    <option value="2000">Enfant — 2 000 FCFA</option>
+                    <option value="5000">VIP — 5 000 FCFA</option>
+                  </select>
+                </div>
+                <div class="fgroup"><label>Mode de paiement</label>
+                  <select class="field-select"><option selected>Espèces</option><option>Orange Money</option><option>Wave</option><option>MTN MoMo</option></select>
+                </div>
+                <div class="fgroup"><label>Montant à payer</label>
+                  <div class="price-display" id="price-display">3 500 FCFA</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Étape 3 -->
+          <div class="card" style="overflow:hidden;margin-bottom:14px">
+            <div class="form-section">
+              <div class="form-section__title"><span class="step-num">3</span>Choisir le siège</div>
+              <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
+                <div>
+                  <div style="font-size:12px;color:var(--color-text-3);margin-bottom:10px">Cliquez pour sélectionner</div>
+                  <div class="seat-grid" id="seat-grid">
+                    <button class="seat seat--taken">01</button><button class="seat seat--taken">02</button><button class="seat seat--selected" onclick="selectSeat(this)">03</button><button class="seat" onclick="selectSeat(this)">04</button>
+                    <button class="seat seat--taken">05</button><button class="seat seat--taken">06</button><button class="seat" onclick="selectSeat(this)">07</button><button class="seat" onclick="selectSeat(this)">08</button>
+                    <button class="seat seat--taken">09</button><button class="seat seat--taken">10</button><button class="seat seat--taken">11</button><button class="seat" onclick="selectSeat(this)">12</button>
+                    <button class="seat seat--taken">13</button><button class="seat seat--taken">14</button><button class="seat" onclick="selectSeat(this)">15</button><button class="seat" onclick="selectSeat(this)">16</button>
+                    <button class="seat seat--taken">17</button><button class="seat seat--taken">18</button><button class="seat seat--taken">19</button><button class="seat seat--taken">20</button>
+                    <button class="seat seat--taken">21</button><button class="seat seat--taken">22</button>
+                  </div>
+                </div>
+                <div style="flex:1;min-width:140px">
+                  <div class="seat-legend">
+                    <div class="seat-legend__item"><div class="seat-legend__dot seat-legend__dot--selected"></div><span>Sélectionné</span></div>
+                    <div class="seat-legend__item"><div class="seat-legend__dot seat-legend__dot--taken"></div><span>Occupé</span></div>
+                    <div class="seat-legend__item"><div class="seat-legend__dot seat-legend__dot--free"></div><span>Libre</span></div>
+                  </div>
+                  <div class="selected-seat-box">
+                    <div class="selected-seat-box__label">Siège sélectionné</div>
+                    <div class="selected-seat-box__num" id="selected-seat-num">03</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;justify-content:flex-end;gap:8px">
+            <button class="btn btn--ghost" onclick="showPage('ticket-list',document.querySelectorAll('.pnav-tab')[0])">Annuler</button>
+            <button class="btn btn--primary" onclick="openModal('confirm-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Émettre le billet</button>
+          </div>
+        </div>
+
+        <!-- Aperçu mini billet -->
+        <div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-3);margin-bottom:10px">Aperçu temps réel</div>
+          <div class="ticket" style="box-shadow:none">
+            <div class="ticket__head">
+              <div class="ticket__logo">TransportApp CI</div>
+              <div class="ticket__ref">TK-XXXXXXXX · Siège 03</div>
+              <div class="ticket__route">Abidjan <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.8)" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg> <span class="ticket__arr">Yamoussoukro</span></div>
+            </div>
+            <div class="ticket__sep"><div class="ticket__notch"></div><div class="ticket__dash"></div><div class="ticket__notch"></div></div>
+            <div class="ticket__body">
+              <div class="ticket__grid">
+                <div class="ticket__field"><div class="ticket__label">Passager</div><div class="ticket__value" style="font-size:12px">—</div></div>
+                <div class="ticket__field"><div class="ticket__label">Date</div><div class="ticket__value ticket__value--mono" style="font-size:12px">07/03/2026</div></div>
+                <div class="ticket__field"><div class="ticket__label">Départ</div><div class="ticket__value ticket__value--mono" style="font-size:12px">06:00</div></div>
+                <div class="ticket__field"><div class="ticket__label">Catégorie</div><div class="ticket__value" style="font-size:12px">Adulte</div></div>
+                <div class="ticket__field" style="grid-column:span 2"><div class="ticket__label">Prix</div><div class="ticket__value ticket__value--teal" style="font-size:12px">3 500 FCFA</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     PAGE : VENTE GROUPÉE
+════════════════════════════════════════════ -->
+<div class="app-shell page-view" id="page-ticket-bulk">
+  <div id="sb-ticket-bulk"></div>
+  <div class="main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#" onclick="showPage('ticket-list',document.querySelectorAll('.pnav-tab')[0]);return false">Billets</a><svg class="breadcrumb__sep" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b>Vente groupée</b></nav>
+      <div class="header-spacer"></div>
+      <span class="unsaved-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Non sauvegardé</span>
+      <button class="btn btn--ghost btn--sm" style="margin-left:8px" onclick="showPage('ticket-list',document.querySelectorAll('.pnav-tab')[0])">Annuler</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header"><div><h1 class="page-header__title">Vente groupée</h1><p class="page-header__subtitle">Émettre plusieurs billets pour un même voyage</p></div></div>
+
+      <div class="form-layout-recap">
+        <div>
+          <div class="card" style="overflow:hidden;margin-bottom:14px">
+
+            <div class="form-section">
+              <div style="font-size:14px;font-weight:700;margin-bottom:14px">Voyage</div>
+              <div class="field-grid field-grid--2">
+                <div class="fgroup"><label>Date</label><input class="field-input" type="date" value="2026-03-07"></div>
+                <div class="fgroup"><label>Voyage</label>
+                  <select class="field-select">
+                    <option selected>ABJ → YKR · 06:00 · VOY-2026-0341</option>
+                    <option>ABJ → BKÉ · 07:30 · VOY-2026-0342</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div style="font-size:14px;font-weight:700;margin-bottom:14px">Passagers <span style="font-size:12.5px;font-weight:500;color:var(--color-text-3)">(3 billets)</span></div>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:12px">
+                <!-- En-tête colonnes -->
+                <div style="display:grid;grid-template-columns:1fr 170px 140px 36px;gap:8px;padding:0 0 4px">
+                  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-3)">Nom complet</div>
+                  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-3)">Catégorie</div>
+                  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-3)">Téléphone</div>
+                  <div></div>
+                </div>
+                <!-- Ligne 1 -->
+                <div style="display:grid;grid-template-columns:1fr 170px 140px 36px;gap:8px;align-items:center">
+                  <input class="field-input" value="Bamba Oumar" style="height:36px">
+                  <select class="field-select" style="height:36px"><option selected>Adulte — 3 500</option><option>Enfant — 2 000</option><option>VIP — 5 000</option></select>
+                  <input class="field-input" placeholder="Téléphone" style="height:36px">
+                  <button class="btn-icon btn-icon--danger" onclick="showToast('ok','Ligne supprimée.')" style="height:36px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                </div>
+                <!-- Ligne 2 -->
+                <div style="display:grid;grid-template-columns:1fr 170px 140px 36px;gap:8px;align-items:center">
+                  <input class="field-input" value="Touré Mariam" style="height:36px">
+                  <select class="field-select" style="height:36px"><option>Adulte — 3 500</option><option selected>Enfant — 2 000</option><option>VIP — 5 000</option></select>
+                  <input class="field-input" value="+225 05 12 34 56" style="height:36px">
+                  <button class="btn-icon btn-icon--danger" onclick="showToast('ok','Ligne supprimée.')" style="height:36px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                </div>
+                <!-- Ligne 3 -->
+                <div style="display:grid;grid-template-columns:1fr 170px 140px 36px;gap:8px;align-items:center">
+                  <input class="field-input" value="Bamba Sékou" style="height:36px">
+                  <select class="field-select" style="height:36px"><option selected>Adulte — 3 500</option><option>Enfant — 2 000</option><option>VIP — 5 000</option></select>
+                  <input class="field-input" placeholder="Téléphone" style="height:36px">
+                  <button class="btn-icon btn-icon--danger" onclick="showToast('ok','Ligne supprimée.')" style="height:36px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+                </div>
+              </div>
+              <button class="btn btn--ghost btn--sm" onclick="showToast('ok','Passager ajouté.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Ajouter un passager</button>
+            </div>
+
+            <div class="form-footer">
+              <div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:600;color:var(--color-text-3)">Total : <span style="color:var(--color-teal);font-size:16px">9 000 FCFA</span> · 3 billets</div>
+              <div class="form-footer__spacer"></div>
+              <button class="btn btn--ghost" onclick="showPage('ticket-list',document.querySelectorAll('.pnav-tab')[0])">Annuler</button>
+              <button class="btn btn--primary" onclick="openModal('confirm-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg>Émettre 3 billets</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card" style="padding:16px">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-3);margin-bottom:10px">Récapitulatif</div>
+            <div class="meta-row" style="padding:7px 0"><span class="meta-row__key">2× Adulte</span><span class="meta-row__val">7 000 F</span></div>
+            <div class="meta-row" style="padding:7px 0"><span class="meta-row__key">1× Enfant</span><span class="meta-row__val">2 000 F</span></div>
+            <div style="padding-top:10px;margin-top:4px;border-top:2px solid var(--color-border)">
+              <div style="font-size:20px;font-weight:700;letter-spacing:-.4px;color:var(--color-teal)">9 000 FCFA</div>
+              <div style="font-size:12px;color:var(--color-text-3);margin-top:2px">3 billets</div>
+            </div>
+          </div>
+          <div class="card" style="padding:16px">
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-3);margin-bottom:8px">Attribution sièges</div>
+            <div style="font-size:13px;color:var(--color-text-3)">Les sièges seront attribués automatiquement en séquence à partir du premier disponible.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     PAGE : CAISSE DU JOUR
+════════════════════════════════════════════ -->
+<div class="app-shell page-view" id="page-caisse">
+  <div id="sb-caisse"></div>
+  <div class="main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#">Billetterie</a><svg class="breadcrumb__sep" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b>Caisse du jour</b></nav>
+      <div class="header-spacer"></div>
+      <button class="btn btn--ghost btn--sm" onclick="showToast('ok','Rapport de caisse exporté.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter rapport</button>
+      <button class="btn btn--primary btn--sm" onclick="openModal('clot-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Clôturer la caisse</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header"><div><h1 class="page-header__title">Caisse du jour</h1><p class="page-header__subtitle"><b style="color:var(--color-text)">Samedi 07/03/2026</b> · Agent : Konan Assoumou</p></div></div>
+
+      <div class="stats-grid stats-grid--4">
+        <div class="card stat-card">
+          <div class="stat-card__icon" style="background:var(--color-teal-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg></div>
+          <div class="stat-card__value">218</div>
+          <div class="stat-card__label">Billets émis</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card__icon" style="background:var(--color-green-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+          <div class="stat-card__value" style="color:var(--color-teal)">763 000</div>
+          <div class="stat-card__label">FCFA total</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card__icon" style="background:var(--color-red-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2"><path d="M15 18l-6-6 6-6"/><path d="M5 12H19"/></svg></div>
+          <div class="stat-card__value" style="color:var(--color-red)">28 000</div>
+          <div class="stat-card__label">FCFA remboursés</div>
+        </div>
+        <div class="card stat-card">
+          <div class="stat-card__icon" style="background:var(--color-teal-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-teal)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
+          <div class="stat-card__value" style="color:var(--color-teal)">735 000</div>
+          <div class="stat-card__label">FCFA net caisse</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px">
+        <!-- Recettes par trajet -->
+        <div class="card" style="overflow:hidden">
+          <div style="padding:16px 20px;border-bottom:1px solid var(--color-border);font-size:14px;font-weight:700">Recettes par trajet</div>
+          <table class="data-table">
+            <thead><tr><th>Trajet</th><th>Billets</th><th>Adultes</th><th>Enfants</th><th>VIP</th><th style="text-align:right">Total (FCFA)</th></tr></thead>
+            <tbody>
+              <tr><td><span class="cell--bold">ABJ → YKR</span></td><td class="cell--mono cell--dim">84</td><td class="cell--mono cell--dim">70</td><td class="cell--mono cell--dim">10</td><td class="cell--mono cell--dim">4</td><td class="cell--mono" style="font-weight:700;color:var(--color-teal);text-align:right">294 000</td></tr>
+              <tr><td><span class="cell--bold">ABJ → BKÉ</span></td><td class="cell--mono cell--dim">56</td><td class="cell--mono cell--dim">48</td><td class="cell--mono cell--dim">6</td><td class="cell--mono cell--dim">2</td><td class="cell--mono" style="font-weight:700;color:var(--color-teal);text-align:right">280 000</td></tr>
+              <tr><td><span class="cell--bold">ABJ → DLO</span></td><td class="cell--mono cell--dim">44</td><td class="cell--mono cell--dim">40</td><td class="cell--mono cell--dim">4</td><td class="cell--mono cell--dim">0</td><td class="cell--mono" style="font-weight:700;color:var(--color-teal);text-align:right">189 000</td></tr>
+              <tr><td><span class="cell--bold">YKR → ABJ</span></td><td class="cell--mono cell--dim">34</td><td class="cell--mono cell--dim">30</td><td class="cell--mono cell--dim">4</td><td class="cell--mono cell--dim">0</td><td class="cell--mono" style="font-weight:700;color:var(--color-teal);text-align:right">119 000</td></tr>
+              <tr style="background:var(--color-surface-2)"><td style="font-weight:700">TOTAL</td><td class="cell--mono cell--bold">218</td><td class="cell--mono cell--dim">188</td><td class="cell--mono cell--dim">24</td><td class="cell--mono cell--dim">6</td><td class="cell--mono" style="font-size:16px;font-weight:700;color:var(--color-teal);text-align:right">882 000</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Ventilation paiement -->
+        <div class="card" style="overflow:hidden">
+          <div style="padding:16px 20px;border-bottom:1px solid var(--color-border);font-size:14px;font-weight:700">Par mode de paiement</div>
+          <div style="padding:16px 20px">
+            <div class="payment-bar">
+              <div class="payment-bar__header"><span class="payment-bar__name">Espèces</span><span class="cell--mono" style="font-weight:700;color:var(--color-teal)">498 000 F</span></div>
+              <div class="payment-bar__track"><div class="payment-bar__fill" style="width:65%;background:var(--color-teal)"></div></div>
+              <div class="payment-bar__pct">65%</div>
+            </div>
+            <div class="payment-bar">
+              <div class="payment-bar__header"><span class="payment-bar__name">Orange Money</span><span class="cell--mono" style="font-weight:700;color:var(--color-orange)">196 000 F</span></div>
+              <div class="payment-bar__track"><div class="payment-bar__fill" style="width:26%;background:var(--color-orange)"></div></div>
+              <div class="payment-bar__pct">26%</div>
+            </div>
+            <div class="payment-bar" style="margin-bottom:0">
+              <div class="payment-bar__header"><span class="payment-bar__name">Wave</span><span class="cell--mono" style="font-weight:700;color:var(--color-sky)">69 000 F</span></div>
+              <div class="payment-bar__track"><div class="payment-bar__fill" style="width:9%;background:var(--color-sky)"></div></div>
+              <div class="payment-bar__pct">9%</div>
+            </div>
+            <div class="caisse-net">
+              <div class="caisse-net__label">Net caisse (après remboursements)</div>
+              <div class="caisse-net__value">735 000 FCFA</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     MODALS
+════════════════════════════════════════════ -->
+
+<!-- Modal confirmation émission -->
+<div class="modal-backdrop" id="confirm-modal" onclick="if(event.target===this)closeModal('confirm-modal')">
+  <div class="modal">
+    <div class="modal__header">
+      <div class="modal__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div>
+      <div><div class="modal__title">Confirmer l'émission</div><div class="modal__subtitle">Le billet sera imprimé et la recette enregistrée</div></div>
+    </div>
+    <div class="modal__body">
+      <p>Vous allez émettre <b>1 billet</b> pour le voyage <b>ABJ → YKR · 07/03/2026 06:00</b>.<br>Montant encaissé : <b style="color:var(--color-teal);font-family:'DM Mono',monospace">3 500 FCFA</b></p>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="closeModal('confirm-modal')">Annuler</button>
+      <button class="btn btn--primary" onclick="closeModal('confirm-modal');showToast('ok','Billet émis · TK-03410219 · Impression en cours.');showPage('ticket-show',document.querySelectorAll('.pnav-tab')[1])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Confirmer &amp; imprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal annulation -->
+<div class="modal-backdrop" id="annul-modal" onclick="if(event.target===this)closeModal('annul-modal')">
+  <div class="modal">
+    <div class="modal__header">
+      <div class="modal__icon modal__icon--danger"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div>
+      <div><div class="modal__title">Annuler le billet</div><div class="modal__subtitle">TK-03410001 · Kouassi Jean-Marc</div></div>
+    </div>
+    <div class="modal__body">
+      <div class="fgroup" style="margin-bottom:14px"><label>Motif d'annulation <span class="req">*</span></label>
+        <select class="field-select"><option>Annulation passager</option><option>Voyage supprimé</option><option>Erreur de saisie</option><option>Autre</option></select>
+      </div>
+      <div class="fgroup"><label>Remboursement</label>
+        <select class="field-select"><option>Remboursement total — 3 500 FCFA</option><option>Remboursement partiel</option><option>Aucun remboursement</option></select>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="closeModal('annul-modal')">Retour</button>
+      <button class="btn btn--danger" onclick="closeModal('annul-modal');showToast('ok','Billet annulé · Remboursement de 3 500 FCFA enregistré.')">Confirmer l'annulation</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal clôture caisse -->
+<div class="modal-backdrop" id="clot-modal" onclick="if(event.target===this)closeModal('clot-modal')">
+  <div class="modal">
+    <div class="modal__header">
+      <div class="modal__icon modal__icon--cash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></div>
+      <div><div class="modal__title">Clôturer la caisse</div><div class="modal__subtitle">07/03/2026 · Agent : Konan Assoumou</div></div>
+    </div>
+    <div class="modal__body">
+      <div class="modal-recap">
+        <div class="meta-row" style="padding:6px 0"><span class="meta-row__key">Billets émis</span><span class="meta-row__val">218</span></div>
+        <div class="meta-row" style="padding:6px 0"><span class="meta-row__key">Recettes brutes</span><span style="font-family:'DM Mono',monospace;font-weight:600;color:var(--color-teal)">763 000 F</span></div>
+        <div class="meta-row" style="padding:6px 0;border-bottom:none"><span class="meta-row__key">Net caisse</span><span style="font-family:'DM Mono',monospace;font-weight:700;font-size:15px;color:var(--color-teal)">735 000 F</span></div>
+      </div>
+      <div class="fgroup"><label>Montant espèces vérifiées (FCFA)</label><input class="field-input" type="number" value="498000" style="font-family:'DM Mono',monospace"></div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="closeModal('clot-modal')">Annuler</button>
+      <button class="btn btn--primary" onclick="closeModal('clot-modal');showToast('ok','Caisse clôturée — Rapport généré.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Clôturer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+</div><!-- /app-wrap -->
+
+
+<script>
+/* ═══════════════════════════
+   THÈME — clé transport-theme
+═══════════════════════════ */
+(function () {
+  const stored = localStorage.getItem('transport-theme');
+  const isDark  = stored !== null ? stored === 'dark' : matchMedia('(prefers-color-scheme:dark)').matches;
+  if (isDark) applyDark(true, false);
+})();
+
+function applyDark(on, save = true) {
+  document.documentElement.classList.toggle('theme-dark', on);
+  document.getElementById('icon-sun').style.display  = on ? 'none'  : 'block';
+  document.getElementById('icon-moon').style.display = on ? 'block' : 'none';
+  if (save) localStorage.setItem('transport-theme', on ? 'dark' : 'light');
+}
+function toggleDark() { applyDark(!document.documentElement.classList.contains('theme-dark')); }
+
+/* ═══════════════════════════
+   NAVIGATION
+═══════════════════════════ */
+function showPage(pageId, tabEl) {
+  document.querySelectorAll('.page-view').forEach(p => p.classList.remove('is-active'));
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('is-active');
+  if (tabEl) {
+    document.querySelectorAll('.pnav-tab').forEach(t => t.classList.remove('is-active'));
+    tabEl.classList.add('is-active');
+  }
+  const content = target?.querySelector('.page-content');
+  if (content) content.scrollTop = 0;
+}
+
+/* ═══════════════════════════
+   SIDEBAR INJECTION
+═══════════════════════════ */
+(function injectSidebars() {
+  const tpl  = document.getElementById('sidebar-tpl');
+  if (!tpl) return;
+  const html = tpl.innerHTML;
+  document.querySelectorAll('[id^="sb-"]').forEach(el => {
+    el.outerHTML = `<aside class="sidebar">${html}</aside>`;
+  });
+})();
+
+/* ═══════════════════════════
+   ONGLETS FICHE TICKET
+═══════════════════════════ */
+const TICKET_TABS = ['tab-pass', 'tab-voyage', 'tab-hist'];
+function switchTab(el, panelId) {
+  el.closest('.card').querySelectorAll('.detail-tab').forEach(t => t.classList.remove('is-active'));
+  el.classList.add('is-active');
+  TICKET_TABS.forEach(id => { const p = document.getElementById(id); if (p) p.style.display = 'none'; });
+  const p = document.getElementById(panelId);
+  if (p) p.style.display = '';
+}
+
+/* ═══════════════════════════
+   SIÈGES INTERACTIFS
+═══════════════════════════ */
+function selectSeat(btn) {
+  document.querySelectorAll('.seat:not(.seat--taken)').forEach(s => s.classList.remove('seat--selected'));
+  btn.classList.add('seat--selected');
+  const num = document.getElementById('selected-seat-num');
+  if (num) num.textContent = btn.textContent.trim();
+}
+
+/* ═══════════════════════════
+   MISE À JOUR PRIX
+═══════════════════════════ */
+function updatePrice(sel) {
+  const val = parseInt(sel.value).toLocaleString('fr-FR');
+  const display = document.getElementById('price-display');
+  if (display) display.textContent = val + ' FCFA';
+}
+
+/* ═══════════════════════════
+   MODALS
+═══════════════════════════ */
+function openModal(id)  { document.getElementById(id)?.classList.add('is-open'); }
+function closeModal(id) { document.getElementById(id)?.classList.remove('is-open'); }
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-backdrop.is-open').forEach(m => m.classList.remove('is-open'));
+});
+
+/* ═══════════════════════════
+   TOASTS
+═══════════════════════════ */
+let toastId = 0;
+function showToast(type, msg) {
+  const container = document.getElementById('toast-container');
+  const id  = 'toast-' + (++toastId);
+  const isOk = type === 'ok';
+  const el  = document.createElement('div');
+  el.className = `toast toast--${type}`;
+  el.id = id;
+  el.innerHTML = `<div class="toast__icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5">${isOk ? '<path d="M20 6L9 17l-5-5"/>' : '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>'}</svg></div>${msg}<span class="toast__close" onclick="document.getElementById('${id}').remove()">✕</span>`;
+  container.appendChild(el);
+  setTimeout(() => { const e = document.getElementById(id); if (e) e.remove(); }, 3500);
+}
+
+/* ═══════════════════════════
+   TOGGLES
+═══════════════════════════ */
+document.addEventListener('click', e => {
+  const tog = e.target.closest('.toggle-switch');
+  if (tog) tog.classList.toggle('is-on');
+});
+</script>
+</body>
+</html>

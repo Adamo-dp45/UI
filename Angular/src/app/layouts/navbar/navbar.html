@@ -1,0 +1,27 @@
+<header class="p-3 mb-4 navbar-shadow">
+    <div class="container flex justify-content-between align-items-center">
+        <a class="navbar-logo flex gap-2 align-items-center" routerLink="/">
+            <img ngSrc="/public/favicon.ico" alt="logo" width="36" height="36">
+            Prompt Hub
+        </a>
+        <nav>
+            <p-button routerLink="/prompts" label="Prompts"></p-button>
+        </nav>
+        <div class="flex align-items-center gap-2">
+            @if (authService.currentUser(); as currentUser) {
+                <span class="text-sm text-color-secondary">{{ currentUser.username }}</span>
+                <p-button [loading]="loggingOut()" label="Déconnexion" severity="secondary" size="small" (onClick)="logout()"></p-button>
+            } @else {
+                <p-button label="Connexion" severity="secondary" routerLink="/auth" size="small"></p-button>
+            }
+            <p-button
+                [icon]="isDark() ? 'pi pi-sun' : 'pi pi-moon'"
+                size="small"
+                (onClick)="isDark.update(value => !value)"
+            /> <!-- L'utilisation de la fonction flèché est supporté par la version 21 d'angular, 'toggleDarkMode()' -->
+            <p-button icon="pi pi-plus" label="Ajouter un prompt" size="small" routerLink="/prompts/create"></p-button> <!--
+                - 'routerLink' pour naviguer vers une autre page sans recharger la page
+            -->
+        </div>
+    </div>
+</header>

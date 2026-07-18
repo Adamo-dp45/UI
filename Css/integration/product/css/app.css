@@ -1,0 +1,28 @@
+@import "base/root.css";
+@import "base/reset.css";
+@import "base/layout.css";
+@import "base/text.css"; /* Style de texte */
+@import "blocs/products.css";
+@import "blocs/categories.css";
+@import "elements/location.css";
+@import "elements/sliders.css";
+@import "blocs/posts.css";
+@import "blocs/banner.css";
+@import "blocs/promos.css";
+@import "elements/btn.css";
+@import "elements/topbar.css";
+@import "elements/footer.css";
+@import "elements/menu.css";
+@import "elements/pagination.css";
+@import "elements/card.css";
+@import "elements/rating.css";
+@import "elements/reviews.css";
+@import "pages/products.css";
+@import "pages/single-product.css";
+
+/*
+    - Taille
+        - rem : Permet d'indiquer les valeurs relativement à la taille de la police, en ce moment il faut réfléchir est ce que si l'utilisateur décide d'avoir une police plus grosse sur son navigateur on estime que l'espacement entre la carte et l'image doit être plus grosse
+
+    - Espacement : On estime que ce n'est pas au élément de gérer leurs espacement mais au parent
+*/

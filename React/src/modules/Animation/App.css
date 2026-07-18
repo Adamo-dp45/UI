@@ -1,0 +1,13 @@
+.square {
+    width: 100px;
+    height: 100px;
+    background: #DDD;
+}
+
+.fade {
+    transition: opacity 1s; /* .3s pourrait convenir */
+}
+
+.fade.out {
+    opacity: 0;
+}

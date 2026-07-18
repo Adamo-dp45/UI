@@ -1,0 +1,40 @@
+.banner {
+    --image: url(../../img/banner.jpg);
+    --width: min(1800px, calc(100% - 2 * var(--container-padding))); /* La valeur minimmale entre les 2, sur les grands écrans il prendra 1500px car le calcule sera supperieur */
+    background:
+            linear-gradient(to top, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+            var(--image) no-repeat center center
+    ;
+    background-size: cover;
+    margin-inline: auto;
+    padding-inline: max(2rem, calc((var(--width) - var(--container-width)) / 2));
+    padding-block: 2rem;
+    border-radius: 20px;
+    color: var(--text-inverse);
+    max-width: var(--width);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.banner_description {
+    margin-top: .725rem;
+    margin-bottom: 1.75rem;
+}
+
+.banner > * {
+    max-width: 675px;
+}
+
+@media (min-width: 610px) {
+    .banner {
+        --image: url(../../img/banner-desktop.jpg);
+        border-radius: 40px;
+    }
+}
+
+@media (min-width: 1100px) {
+     .banner {
+         min-height: 743px;
+     }
+}

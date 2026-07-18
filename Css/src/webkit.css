@@ -1,0 +1,27 @@
+::-webkit-scrollbar { /*
+    - Pour définir la taille de la scrollbar
+*/
+    width: 9px;
+    height: 7px;
+}
+
+::-webkit-scrollbar-track { /*
+    - La piste sur laquelle est notre scrollbar
+*/
+    background: #DDD; /* Ou.. 'transparent' qui peut être intérèssant */
+    padding: 1px;
+}
+
+::-webkit-scrollbar-thumb { /*
+    - La zone cliquable
+*/
+    background: #CCC;
+    border-radius: 10px;
+
+    border: 2px solid transparent; /*
+        - Pour espacer la thumb du reste de la scrollbar
+    */
+    background-clip: padding-box; /*
+        - Pour ne pas que le fond passe au dessus de la bordure vu qu'on n'est à 'border-box' par défaut donc on spécifie que le fond s'arrêter au bord de la zone de padding
+    */
+}

@@ -1,0 +1,68 @@
+<div class="container">
+    <app-navbar></app-navbar>
+    <router-outlet /> <!-- Va injecter les composants enfants selon la route actuelle vu qu'on utilise le router donc on se passe de '<app-prompt-list />' -->
+    <p-toast></p-toast>
+
+    <h1>{{ 'Hello' | uppercase }} </h1>
+
+    <app-test [data]="{name: 'Adama'}" (nameClick)="onNameClick($event)" /> <!--
+        - '$event' pour récupérer les données envoyés par l'enfant
+    -->
+
+    <h2>Text interpolation & Binding</h2>
+    <div title="tooltip">{{ message }}</div>
+    <button [disabled]="disabledButton">Binding</button> <!-- Le 'binding' permet de lier une propriété d'un composant à un attribut html, si on veut juste mettre un texte on peut le faire sans '[]' -->
+
+    <h2>Events</h2>
+    <div>{{ count }}</div>
+    <button (click)="count = count + 1">Incrémenter</button> <!-- On peut le faire dans le composant -->
+    <button (click)="decrementer()">Décrémenter</button>
+    <input type="text" (keydown)="logkey($event)"> <!-- '$event' permet de récupérer les données de l'évènement -->
+
+    <h2>Two Way Databinding ou Model de champ</h2>
+    <div>{{ inputValue }}</div>
+    <input type="text" [(ngModel)]="inputValue"> <!-- 'ngModel' va mettre à jour la variable lorsqu'on tape dans le champ -->
+    <button (click)="inputValue = ''">Reset</button>
+
+    <h2>Control flow ou condition</h2> <!--
+        - Permet d'afficher des blocs de code en fonction de conditions
+    -->
+    @if (a < b) {
+        {{ a }} est inférieur à {{ b }}
+    } @else if (a > b) {
+        {{ a }} est supérieur à {{ b }}
+    } @else {
+        {{ a }} est égal à {{ b }}
+    }
+
+    @for (person of people; track person.id) { <!-- 'track' l'identifiant unique pour que angular puisse géré l'affichage -->
+        <div>{{ person.name }} à {{ person.age }} ans</div>
+        <div>
+            {{ $index }} <!--
+                - La boucle '@for' permet d'avoir l'index '$index'
+                - '$odd' ou '$even' permet de savoir si on est sur une ligne paire ou impaire
+                - '$last' !! si on est sur la dernière ligne
+                - '$first' !! première ligne
+            -->
+            {{ $odd }}
+            {{ $first }}
+        </div>
+    }
+    <!--
+        @for (item of data; track item.id; let index = $index; let pair = $even) {
+            <p [class.red]="pair">Va ajouter la class red si c'est paire</p>
+        } @empty {
+        }
+
+        @switch () {
+            case() {}
+            @default {}
+        }
+    -->
+
+    <h2>Signals ou ref ou useState</h2> <!-- Le 'signal' est une variable que angular surveille nativement, dès qu'il change de valeur il déclanche le refresh ou rerendu de l'affichage, remplace 'RxJS' -->
+    <div>{{ countSignal() }}</div> <!-- Le '()' pour avoir la valeur du signal sinon va nous donner le wrapper -->
+    <input type="number" [(ngModel)]="quantitie"> <!-- On n'a pas mis 'quantitie()' car on veut le signal vu que 'ngModel' est compatible -->
+    <input type="number" [(ngModel)]="price">
+    <div>total : {{ total() }}</div>
+</div>

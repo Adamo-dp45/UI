@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image au survol</title>
+</head>
+<style>
+    body {
+        background-color: lightblue;
+        font-family: sans-serif;
+    }
+
+    .center {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .card {
+        z-index: 1;
+        display: grid;
+        place-content: center;
+        text-align: center;
+        background: url(../../src/images/carte.png);
+        background-size: cover;
+        padding: 65px;
+        width: 170px;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .card::before, .card::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        z-index: -1;
+        width: 100%;
+        height: calc(60% + 35px);
+        background-color: lightgoldenrodyellow;
+        transition: transform 0.5s 0.25s;
+    }
+
+    .card::before {
+        top: 0;
+        clip-path: polygon(0 0, 100% 0, 100% 45%, 0%, 100%);
+        transform: translateY(-100%);
+    }
+
+    .card::after {
+        bottom: 0;
+        clip-path: polygon(0 55%, 100% 0, 100% 100%, 0%, 100%);
+        transform: translateY(100%);
+    }
+
+    .card-body {
+        opacity: 0;
+        transition: opacity 0.25s;
+    }
+
+    .card-title {
+        margin-bottom: 15px;
+        color: black;
+    }
+
+    .card:hover::before, .card:hover::after {
+        transform: translateY(0);
+    }
+
+    .card:hover .card-body {
+        opacity: 1;
+        transition-delay: .75s;
+    }
+
+    .card-title p {
+        color: burlywood;
+    }
+</style>
+<body>
+    <div class="card center">
+        <div class="card-body">
+            <div class="card-title">
+                <h2>Lorem ipsum dolor sit amet.</h2>
+                <p>
+                    Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

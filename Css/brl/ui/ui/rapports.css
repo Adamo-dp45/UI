@@ -1,0 +1,801 @@
+/* ═══════════════════════════════════════════════════════════════
+   rapports.css — Module Dashboard & Rapports
+   À inclure APRÈS styles.css (le CSS du dashboard principal).
+   Ne redéfinit pas les tokens, composants ou layouts déjà présents.
+   ═══════════════════════════════════════════════════════════════ */
+
+
+/* ───────────────────────────────────────────────────────────────
+   NOUVEAUX TOKENS  (ajouts au :root du dashboard principal)
+   Couleurs supplémentaires utilisées uniquement dans ce module.
+─────────────────────────────────────────────────────────────── */
+
+:root {
+  --color-cyan:        #0891b2;
+  --color-cyan-light:  #cffafe;
+  --color-teal:        #0f766e;
+  --color-teal-light:  #ccfbf1;
+}
+
+.theme-dark {
+  --color-cyan:        #22d3ee;
+  --color-cyan-light:  #061b1f;
+  --color-teal:        #14b8a6;
+  --color-teal-light:  #042f2e;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   SOUS-NAVIGATION  —  barre d'onglets entre le header et le contenu
+   Affiche les sous-pages du module (Dashboard / Exploitation / …)
+─────────────────────────────────────────────────────────────── */
+
+.report-subnav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 24px;
+  height: 44px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.report-subnav::-webkit-scrollbar { display: none; }
+
+.report-subnav__tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+  position: relative;
+}
+
+.report-subnav__tab:hover {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+}
+
+.report-subnav__tab.is-active {
+  background: var(--color-amber-light);
+  color: var(--color-amber);
+}
+
+.report-subnav__tab-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.report-subnav__tab.is-active .report-subnav__tab-dot { opacity: 1; }
+
+.report-subnav__separator {
+  width: 1px;
+  height: 18px;
+  background: var(--color-border);
+  flex-shrink: 0;
+  margin: 0 4px;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   KPI CARD  —  variante avec barre colorée en haut (top-accent)
+   Réutilise .card du dashboard + ces classes supplémentaires.
+─────────────────────────────────────────────────────────────── */
+
+.kpi-card {
+  /* Héritage : utilise .card comme base */
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--kpi-accent, var(--color-amber));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.kpi-card__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.kpi-card__value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -.7px;
+  line-height: 1;
+  color: var(--kpi-accent, var(--color-text));
+}
+
+.kpi-card__value--default { color: var(--color-text); }
+
+.kpi-card__label {
+  font-size: 12px;
+  color: var(--color-text-3);
+  margin-top: 6px;
+}
+
+.kpi-card__delta {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+.kpi-card__delta--up   { color: var(--color-green); }
+.kpi-card__delta--down { color: var(--color-red); }
+.kpi-card__delta--flat { color: var(--color-text-3); }
+
+
+/* ───────────────────────────────────────────────────────────────
+   GRILLES  —  nouvelles colonnes non présentes dans le dashboard
+─────────────────────────────────────────────────────────────── */
+
+/* 3 colonnes égales */
+.grid--3-cols { grid-template-columns: repeat(3, 1fr); }
+
+/* 4 colonnes égales (KPI row) */
+.grid--4-cols-kpi { grid-template-columns: repeat(4, 1fr); }
+
+/* 2/3 + 1/3 */
+.grid--2-1 { grid-template-columns: 2fr 1fr; }
+
+/* sidebar étroite fixe + contenu */
+.grid--sidebar-content { grid-template-columns: 240px 1fr; }
+
+
+/* ───────────────────────────────────────────────────────────────
+   SECTION CARD HEADER  —  titre de card standard pour ce module
+─────────────────────────────────────────────────────────────── */
+
+.card-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.card-section-header__title {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -.2px;
+}
+
+.card-section-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   ALERTES OPÉRATIONNELLES
+─────────────────────────────────────────────────────────────── */
+
+.op-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.op-alert__icon { flex-shrink: 0; margin-top: 1px; }
+.op-alert__text { flex: 1; }
+
+.op-alert--red {
+  background: color-mix(in srgb, var(--color-red-light) 70%, transparent);
+  border-color: rgba(220, 38, 38, .2);
+  color: var(--color-red);
+}
+
+.op-alert--amber {
+  background: color-mix(in srgb, var(--color-amber-light) 70%, transparent);
+  border-color: rgba(217, 119, 6, .2);
+  color: var(--color-amber);
+}
+
+.op-alert--green {
+  background: color-mix(in srgb, var(--color-green-light) 70%, transparent);
+  border-color: rgba(5, 150, 105, .2);
+  color: var(--color-green);
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   GRAPHIQUE EN BARRES  —  nouvelle variante avec axes et tooltips
+─────────────────────────────────────────────────────────────── */
+
+.chart-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+.chart-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 200px;
+  padding: 4px 0;
+  font-size: 10.5px;
+  color: var(--color-text-4);
+  text-align: right;
+  width: 44px;
+  flex-shrink: 0;
+  font-family: 'DM Mono', monospace;
+}
+
+.chart-body { flex: 1; }
+
+.chart-bars-area {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 200px;
+  padding: 0 4px;
+}
+
+.chart-bar {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: opacity var(--duration-fast);
+}
+
+.chart-bar:hover { opacity: .75; }
+
+/* Tooltip au survol */
+.chart-bar__tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-text);
+  color: var(--color-surface);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+  z-index: 10;
+}
+
+.chart-bar:hover .chart-bar__tooltip { opacity: 1; }
+
+.chart-x-axis {
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 0 0 52px;
+  font-size: 10.5px;
+  color: var(--color-text-4);
+  font-family: 'DM Mono', monospace;
+}
+
+.chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--color-text-3);
+}
+
+.chart-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chart-legend__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   BARRES DE PROGRESSION  —  rangée label + barre + valeur
+   Plus dense que la version dashboard (lignes condensées)
+─────────────────────────────────────────────────────────────── */
+
+.prog-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.prog-row:last-child { margin-bottom: 0; }
+
+.prog-row__label {
+  font-size: 12.5px;
+  font-weight: 500;
+  width: 140px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prog-row__track {
+  flex: 1;
+  height: 7px;
+  background: var(--color-surface-3);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.prog-row__fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 1.1s var(--ease);
+}
+
+.prog-row__value {
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  width: 52px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   RAPPORT CARD  —  ligne cliquable dans le centre de rapports
+─────────────────────────────────────────────────────────────── */
+
+.report-card-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.report-card-row:hover { background: var(--color-surface-2); }
+.report-card-row:last-child { border-bottom: none; }
+
+.report-card-row__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.report-card-row__title { font-size: 13.5px; font-weight: 600; }
+.report-card-row__sub   { font-size: 12px; color: var(--color-text-3); margin-top: 2px; }
+
+.report-card-row__badge {
+  margin-left: auto;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-2);
+  color: var(--color-text-3);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   JAUGE DEMI-CERCLE  —  taux de remplissage
+─────────────────────────────────────────────────────────────── */
+
+.gauge-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0 8px;
+  gap: 6px;
+}
+
+.gauge-svg { overflow: visible; }
+
+.gauge-value {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.5px;
+  text-align: center;
+  line-height: 1;
+}
+
+.gauge-label {
+  font-size: 11.5px;
+  color: var(--color-text-3);
+  text-align: center;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   HEATMAP HEBDOMADAIRE
+─────────────────────────────────────────────────────────────── */
+
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-bottom: 6px;
+}
+
+.heatmap-day-labels {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.heatmap-day-label {
+  font-size: 9.5px;
+  color: var(--color-text-4);
+  text-align: center;
+}
+
+.heatmap-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: opacity var(--duration-fast), transform var(--duration-fast);
+}
+
+.heatmap-cell:hover {
+  opacity: .75;
+  transform: scale(1.15);
+}
+
+.heatmap-legend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  color: var(--color-text-4);
+  margin-top: 8px;
+}
+
+.heatmap-legend__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   COMPTE DE RÉSULTAT  —  lignes recettes / charges
+─────────────────────────────────────────────────────────────── */
+
+.compte-section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--color-text-3);
+  margin-bottom: 10px;
+}
+
+.compte-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  transition: background var(--duration-fast);
+}
+
+.compte-line:hover { background: var(--color-surface-2); }
+
+.compte-line--total-green {
+  background: var(--color-green-light);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.compte-line--total-red {
+  background: var(--color-red-light);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.compte-line--result {
+  background: var(--color-green-light);
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 12px 14px;
+  margin-top: 8px;
+}
+
+.compte-line__amount {
+  font-family: 'DM Mono', monospace;
+  font-weight: 600;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   TABLEAU DATA ENRICHI  —  avec inline progress dans les cellules
+─────────────────────────────────────────────────────────────── */
+
+.inline-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inline-progress__track {
+  width: 60px;
+  height: 6px;
+  background: var(--color-surface-3);
+  border-radius: 99px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.inline-progress__fill {
+  height: 100%;
+  border-radius: 99px;
+}
+
+.inline-progress__value {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--color-text-3);
+  white-space: nowrap;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   MÉTRIQUES TEXTE  —  grand chiffre + label en dessous
+─────────────────────────────────────────────────────────────── */
+
+.metric-block { display: flex; flex-direction: column; gap: 2px; }
+.metric-block__label { font-size: 12px; color: var(--color-text-3); }
+.metric-block__value { font-size: 20px; font-weight: 700; letter-spacing: -.4px; }
+
+
+/* ───────────────────────────────────────────────────────────────
+   USURE BAR  —  mini-barre d'état usure véhicule
+─────────────────────────────────────────────────────────────── */
+
+.wear-bar {
+  width: 60px;
+  height: 6px;
+  background: var(--color-surface-3);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.wear-bar__fill { height: 100%; border-radius: 99px; }
+
+
+/* ───────────────────────────────────────────────────────────────
+   GRILLE DE DÉTAIL RETARDS  —  3 colonnes dans une card
+─────────────────────────────────────────────────────────────── */
+
+.delay-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.delay-detail-col {
+  padding: 16px 18px;
+  border-right: 1px solid var(--color-border);
+}
+
+.delay-detail-col:last-child { border-right: none; }
+
+.delay-detail-col__title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--color-text-3);
+  margin-bottom: 12px;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   DONUT SVG  —  wrapper centré avec valeur au centre
+─────────────────────────────────────────────────────────────── */
+
+.donut-center {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.donut-center__svg { display: block; }
+
+.donut-center__label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.donut-center__label-value  { font-size: 24px; font-weight: 700; letter-spacing: -.5px; line-height: 1; }
+.donut-center__label-sub    { font-size: 11px; color: var(--color-text-3); margin-top: 2px; }
+
+
+/* ───────────────────────────────────────────────────────────────
+   SÉLECTEUR PÉRIODE  —  fsel déjà défini dans le dashboard.
+   Variante compacte pour les headers de rapports.
+─────────────────────────────────────────────────────────────── */
+
+.period-select {
+  /* Réutilise la base du dashboard (apparence, couleurs, fleche)
+     On surcharge uniquement la taille pour être cohérent. */
+  height: 32px;
+  font-size: 12.5px;
+}
+
+
+/* ───────────────────────────────────────────────────────────────
+   SECTION RECAP MINI  —  petites boxes chiffre dans une grille
+─────────────────────────────────────────────────────────────── */
+
+.recap-mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.recap-mini-box {
+  padding: 10px;
+  background: var(--color-surface-2);
+  border-radius: var(--radius-sm);
+}
+
+.recap-mini-box__label { font-size: 11px; color: var(--color-text-3); }
+.recap-mini-box__value { font-size: 16px; font-weight: 700; margin-top: 2px; }
+
+
+/* ───────────────────────────────────────────────────────────────
+   TOAST  —  le dashboard principal n'a pas de système de toast.
+   Ces styles sont entièrement nouveaux.
+─────────────────────────────────────────────────────────────── */
+
+.toast-zone {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--color-text);
+  color: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  font-size: 13.5px;
+  font-weight: 500;
+  min-width: 280px;
+  max-width: 360px;
+  pointer-events: auto;
+  animation: toast-in var(--duration-slow) var(--ease) both;
+}
+
+.toast--exiting {
+  animation: toast-out var(--duration-slow) var(--ease) both;
+}
+
+@keyframes toast-in {
+  from { transform: translateX(24px); opacity: 0; }
+  to   { transform: translateX(0);   opacity: 1; }
+}
+
+@keyframes toast-out {
+  from { transform: translateX(0);   opacity: 1; }
+  to   { transform: translateX(24px); opacity: 0; }
+}
+
+.toast__icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast__icon--success { background: var(--color-green); }
+.toast__icon--error   { background: var(--color-red); }
+.toast__icon--info    { background: var(--color-sky); }
+
+.toast__close {
+  margin-left: auto;
+  color: rgba(255, 255, 255, .4);
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color var(--duration-fast);
+}
+
+.toast__close:hover { color: #fff; }
+
+
+/* ───────────────────────────────────────────────────────────────
+   RESPONSIVE  —  breakpoints supplémentaires pour ce module
+─────────────────────────────────────────────────────────────── */
+
+@media (max-width: 1200px) {
+  .grid--2-1    { grid-template-columns: 1fr; }
+  .grid--3-cols { grid-template-columns: repeat(2, 1fr); }
+  .delay-detail-grid { grid-template-columns: 1fr; }
+  .delay-detail-col  { border-right: none; border-bottom: 1px solid var(--color-border); }
+  .delay-detail-col:last-child { border-bottom: none; }
+}
+
+@media (max-width: 960px) {
+  .grid--4-cols-kpi         { grid-template-columns: repeat(2, 1fr); }
+  .grid--sidebar-content    { grid-template-columns: 1fr; }
+  .report-subnav            { padding: 0 16px; }
+}
+
+@media (max-width: 640px) {
+  .grid--3-cols             { grid-template-columns: 1fr; }
+  .report-subnav__tab span  { display: none; }
+  .report-subnav__tab       { padding: 6px 10px; }
+}

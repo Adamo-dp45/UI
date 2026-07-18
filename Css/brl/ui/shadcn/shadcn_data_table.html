@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400&display=swap');
+
+:root {
+  --bg: #ffffff;
+  --bg-2: #f9fafb;
+  --bg-3: #f3f4f6;
+  --border: #e5e7eb;
+  --border-2: #d1d5db;
+  --txt: #111827;
+  --txt-2: #6b7280;
+  --txt-3: #9ca3af;
+  --ring: rgba(17,24,39,0.1);
+  --badge-paid-bg: #f0fdf4; --badge-paid-txt: #15803d;
+  --badge-pending-bg: #fefce8; --badge-pending-txt: #a16207;
+  --badge-failed-bg: #fef2f2; --badge-failed-txt: #b91c1c;
+  --badge-processing-bg: #eff6ff; --badge-processing-txt: #1d4ed8;
+  --radius: 6px;
+  --radius-lg: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #09090b; --bg-2: #18181b; --bg-3: #27272a;
+    --border: #27272a; --border-2: #3f3f46;
+    --txt: #fafafa; --txt-2: #a1a1aa; --txt-3: #52525b;
+    --ring: rgba(255,255,255,0.1);
+    --badge-paid-bg: #052e16; --badge-paid-txt: #4ade80;
+    --badge-pending-bg: #422006; --badge-pending-txt: #facc15;
+    --badge-failed-bg: #450a0a; --badge-failed-txt: #f87171;
+    --badge-processing-bg: #1e3a8a; --badge-processing-txt: #93c5fd;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Geist',system-ui,sans-serif;background:var(--bg);color:var(--txt)}
+
+.wrap{padding:1.75rem 2rem 2rem}
+
+/* toolbar */
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.toolbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.toolbar-right{display:flex;align-items:center;gap:8px}
+
+.shad-input{font-family:inherit;font-size:13.5px;height:34px;padding:0 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--txt);outline:none;width:220px;transition:box-shadow .15s}
+.shad-input::placeholder{color:var(--txt-3)}
+.shad-input:focus{box-shadow:0 0 0 2px var(--ring)}
+
+.btn{font-family:inherit;font-size:13px;font-weight:500;height:34px;padding:0 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--txt);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .1s;white-space:nowrap;position:relative}
+.btn:hover{background:var(--bg-2)}
+.btn.primary{background:var(--txt);color:var(--bg);border-color:var(--txt)}
+.btn.primary:hover{opacity:.87}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--bg-2)}
+
+/* faceted filter btn */
+.btn .badge-count{display:inline-flex;align-items:center;justify-content:center;background:var(--txt);color:var(--bg);border-radius:9999px;font-size:10px;font-weight:600;min-width:16px;height:16px;padding:0 4px}
+
+/* dropdown */
+.dropdown{position:relative;display:inline-block}
+.dropdown-menu{position:absolute;top:calc(100% + 6px);right:0;z-index:50;min-width:160px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 4px 16px rgba(0,0,0,.08);padding:4px;display:none}
+.dropdown-menu.open{display:block}
+.dropdown-item{display:flex;align-items:center;gap:8px;padding:6px 10px;font-size:13px;border-radius:4px;cursor:pointer;color:var(--txt);transition:background .1s}
+.dropdown-item:hover{background:var(--bg-2)}
+.dropdown-item.header{font-size:11.5px;font-weight:500;color:var(--txt-2);cursor:default;padding-bottom:4px}
+.dropdown-item.header:hover{background:transparent}
+.dropdown-sep{border:none;border-top:1px solid var(--border);margin:4px 0}
+.check-box{width:14px;height:14px;border:1px solid var(--border-2);border-radius:3px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg);transition:background .1s,border-color .1s}
+.check-box.checked{background:var(--txt);border-color:var(--txt)}
+.check-box.checked::after{content:'';display:block;width:8px;height:5px;border-left:1.5px solid var(--bg);border-bottom:1.5px solid var(--bg);transform:rotate(-45deg) translate(1px,-1px)}
+
+/* status filter panel */
+.filter-panel{position:absolute;top:calc(100% + 6px);left:0;z-index:50;width:220px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 4px 16px rgba(0,0,0,.08);padding:4px;display:none}
+.filter-panel.open{display:block}
+.filter-search{width:100%;font-family:inherit;font-size:12.5px;height:28px;padding:0 8px;border:none;border-bottom:1px solid var(--border);background:transparent;color:var(--txt);outline:none;margin-bottom:4px}
+.filter-search::placeholder{color:var(--txt-3)}
+
+/* table */
+.table-wrap{border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:14px}
+thead tr{border-bottom:1px solid var(--border);background:var(--bg)}
+thead th{padding:10px 16px;text-align:left;font-size:12.5px;font-weight:500;color:var(--txt-2);white-space:nowrap;user-select:none}
+thead th.sortable{cursor:pointer}
+thead th.sortable:hover .th-label{color:var(--txt)}
+.th-label{display:inline-flex;align-items:center;gap:4px;transition:color .1s}
+.sort-asc .sort-up{opacity:1} .sort-desc .sort-down{opacity:1}
+.sort-up,.sort-down{opacity:.3;transition:opacity .15s}
+.th-check{width:40px;padding-left:16px}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:var(--bg-2)}
+tbody tr.sel{background:var(--bg-2)}
+tbody td{padding:12px 16px;vertical-align:middle;font-size:13.5px}
+td.td-check{padding-left:16px;width:40px}
+
+.shad-cb{appearance:none;-webkit-appearance:none;width:15px;height:15px;border:1.5px solid var(--border-2);border-radius:3.5px;cursor:pointer;background:var(--bg);position:relative;flex-shrink:0;transition:background .1s,border-color .1s}
+.shad-cb:checked{background:var(--txt);border-color:var(--txt)}
+.shad-cb:checked::after{content:'';position:absolute;width:8px;height:5px;border-left:1.5px solid var(--bg);border-bottom:1.5px solid var(--bg);transform:rotate(-45deg) translate(1px,-1px);top:2px;left:2px}
+
+.mono{font-family:'Geist Mono',monospace;font-size:12px;color:var(--txt-2)}
+.amount{font-weight:500;text-align:right}
+
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:500;padding:2.5px 8px;border-radius:9999px}
+.badge-dot{width:5.5px;height:5.5px;border-radius:50%}
+.paid{background:var(--badge-paid-bg);color:var(--badge-paid-txt)} .paid .badge-dot{background:var(--badge-paid-txt)}
+.pending{background:var(--badge-pending-bg);color:var(--badge-pending-txt)} .pending .badge-dot{background:var(--badge-pending-txt)}
+.failed{background:var(--badge-failed-bg);color:var(--badge-failed-txt)} .failed .badge-dot{background:var(--badge-failed-txt)}
+.processing{background:var(--badge-processing-bg);color:var(--badge-processing-txt)} .processing .badge-dot{background:var(--badge-processing-txt)}
+
+/* priority icons */
+.priority{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--txt-2)}
+
+/* row actions */
+.row-action-btn{appearance:none;background:none;border:none;width:30px;height:30px;border-radius:5px;cursor:pointer;color:var(--txt-2);display:inline-flex;align-items:center;justify-content:center;transition:background .1s,color .1s}
+.row-action-btn:hover{background:var(--bg-3);color:var(--txt)}
+.row-ctx-menu{position:absolute;right:8px;z-index:60;width:160px;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:0 4px 16px rgba(0,0,0,.1);padding:4px;display:none}
+.row-ctx-menu.open{display:block}
+.ctx-item{padding:6px 10px;font-size:13px;border-radius:4px;cursor:pointer;color:var(--txt);transition:background .1s}
+.ctx-item:hover{background:var(--bg-2)}
+.ctx-item.danger{color:#dc2626}
+.ctx-item.danger:hover{background:var(--badge-failed-bg)}
+.ctx-sep{border:none;border-top:1px solid var(--border);margin:3px 0}
+
+/* footer */
+.footer{display:flex;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap;gap:10px}
+.sel-info{font-size:13px;color:var(--txt-2)}
+.footer-right{display:flex;align-items:center;gap:16px}
+.rows-per-page{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt-2)}
+.rows-select{font-family:inherit;font-size:13px;height:30px;padding:0 8px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--txt);outline:none;cursor:pointer}
+.page-info{font-size:13px;color:var(--txt-2);white-space:nowrap}
+.pag{display:flex;align-items:center;gap:2px}
+.pag-btn{font-family:inherit;height:30px;min-width:30px;padding:0 8px;border:1px solid var(--border);border-radius:var(--radius);background:var(--bg);color:var(--txt);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .1s;gap:2px}
+.pag-btn:hover{background:var(--bg-2)}
+.pag-btn:disabled{opacity:.38;cursor:not-allowed}
+
+/* column-hidden class */
+.col-hidden{display:none}
+
+/* active filter indicator */
+.active-filter-bar{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.filter-tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:3px 8px;border:1px solid var(--border);border-radius:9999px;color:var(--txt-2)}
+.filter-tag button{background:none;border:none;cursor:pointer;color:var(--txt-3);display:inline-flex;align-items:center;padding:0}
+.filter-tag button:hover{color:var(--txt)}
+.reset-btn{font-family:inherit;font-size:12px;background:none;border:none;color:var(--txt-2);cursor:pointer;padding:2px 6px;border-radius:4px}
+.reset-btn:hover{background:var(--bg-2);color:var(--txt)}
+</style>
+
+<div class="wrap">
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <input class="shad-input" id="globalFilter" placeholder="Filter tasks…" />
+
+      <!-- Status faceted filter -->
+      <div class="dropdown" id="statusDropdown">
+        <button class="btn" id="statusBtn" onclick="togglePanel('statusPanel')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32 1.41-1.41"/></svg>
+          Status
+          <span id="statusCount" style="display:none" class="badge-count">0</span>
+        </button>
+        <div class="filter-panel" id="statusPanel">
+          <input class="filter-search" placeholder="Search status…" />
+          <div id="statusOptions"></div>
+        </div>
+      </div>
+
+      <!-- Priority faceted filter -->
+      <div class="dropdown" id="priorityDropdown">
+        <button class="btn" id="priorityBtn" onclick="togglePanel('priorityPanel')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
+          Priority
+          <span id="priorityCount" style="display:none" class="badge-count">0</span>
+        </button>
+        <div class="filter-panel" id="priorityPanel">
+          <input class="filter-search" placeholder="Search priority…" />
+          <div id="priorityOptions"></div>
+        </div>
+      </div>
+
+      <!-- Reset -->
+      <button class="reset-btn" id="resetBtn" style="display:none" onclick="resetFilters()">
+        Reset
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:3px"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="toolbar-right">
+      <!-- Column visibility -->
+      <div class="dropdown">
+        <button class="btn" onclick="toggleDropdown('colMenu')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4.5v15M4.5 12h15"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          Columns
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="dropdown-menu" id="colMenu">
+          <div class="dropdown-item header">Toggle columns</div>
+          <hr class="dropdown-sep">
+          <div id="colItems"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active filter tags -->
+  <div class="active-filter-bar" id="filterBar" style="display:none"></div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="th-check"><input type="checkbox" class="shad-cb" id="checkAll"></th>
+          <th class="sortable" data-col="id" id="th-id">
+            <span class="th-label">Task <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path class="sort-up" d="M12 5v7"/><path class="sort-down" d="M12 19v-7"/><path d="M8 9l4-4 4 4" class="sort-up"/><path d="M8 15l4 4 4-4" class="sort-down"/></svg></span>
+          </th>
+          <th class="sortable" data-col="title" id="th-title">
+            <span class="th-label">Title <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path class="sort-up" d="M8 9l4-4 4 4"/><path class="sort-down" d="M8 15l4 4 4-4"/></svg></span>
+          </th>
+          <th class="sortable" data-col="status" id="th-status">
+            <span class="th-label">Status <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path class="sort-up" d="M8 9l4-4 4 4"/><path class="sort-down" d="M8 15l4 4 4-4"/></svg></span>
+          </th>
+          <th class="sortable" data-col="priority" id="th-priority">
+            <span class="th-label">Priority <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path class="sort-up" d="M8 9l4-4 4 4"/><path class="sort-down" d="M8 15l4 4 4-4"/></svg></span>
+          </th>
+          <th id="th-actions" style="width:48px"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span class="sel-info" id="selInfo">0 of 0 row(s) selected.</span>
+    <div class="footer-right">
+      <div class="rows-per-page">
+        Rows per page
+        <select class="rows-select" id="pageSize">
+          <option value="5">5</option>
+          <option value="10" selected>10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+      <span class="page-info" id="pageInfo">Page 1 of 1</span>
+      <div class="pag">
+        <button class="pag-btn" id="firstBtn" title="First" onclick="goPage(1)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+        </button>
+        <button class="pag-btn" id="prevBtn" title="Previous" onclick="goPage(currentPage-1)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <button class="pag-btn" id="nextBtn" title="Next" onclick="goPage(currentPage+1)">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <button class="pag-btn" id="lastBtn" title="Last" onclick="goPage(totalPages())">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 17l5-5-5-5M6 17l5-5-5-5"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ALL_DATA = [
+  {id:'TASK-8782',title:'Implement authentication flow',status:'in progress',priority:'medium'},
+  {id:'TASK-7878',title:'Add dark mode toggle',status:'backlog',priority:'low'},
+  {id:'TASK-7839',title:'Fix navbar overlap on mobile',status:'todo',priority:'medium'},
+  {id:'TASK-5562',title:'Create onboarding screens',status:'in progress',priority:'high'},
+  {id:'TASK-8686',title:'Set up CI/CD pipeline',status:'done',priority:'medium'},
+  {id:'TASK-1280',title:'Migrate to PostgreSQL',status:'todo',priority:'high'},
+  {id:'TASK-7262',title:'Write API documentation',status:'backlog',priority:'low'},
+  {id:'TASK-1138',title:'Optimize image loading',status:'in progress',priority:'medium'},
+  {id:'TASK-6606',title:'Add unit tests for auth module',status:'todo',priority:'high'},
+  {id:'TASK-7184',title:'Refactor billing service',status:'cancelled',priority:'high'},
+  {id:'TASK-5788',title:'Implement search with Algolia',status:'in progress',priority:'medium'},
+  {id:'TASK-9401',title:'Design new landing page',status:'todo',priority:'low'},
+  {id:'TASK-4314',title:'Fix memory leak in dashboard',status:'in progress',priority:'high'},
+  {id:'TASK-3221',title:'Add CSV export feature',status:'done',priority:'low'},
+  {id:'TASK-2145',title:'Upgrade React to v19',status:'backlog',priority:'medium'},
+  {id:'TASK-9832',title:'Add two-factor authentication',status:'todo',priority:'high'},
+  {id:'TASK-6540',title:'Create email templates',status:'done',priority:'medium'},
+  {id:'TASK-4891',title:'Implement rate limiting',status:'in progress',priority:'high'},
+  {id:'TASK-3307',title:'Set up error monitoring',status:'backlog',priority:'low'},
+  {id:'TASK-7726',title:'Redesign admin dashboard',status:'todo',priority:'medium'},
+  {id:'TASK-5591',title:'Optimize database queries',status:'done',priority:'high'},
+  {id:'TASK-2873',title:'Add webhook support',status:'in progress',priority:'medium'},
+  {id:'TASK-6123',title:'Fix timezone handling',status:'todo',priority:'low'},
+  {id:'TASK-8854',title:'Implement audit logging',status:'backlog',priority:'high'},
+  {id:'TASK-1092',title:'Update privacy policy page',status:'done',priority:'low'},
+];
+
+const STATUS_META = {
+  'backlog':     {label:'Backlog',     cls:'',          icon:'○'},
+  'todo':        {label:'Todo',        cls:'',          icon:'◷'},
+  'in progress': {label:'In Progress', cls:'processing',icon:'◑'},
+  'done':        {label:'Done',        cls:'paid',      icon:'●'},
+  'cancelled':   {label:'Cancelled',   cls:'failed',    icon:'✕'},
+};
+
+const PRIORITY_META = {
+  'low':    {label:'Low',    svg:'<path d="M12 19V5M5 12l7-7 7 7" stroke-dasharray="0"/>'},
+  'medium': {label:'Medium', svg:'<path d="M12 19V5M5 12l7-7 7 7"/>'},
+  'high':   {label:'High',   svg:'<path d="M12 19V5M5 12l7-7 7 7" stroke-width="2.8"/>'},
+};
+
+const COLS = ['id','title','status','priority'];
+let visibleCols = new Set(COLS);
+let sortCol = null, sortDir = 1;
+let selectedIds = new Set();
+let filterText = '';
+let activeStatus = new Set();
+let activePriority = new Set();
+let currentPage = 1;
+
+function totalPages(){ return Math.max(1, Math.ceil(filtered().length / pageSize())); }
+function pageSize(){ return parseInt(document.getElementById('pageSize').value); }
+
+function filtered(){
+  return ALL_DATA.filter(r => {
+    const ft = filterText.toLowerCase();
+    const textMatch = !ft || r.id.toLowerCase().includes(ft) || r.title.toLowerCase().includes(ft);
+    const statusMatch = activeStatus.size === 0 || activeStatus.has(r.status);
+    const priorityMatch = activePriority.size === 0 || activePriority.has(r.priority);
+    return textMatch && statusMatch && priorityMatch;
+  }).sort((a,b) => {
+    if(!sortCol) return 0;
+    return a[sortCol].localeCompare(b[sortCol]) * sortDir;
+  });
+}
+
+function paginated(){ const f=filtered(); const s=(currentPage-1)*pageSize(); return f.slice(s,s+pageSize()); }
+
+function statusBadge(s){
+  const m = STATUS_META[s] || {label:s,cls:'',icon:'?'};
+  if(!m.cls) return `<span class="priority" style="font-size:13px;color:var(--txt-2)">${m.icon} ${m.label}</span>`;
+  return `<span class="badge ${m.cls}"><span class="badge-dot"></span>${m.label}</span>`;
+}
+
+function priorityIcon(p){
+  const m = PRIORITY_META[p] || {label:p,svg:''};
+  return `<span class="priority"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${m.svg}</svg>${m.label}</span>`;
+}
+
+const dotsIcon = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>`;
+
+function render(){
+  const rows = paginated();
+  const f = filtered();
+  const tbody = document.getElementById('tbody');
+
+  tbody.innerHTML = rows.map(r => {
+    const sel = selectedIds.has(r.id);
+    return `<tr class="${sel?'sel':''}" data-id="${r.id}">
+      <td class="td-check"><input type="checkbox" class="shad-cb row-cb" data-id="${r.id}" ${sel?'checked':''}></td>
+      <td class="${!visibleCols.has('id')?'col-hidden':''}"><span class="mono">${r.id}</span></td>
+      <td class="${!visibleCols.has('title')?'col-hidden':''}" style="max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${r.title}</td>
+      <td class="${!visibleCols.has('status')?'col-hidden':''}">${statusBadge(r.status)}</td>
+      <td class="${!visibleCols.has('priority')?'col-hidden':''}">${priorityIcon(r.priority)}</td>
+      <td style="text-align:right;position:relative">
+        <button class="row-action-btn" onclick="toggleCtx(event,'ctx-${r.id}')">${dotsIcon}</button>
+        <div class="row-ctx-menu" id="ctx-${r.id}">
+          <div class="ctx-item" onclick="closeCtx()">Edit</div>
+          <div class="ctx-item" onclick="closeCtx()">Make a copy</div>
+          <div class="ctx-item" onclick="closeCtx()">Favorite</div>
+          <hr class="ctx-sep">
+          <div class="ctx-item danger" onclick="closeCtx()">Delete</div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('.row-cb').forEach(cb => {
+    cb.addEventListener('change', () => {
+      if(cb.checked) selectedIds.add(cb.dataset.id); else selectedIds.delete(cb.dataset.id);
+      updateCheckAll(); updateFooter();
+    });
+  });
+
+  updateCheckAll();
+  updateFooter();
+  updateSortHeaders();
+  updateColHeaders();
+  document.getElementById('pageInfo').textContent = `Page ${currentPage} of ${totalPages()}`;
+  document.getElementById('firstBtn').disabled = currentPage === 1;
+  document.getElementById('prevBtn').disabled = currentPage === 1;
+  document.getElementById('nextBtn').disabled = currentPage >= totalPages();
+  document.getElementById('lastBtn').disabled = currentPage >= totalPages();
+}
+
+function updateCheckAll(){
+  const rows = paginated();
+  const cb = document.getElementById('checkAll');
+  const allSel = rows.length > 0 && rows.every(r => selectedIds.has(r.id));
+  const someSel = rows.some(r => selectedIds.has(r.id));
+  cb.checked = allSel;
+  cb.indeterminate = someSel && !allSel;
+}
+
+function updateFooter(){
+  const f = filtered();
+  document.getElementById('selInfo').textContent = `${selectedIds.size} of ${f.length} row(s) selected.`;
+}
+
+function updateSortHeaders(){
+  COLS.forEach(col => {
+    const th = document.getElementById('th-'+col);
+    if(!th) return;
+    th.classList.remove('sort-asc','sort-desc');
+    if(sortCol === col) th.classList.add(sortDir===1?'sort-asc':'sort-desc');
+  });
+}
+
+function updateColHeaders(){
+  COLS.forEach(col => {
+    const th = document.getElementById('th-'+col);
+    if(th) th.classList.toggle('col-hidden', !visibleCols.has(col));
+  });
+}
+
+document.getElementById('checkAll').addEventListener('change', e => {
+  paginated().forEach(r => { if(e.target.checked) selectedIds.add(r.id); else selectedIds.delete(r.id); });
+  render();
+});
+
+document.getElementById('globalFilter').addEventListener('input', e => {
+  filterText = e.target.value; currentPage = 1; render(); updateFilterBar();
+});
+
+document.getElementById('pageSize').addEventListener('change', () => { currentPage = 1; render(); });
+
+document.querySelectorAll('thead th.sortable').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if(sortCol === col) sortDir *= -1; else { sortCol = col; sortDir = 1; }
+    currentPage = 1; render();
+  });
+});
+
+function goPage(p){ currentPage = Math.max(1, Math.min(p, totalPages())); render(); }
+
+/* Column visibility */
+function buildColMenu(){
+  const el = document.getElementById('colItems');
+  const labels = {id:'Task',title:'Title',status:'Status',priority:'Priority'};
+  el.innerHTML = COLS.map(col => `
+    <div class="dropdown-item" onclick="toggleCol('${col}')">
+      <div class="check-box ${visibleCols.has(col)?'checked':''}" id="colcheck-${col}"></div>
+      ${labels[col]}
+    </div>
+  `).join('');
+}
+
+function toggleCol(col){
+  if(visibleCols.has(col) && visibleCols.size === 1) return;
+  if(visibleCols.has(col)) visibleCols.delete(col); else visibleCols.add(col);
+  buildColMenu(); render();
+}
+
+function toggleDropdown(id){
+  const m = document.getElementById(id);
+  const wasOpen = m.classList.contains('open');
+  closeAll();
+  if(!wasOpen) { m.classList.add('open'); buildColMenu(); }
+}
+
+/* Faceted filters */
+function buildStatusOptions(){
+  const statuses = [...new Set(ALL_DATA.map(r=>r.status))];
+  document.getElementById('statusOptions').innerHTML = statuses.map(s => {
+    const m = STATUS_META[s] || {label:s};
+    const count = ALL_DATA.filter(r=>r.status===s).length;
+    return `<div class="dropdown-item" onclick="toggleStatus('${s}')">
+      <div class="check-box ${activeStatus.has(s)?'checked':''}" id="stcheck-${s}"></div>
+      <span style="flex:1">${m.label}</span>
+      <span style="font-size:12px;color:var(--txt-3)">${count}</span>
+    </div>`;
+  }).join('');
+}
+
+function buildPriorityOptions(){
+  const pris = ['low','medium','high'];
+  document.getElementById('priorityOptions').innerHTML = pris.map(p => {
+    const m = PRIORITY_META[p] || {label:p};
+    const count = ALL_DATA.filter(r=>r.priority===p).length;
+    return `<div class="dropdown-item" onclick="togglePriority('${p}')">
+      <div class="check-box ${activePriority.has(p)?'checked':''}" id="prcheck-${p}"></div>
+      <span style="flex:1">${m.label}</span>
+      <span style="font-size:12px;color:var(--txt-3)">${count}</span>
+    </div>`;
+  }).join('');
+}
+
+function toggleStatus(s){
+  if(activeStatus.has(s)) activeStatus.delete(s); else activeStatus.add(s);
+  currentPage=1; buildStatusOptions(); render(); updateFilterBar(); updateFacetedBadges();
+}
+
+function togglePriority(p){
+  if(activePriority.has(p)) activePriority.delete(p); else activePriority.add(p);
+  currentPage=1; buildPriorityOptions(); render(); updateFilterBar(); updateFacetedBadges();
+}
+
+function updateFacetedBadges(){
+  const sc = document.getElementById('statusCount');
+  const pc = document.getElementById('priorityCount');
+  sc.textContent = activeStatus.size; sc.style.display = activeStatus.size?'inline-flex':'none';
+  pc.textContent = activePriority.size; pc.style.display = activePriority.size?'inline-flex':'none';
+}
+
+function updateFilterBar(){
+  const bar = document.getElementById('filterBar');
+  const hasFilter = filterText || activeStatus.size || activePriority.size;
+  document.getElementById('resetBtn').style.display = hasFilter ? 'inline-flex' : 'none';
+  if(!hasFilter){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  let tags = '';
+  if(filterText) tags += `<span class="filter-tag">Search: ${filterText} <button onclick="document.getElementById('globalFilter').value='';filterText='';currentPage=1;render();updateFilterBar()"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button></span>`;
+  activeStatus.forEach(s => { const m=STATUS_META[s]||{label:s}; tags+=`<span class="filter-tag">${m.label} <button onclick="toggleStatus('${s}')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button></span>`; });
+  activePriority.forEach(p => { const m=PRIORITY_META[p]||{label:p}; tags+=`<span class="filter-tag">${m.label} <button onclick="togglePriority('${p}')"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg></button></span>`; });
+  bar.innerHTML = tags;
+}
+
+function resetFilters(){
+  filterText=''; activeStatus.clear(); activePriority.clear();
+  document.getElementById('globalFilter').value='';
+  currentPage=1; render(); updateFilterBar(); updateFacetedBadges();
+}
+
+function togglePanel(id){
+  const p = document.getElementById(id);
+  const wasOpen = p.classList.contains('open');
+  closeAll();
+  if(!wasOpen){
+    p.classList.add('open');
+    if(id==='statusPanel') buildStatusOptions();
+    if(id==='priorityPanel') buildPriorityOptions();
+  }
+}
+
+/* Row context menu */
+let openCtxId = null;
+function toggleCtx(e, id){
+  e.stopPropagation();
+  const el = document.getElementById(id);
+  const wasOpen = el.classList.contains('open');
+  closeAll();
+  if(!wasOpen){ el.classList.add('open'); openCtxId=id; }
+}
+function closeCtx(){ if(openCtxId){ const el=document.getElementById(openCtxId); if(el) el.classList.remove('open'); openCtxId=null; } }
+
+function closeAll(){
+  document.querySelectorAll('.dropdown-menu,.filter-panel,.row-ctx-menu').forEach(m=>m.classList.remove('open'));
+  openCtxId=null;
+}
+
+document.addEventListener('click', closeAll);
+document.querySelectorAll('.dropdown-menu,.filter-panel,.row-ctx-menu,.btn').forEach(el=>{el.addEventListener('click',e=>e.stopPropagation())});
+
+render();
+</script>
+
+</body>
+</html>

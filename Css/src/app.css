@@ -1,0 +1,1002 @@
+/*
+    - Important !!
+        - Une image prend comme largeur par défaut sa largeur réel mais on peut changer avec `width` de même pour la hauteur qui si on mais `auto` va garder le ratio de l'image
+
+    - margin: auto : Pour centrer une image de fond, texte.. mais ne centre pas verticalement un bloc
+    - pointer-events: none; : Permet d'indiquer à la souris de ne pas cliquer l'element
+*/
+@import './base/reset.css';
+@import './webkit.css';
+
+*, *::before, *::after { /*
+        - '*' signifie la racine de notre page et est plus précis que html
+    */
+    box-sizing: border-box; /*
+        - Permet d'indiquer comment on mésure la largeur d'un élément appelé le modèle de boîte
+            - 'border-box' lorsqu'on définie la largeur d'un bloc elle va prendre compte les padding et bordures
+            - 'content-box' !! ne prend pas en compte les padding et bordures et les rajoutes après la largeur, par défaut
+    */
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 1rem; /*
+        - Pour respecter les préférences de l'utilisateur au cas ou il change la police dans le paramètre de son navigateur
+    */
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: rgba(0, 0, 0, 0.8);
+    line-height: 1.4; /* La hauteur entre les textes, 1 = 1x la taille de la police de l'élément */
+    letter-spacing: 1px; /* La distance entre les lettre */
+    padding: 20px;
+}
+
+::selection {
+    color: #FFF !important; /* 'important' permet de rendre une propriété plus spécifique */
+    background-color: #0d6efd;
+}
+
+*:focus {
+    outline: 2px solid #A91101;
+}
+
+a {
+    font: inherit; /*
+        - 'inherit' prend la valeur du parent
+    */
+    color: inherit;
+}
+
+img, picture, video {
+    display: block; /* Par défaut ils sont en 'inline-block' */
+    max-width: 100%; /* Ne vont jamais dépasser la largeur de l'écran */
+    height: auto; /* Va garder son ratio */
+}
+
+.stack > * + * { /*
+    - Pour définir un espace entre les éléments qui sont directement adjacent à un élément qui est un enfant directe de .stack    
+*/
+    margin-top: 2rem
+}
+
+.table-responsive {
+    overflow-x: auto;
+    width: 100%;
+}
+/* ----- */
+.display {
+    display: block; /*
+        - Le modèle de boîte.. permet de définir le comportement de l'élément
+            - 'block' va se comporter comme un bloc et prend toute la largeur
+            - 'inline' !! un texte et ne vas pas provoquer un passage à la ligne
+            - 'inline-block' !! un texte mais on peut lui donner une largeur
+            - 'flex' permet de transformer notre élément en conteneur flex
+            - 'grid' !! en grille
+            - 'none' permet de masquer un élément, sera présent dans l'HTML mais n'aura plus de hauteur ni de largeur
+    */
+}
+/* -- La police personalisée -- */
+@font-face {
+    font-family: 'Inter';
+    src: local('Inter Light'), url('fonts/Inter-Light.woff2') format('woff2'); /*
+        - 'otf' format opentype, 'local' si l'utilisateur à la police en local on l'utilise sinon 'url'
+    */
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap; /*
+        - La strategie de chargement, 'auto' par défaut
+            - 'block' va définir une période de blocage assez courte et ensuite un suivie de période infini
+            - 'swap' !! une période de blocage un peu plus rapide car il va affiché la police du navigateur ensuite il va chargé notre police
+            - 'fallback' se comporte comme le 'swap' mais s'il n'arrive pas à charger notre police il garde celui du navigateur
+            - 'optional' permet de dire au navigateur qu'il n'y a pas de période d'échange du tout, s'il n'arrive pas à charger la police dans l'étape 1 il garde celui du navigateur
+
+        - 'transfonter.org' permet de convertir les fonts en d'autre format woff recommandé
+    */
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter-SemiBold.woff2') format('woff2');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('fonts/Inter-Black.woff2') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+/* ----- */
+.text {
+    font-weight: bold;
+    font-size: 1rem; /*
+        - Pour fixer une valeur par rapport à la taille de la police général de notre application
+            - Si je veux 12px je fais 12 / 18 = ..rem
+            - Quand on zoom la page la taille de mes éléments augmente en fonction alors que le pixel reste fixe
+        - 'em' pour fixer une valeur par rapport a la taille de la police de l'éléments parent
+    */
+    font: 1.2rem/2 'Inter', sans-serif; /*
+        - Un raccourci vers les autres font*
+    */
+    font-style: italic; /*
+        - Pour donner un style particulier au texte
+    */
+    text-align: start; /*
+        - Permet de spécifier l'alignement de texte, on a 'center', 'left', 'right'..
+    */
+    text-wrap: wrap; /*
+        - !! comment le texte va aller à la ligne
+            - 'balance' pour qu'il est a peu près le même nombre de caractère entre les lignes, utile pour les 'h1'..
+            - 'pretty' pour éviter qu'un mot se retrouve seule à la fin d'un para.. utile pour les 'p' et 'div'
+    */
+    white-space: nowrap; /*
+        - 'normal' par défaut qui lorsqu'on a de l'espace blanc et que le texte ne rentre pas on casse la ligne pour aller en dessous
+        - 'nowrap' pour éviter le passage à la ligne d'un texte, utile pour les 'bouton'
+        - 'pre' pour respecter les saut de ligne tel qu'il sont dans le html
+    */
+    text-transform: upercase; /* 
+        - Permet de transformer un texte
+            - 'upercase' pour de mettre en majuscule
+            - 'capitalize' !! la prémière lettre en majuscule
+            - 'lowercase' !! en miniscule
+    */
+    text-indent: 100px /* Permet d'indenter la prémière ligne d'un texte */
+}
+
+a {
+    text-decoration: none; /*
+        - Permet de décorer un texte, 'underline' pour souligner le texte..
+    */
+}
+
+.color {
+    color: currentColor; /*
+        - 'currentColor' correspond à la couleur courante de texte
+    */
+}
+/* ----- */
+.marge {
+    margin: 10px 20px 5px 4px; /*
+        - Permet d'ajouter une marge extérieur sur un élément, on a.. , 4 valeurs l'aiguile d'une montre, on peut aussi avoir des marges négatives '-30px'
+    */
+    margin-inline: 10px; /*
+        - !! sur les côtés
+            - 'auto' va mettre la même quantité de marge à droite te à gauche pour centrer l'élément
+    */
+    margin-block: 10px; /* En haut en bas */
+
+    padding: 10px; /* !! marge intérieur.. */
+}
+/* ----- */
+.width {
+    width: max-content; /*
+        - 'max-content' la largeur de l'élément sera celle des éléments qu'elle contient, utile pour les boutons
+        - 'min-content' on rétraissi l'élément au minimum pour avoir la taille d'un élément à l'intérieur
+    */
+    min-width: 100px;
+    max-width: 100px; /* Pour définir la largeur minimale (et s'adpate à la taille de l'écran par rapport à width) et maximale d'un élément */
+    min-height: 100px;
+    max-height: 100px; /* Pour définir la heauteur minimale et maximale d'un élément */
+}
+/* ----- */
+.unit {
+    width: 5px; /*
+        - L'unité de mésure
+            - px : Représente un pixel sur notre écran, est une unité absolue ou largeur fixe
+            - em : Spécifie une valeur par rapport à la taille de la police de notre élément ou de l'élément parent, '1.5em' 1.5x plus grande que la taille de la police, utile pour les boutons
+            - 1.5rem : 1.5x plus grande par rapport à la taille de police général
+            - 50% : Prend 50% par rapport a la largeur de notre bloc, ne fonctionne pas sur la propriété 'height'
+            - 100vh : 100% de la hauteur de l'espace visible
+            - 100vw : 100% de la largeur de la taille de fenêtre, 'vh' pour la hauteur
+            - 50vmin : Prend la dimenssion la plus petite entre la hauteur et la largeur et le chiffre sera en pourcentage de cette valeur, dépend du ratio du navigateur
+            - 50vmax : !! la plus grande
+
+            - 'ex' correspond à la hauteur d'x de la police de l'élément 
+            - 'auto' !! 100% du conteneur parent
+
+            - Sur mobile la zone d'affichage peut changer en fonction du navigateur ce qui causait le fait que le 'vh' et 'vw' ne prennait pas en compte ses dimension donc on a d'autres unités pour prendre en compte les barre d'adresse et autre du mobile
+                - 'lvw' et 'lvh' correspond à la taille si on n'avait toutes les barres qui étaient masqués
+                - 'svw' et 'svh' !! l'unité de mésure la plus petite, la cas ou la zone d'affichage est rempli avec toutes les barres affichés
+                - 'dvw' et 'dvh' !! une valeur dynamique, varie en fonction des barres affichés par le navigateur
+
+        - Pour que la hauteur en '%' fonctionne il faut que le parent est une hauteur définie 
+    */
+    height: 5px; /*
+        - 'auto' sera calculé par rapport à la taille du contenu
+    */
+}
+
+.button {
+    border: 1px solid gray;
+    background-color: lightgray;
+    padding: 0.5em 1em; /*
+        - Va être relatif à la taille du bouton, si elle augmente les espacements aussi augmente
+    */
+    font-size: 20px;
+}
+/* ----- */
+.background {
+    background-color: rgba(255, 255, 255, .2); /* Pour définir la couleur de fond */
+    background-image: url(./img/guirlande1.png); /* !! une image de fond */
+    background-repeat: no-repeat; /*
+        - Pour éviter de repéter l'image
+            - 'repeat-x' permet de repéter l'image sur l'axe horizontal
+            - 'repeat' !! l'axe horizontal et vertical
+            - 'space' !! mettre de l'espace en metant l'image au 4 coints
+            - 'round'
+            - 'space repeat' on peut les combinés, ici space au niveau horizontal et repeat au niveau vertical
+    */
+    background-position: center top; /*
+        - Permet de spécifier la position de l'image par rapport à l'élément et on peut les combiné ou leur donnée des valeurs
+            - 'center' au centre
+            - 'center bottom' au centre en bas
+            - '25% 75%' le positionnement par rapport à la gauche et au haut
+            - 'bottom 50px right 100px' permet de spécifier qu'il soit à 50px du bas et 100px de la droite, on peut utiliser '%'
+    */
+    background-size: 100% 100%, cover; /*
+        - Permet de spécifier la taille du background, 100%.. pour le dégradé
+            - cover : S'arragera pour que l'image prenne la totalité de l'espace disponible sans la déformée
+            - contain : S'arrangera pour que l'image prenne la totalité de la largeur et ne s'étend pas en hauteur pour garder son ratio initial
+            - 30% : L'image prendra 30% de la largeur et la hauteur s'adaptera
+            - 100% 100% : L'image prendra 100% de la largeur et 100% de la hauteur
+    */
+    background-attachment: local, fixed; /*
+        - En général on vas l'utiliser avec le fixed, Lorsqu'on scroll le fond reste figé et le fixed à un problème avec le cover de la taille car il va prendre le fixed en compte par rapport à notre fenêtre au zoom
+            - 'scroll' si on bouge le scroll de l'élément au quel il est contenu il reste figé
+            - 'local' lorsqu'on scroll le fond scroll, par défaut
+            - local, scroll : On peut mettre plusieurs valeurs lorsqu'on n'a plusieurs background-image
+    */
+    background-clip: border-box; /*
+        - Permet de définir la façon dont l'arrière plan d'un élément s'étant sous la bordure
+            - 'border-box' le fond prendra tout l'élément y compris les bordures, par défaut
+            - 'padding-box' !! ne sera pas sur les bordures et commencera à l'intérieur de la boite
+            - 'content-box' !! ne sera pas dans les parties ou il y'a le padding mais dans la partie content
+            - 'text' !! ne sera lié qu'aux textes
+    */
+    background-origin: border-box; /*
+        - Permet de spécifier l'origine de notre fond par rapport au bordures
+            - 'border-box' l'origine sera par rapport aux bordures, par défaut
+            - 'padding-box' l'image commencera là ou le contenu commence
+    */
+    /* background: center top / cover no-repeat url() fixed; -- Permet de tous combiné - position,taille,repétition,image - On peut avoir plusieurs background sur l'élément en séparant par ',' */
+    height: 10vh;
+    
+    background-image: linear-gradient(to bottom, #000, #0008), url(./img/guirlande1.png); /*
+        - Permet de faire un dégradé
+            - L'image de fond et on peut mettre plusieurs images
+            - Si on n'a une petite image elle sera repété pour remplir le bloc
+            - linear-gradient() : Permet de créer un dégradé
+    */
+    background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+}
+/* ----- */
+.border {
+    border-width: 1px;
+    border-color: #000;
+    border-style: dashed solid; /* 'dashed' tirets, 'dotted' point  */
+    border: 1px solid solid;
+    border-bottom: 1px solid solid;
+    border-top: 1px solid solid;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-width: 1px 3px 2px 5px;
+    border-color: #000 #A91101 #0d6efd #fb9898; /* Pour chaque côté */
+
+    border-radius: 10px; /*
+        - Permet de définir l'arrondi qu'on veut mettre à notre bordure
+            - '100%' fera une sorte d'élispe, complètement arrondi
+    */
+    outline: 10px solid #0d6efd; /*
+        - Permet de mettre une bordure en dehors de l'élément et ne vas pas se rajouter à la taille de l'élément, utile pour les ':focus'
+    */
+}
+/* ----- */
+.shadow {
+    box-shadow: 6px 7px 5px rgba(0, 0, 0, 0.4); /*
+        - Permet de mettre une ombre sur l'élément
+            - Le décalage horizontale de l'ombre
+            - Le décalage verticale de l'ombre
+            - L'adoucissement du dégradé
+            - La couleur de l'ombre
+
+            - On peut rajouter une autre valeur qui celle de l'extension de l'ombre 6px 7px 5px '20px' color
+        - On peut piloter l'ombre dans l'inspecteur
+
+        -- L'adoucissement peut être faible si décalage est < à adoucissement, normal si décalage = à adoucissement et élevé si décalage est > à adoucissement
+    */
+    text-shadow: 6px 7px 0px rgba(0, 0, 0, 0.8); /* Pour mettre une ombre sur un texte */
+}
+/* -- Le défilement des éléments 'overflow' -- */
+.overflow {
+    overflow: visible; /*
+        - 'overflow' un raccourci vers 'overflow-x' et 'overflow-y' qui permettent de gérer le défilement en x et y
+            - hidden : Si le texte depasse les limites de son conteneur il sera caché, on ne verra pas tout le texte
+            - scroll : Il cache et nous donne une barre de defilement pour voir le reste, affiche la scrollbar même si l'élément n'en n'a pas besoin donc pour ça on a 'auto'
+            - auto : Le navigateur met une barre de defilement si nécessaire
+    */
+    /* all: unset; -- Réinitialise toutes les propriétés d'un élément */
+    overflow-wrap: breack-word; /* Pour casser les mots qui depassent leurs bloc */
+
+    scrollbar-gutter: stable; /*
+        - On le met sur le html {} et permet de spécifier comment la scrollbar va apparaître, utile si on ne veut pas que le texte bouge à l'apparition
+            - 'auto' par défaut
+            - 'stable' va réserver la place pour la goutière et éviter le décalage du texte, aussi faire attention car il n'est pas pris en compte par le 'vw'
+    */
+
+    filter: blur(5px) opacity(95%); /*
+        - Permet d'appliquer des effets graphiques à un élément, comme le flou, le contraste ou la luminosité
+            - blur(5px) : Flou de 5 pixels
+            - contrast(%)
+            - grayscale(100%) : Rendre l'image en niveaux de gris
+            - brightness(%) : Ajuste la luminosité
+            - sepia(%) : Applique un effet sépia
+            - invert(%) : Inverse les couleurs
+            - opacity(%) : Ajuste l'opacité
+            - saturate(%) : Augmente ou diminue la saturation
+            - hue-rotate(deg) : Modifie la teinte des couleurs
+    */
+    /* backdrop-filter: blur(5px);  -- */
+}
+/* ----- */
+.position { /* 
+    - Permet de positionner un élément sur la page et même les superposés
+*/
+    position: relative; /*
+        - static : Le positionnement de l'élément dépend du contenu - par défaut
+        - relative : Se comporte comme le 'static' mais on préciser un décalage avec les propriétés top,left,right,bottom
+        - absolute : L'élément est positionner de manière absolue par rapport à un autre élément 'relative' et va de paire avec 4 propriété - top,left,right,bottom, si je lui donne une largeur 'width=100%' ou la hauteur ça va être calculé par rapport à la fenêtre
+        - fixed : Se comporte comme le 'absolute' mais quand on scroll il reste figé par rapport à la fenêtre
+        - sticky : Se comporte comme le 'static' jusqu'au moment ou il sort du cardre il devient fixe jusqu'a ce sort de son parent
+    */
+    top: 0; /* Décalage de l'élément depuis la gauche */
+    left: 0;
+    right: 0; /* Va prendre une largeur de 100% pour s'adapter dans ce cas, marche aussi pour le 'top' et le 'bottom' */
+    z-index: 5; /* Permet d'indiquer quel élément doit apparaître au dessus des autres */
+    /*
+        - Si on précise les 4 valeurs top.. la largeur de l'élément va prendre toute la page mais on a une propriété :
+            - 'inset' qui s'applique au 4, ex: inset: 20px, l'élément va la totalité de la page avec une marge de 20px au allentour et on peut préciser plusieurs valeurs
+
+        - Si 2 éléments en absolue se situe au même endroit ils se supperpose et on peut changer se comportement avec la propriété 'z-index: 4' qui précise quel élément va se situer au dessus, par défaut 'auto' les éléments s'empilent selon l'ordre html
+    */
+}
+
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    color: #A91101;
+    background-color: aliceblue;
+    padding: 10px;
+}
+
+.center-grid {
+    display: grid;
+    place-items: center;
+    min-height: 20vh;
+    background-color: rgb(215, 250, 249);
+}
+/* ----- */
+/*
+    Le 'flexbox' permet de gérer l'alignement sur une dimenssion des éléments dans un conteneur
+        - css-tricks.com/snippets/css/a-guide-to-flexbox : Un récap de tous ce qui est possible
+
+    - Si le conteneur '.flex' est top petit il change la largeur des éléments pour qu'il rentre, pour changer ce comportement on n'a la propriété 'flex-wrap'
+    - Dans le flexbox la fusion des marges ne fonctionne pas
+*/
+.flex {
+    display: flex; /*
+        - On a aussi le 'inline-flex' qui se comporte comme un inline en gardant la logique du flexbox
+    */
+    flex-direction: row; /*
+        - Permet de gérer la direction des éléments dans l'axe
+            - row : Pour organiser les éléments sur une ligne, par défaut
+            - row-reverse : !! en inversé
+            - column : !! sur une colonne
+            - column-reverse : !! en inversé
+    */
+    flex-wrap: wrap; /*
+        - wrap : Permet à un élément d'aller à la ligne s'il n'y a plus d'espace
+        - wrap-reverse : !! au dessus des autres éléments
+        - nowrap : Par défaut
+    */
+    /* flex-flow: row wrap; -- Un raccourci pour le 'flex-direction' et 'flex-wrap' */
+    justify-content: center; /* -- Permet d'alligner les éléments sur l'axe horizontale
+        - flex-start : Les éléments sont allignés au début, par défaut
+        - flex-end : !! à la fin
+        - center : !! au centre
+        - space-between : Les éléments sont étirés sur tout l'axe sans espace entre eux
+        - space-around : !! sur tout l'axe en laissant de l'espace sur les extrémités
+        - space-evenly : Permet d'espacer les éléments de manière uniforme, on n'a toujours le même espace entre les éléments
+
+        -- Avec 'flex-direction: column' le centrage fonctionne de la même façon mais en hauteur
+    */
+    align-items: center; /* -- !! sur l'axe verticale
+        - center : Les éléments sont allignés au centre
+        - stretch : Permet d'agrandir les éléments pour qu'ils remplissent la hauteur du conteneur, n'agit que si les éléments n'ont pas de hauteur, par défaut
+        - flex-start : !! allignés au début, permet aussi d'empêcher un élément inline de s'étendre dans notre flex
+        - flex-end : !! à la fin
+        - baseline : !! par rapport à la ligne de texte
+    */
+    /* align-content: center; -- Permet de spécifier comment les lignes de notre flex vont se placer et fonctionne que si on utilise le 'flex-wrap'
+        - 'flex-start' va crée les lignes dès le debut
+        - 'flex-end' !! à la fin
+    */
+    gap: 5px; /* Permet de mettre des espaces entre les éléments et contient 2 propriétés
+        - 'row-gap' l'espace entre les lignes
+        - 'column-gap' !! colonnes
+    */
+
+    height: 150px;
+}
+
+.flex div {
+    width: 100px;
+    border: 1px solid #CCC;
+    text-align: center;
+}
+
+.flex div:nth-child(1) {
+    order: 4; /* Permet de changer l'ordre d'un élément dans le conteneur */
+    align-self: flex-end; /* On peut changer l'alignement d'un élément et seulement pour un seule */
+
+    flex-grow: 1; /* Permet de spécifier comment s'étend les éléments, par défaut 0 ne s'agrendi pas, 1 va distribué l'espace restant pour cet élement */
+    flex-shrink: 0; /* Pour ne pas que la largeur de l'élément soit mangé et ne reduis pas sa taille, si on met '10' il va se reduire 10x plus que les autres */
+    flex-basis: 50px; /* Par défaut si on ne met rien ce qui est utilisé comme base de calcule de l'espace pour le redimensionnement c'est la largeur des éléments, '50px' sera la base de calcule de cet élément */
+    /* flex: 0 0 240px; -- Un raccourci pour flex-grow,flex-shrink,flex-basis */
+
+    /* flex: none; -- L'élément ne grandira pas et ne se rapetissera pas */
+}
+
+.flex div:nth-child(2) {
+    flex-grow: 1;
+}
+
+.flex div:nth-child(3) {
+    flex-grow: 1; /* Va prendre la largeur qui est resté et le distribuer à ces 2 éléments, si on met '10' il va divisé l'espace en 11 part et celui là reçevra 10 et l'autre 1 */
+}
+/* -- Tp flex -- */
+.banner {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start; /* Pour éviter que les éléments grandissent et seront placés au début du conteneur */
+    height: 200px;
+    padding: 20px;
+    background-color: #f3f1f1;
+}
+
+.banner a {
+    background-color: #0d6efd;
+    color: #FFF;
+    padding: 5px 10px;
+    text-decoration: none;
+    line-height: 1;
+}
+
+.page {
+    display: flex;
+}
+
+.page .main {
+    width: 100%; /* Ou flex: 1 1; */
+}
+
+.page .sidebar {
+    width: 250px;
+    background-color: #f3f1f1;
+
+    flex: none; /* La sidebar aura 250px quoi qu'il arrive */
+}
+/* justif.. space-evenly sur le flex à le même effet que le flex-grow1 sur les enfants */
+
+/*
+    Grid : Une grille utilisée pour placer les éléments enfants, l'avantage est qu'il permet de piloter la disposition de la grille depuis l'élément parent
+        - cssgridgarden.com : Pour pratiquer le grid
+
+    - Si des éléments ont la même position ils vont se superposé sans problème
+    - Dans le grid la fusion des marges ne fonctionne pas
+*/
+.grid {
+    display: grid; /*
+        - On a aussi 'inline-grid' qui se comporte comme un inline en gardant la logique du grid
+    */
+    grid-template-columns: 1fr 1fr 1fr; /* Pour le nombre de colonnes et la largeur de chacune d'entre elles, on peut définir une hauteur pour chacune
+        - 1fr : Pour représenter une fraction, on peut aussi les combinés avec les px, le fr est l'espace restant après avoir pris en compte les autres valeurs
+        - 300px 500px 400px : Pour une largeur en px
+        - repeat(4, 1fr) : Permet de repéter un nombre de fois
+        - repeat(auto-fill, minmax(200px, 1fr)) : Permet de créer autant de colonnes que possible avec une largeur minimum de 200px et maximum de 1fr, utile pour le responsive, pour que le nombre de colonnes s'adapte suivant la taille de l'écran on a 'auto-fill'. On a aussi 'auto-fit' mais qui a du sens que s'il y'a moins d'éléments que de colonnes, il va faire en sorte que les colonnes vides prennent la même largeur que les autres
+    */
+    justify-content: center; /* !! comme pour le flex et si la grille ne prend pas la totalité de la largeur on peut changer ainsi */
+    grid-template-rows: 150px 150px 300px; /*
+        - Pour gérer le nombre les lignes et la hauteur de chacune elles, à utilisé si on n'a pas défini une hauteur pour nos colonnes individuellement 
+    */
+    gap: 5px; /* Permet de créer des espaces entre les éléments */
+
+    grid-auto-flow: row; /* Permet de changer la manière de s'alligner des éléments, permet de spécifier comment les éléments vont être placés dans la grille lorsqu'on ne spécifie pas leur position
+        - row : S'alligne en ligne, par défaut
+        - column : Va remplir les éléments par colonnes
+        - 'row dense' permet de remplir les trous dans la grille, par exemple si on a un élément qui prend 2 colonnes et que le suivant ne peut pas être placé à côté de lui il va le placer dans la ligne suivante s'il y'a de la place
+    */
+
+    grid-auto-columns: 20px; /* Dans le cas ou notre élément est placé dans une colonne qui n'existe pas par défaut le grid va crée les colonnes qui lui manque donc on peut spécifier la manière de créer les nouvelles colonnes
+        - 20px : Les nouvelles colonnes qu'il va créer mésuront 20px
+    */
+    grid-auto-rows: 100px; /* !! les lignes manquantes et leurs largeurs, hauteur */
+
+    /*
+        justify-items: center; -- Pour spécifier comment les éléments vont se placés au sein de la grille dans le cas ou ils ont une largeur ou hauteur défini
+        align-items: center; -- !! sur l'axe verticale  -- On peut les pilotés dépuis l'enfant avec le '-self'
+
+        'place-content' permet de gérer à la fois le 'justify-content' et le 'align-content' en même temps
+        'place-items' pour le 'justify-items' et le 'align-items'
+    */
+
+    /*
+        - '..-content' permet de gérer la disposition de la grille par rapport à son conteneur
+        - '..-items' pour gérer la disposition des éléments à l'intérieur de la grille
+    */
+}
+
+.grid .child { /* Pour spécifier la position d'un enfant dans le grid */
+    grid-column-start: 2; /* Indique la ligne verticale de départ de l'élément */
+    grid-column-end: span 2; /* Indique la ligne verticale d'arrivé de l'élément
+        - span 2 : S'étend sur 2 colonnes
+    */
+    grid-row-start: 1; /* Indique la ligne horizontale de départ de l'élément */
+    grid-row-end: 3; /* Indique la ligne horizontale d'arrivée de l'élément */
+    /*
+        - grid-column: 1 / 4; -- Un raccourci pour grid-column-start,grid-column-end, si on fais '1 / -1' il va s'étendre jusqu'à la dernière colonne vu que la valeur négative par de la droite
+        - grid-row: 1 / span 4; -- Un raccourci pour grid-row-start,grid-row-end
+    */
+    /*
+        justify-self: start; -- permet de gérer la position de l'élément et à un sens si l'élément à une largeur
+        align-self: start; -- !! sur l'axe verticale
+    */
+}
+
+.grid div {
+    border: 1px solid #CCC;
+    background-color: #f3f1f1;
+}
+
+/* -- Tp flex -- */
+.site {
+    display: grid; /* On n'a aussi le 'inline-grid' qui va placé notre grid en inline donc si on met une balise inline il se placera à côté de la grille mais pour ça il faut qu'il est une largeur */
+    grid-template-rows: minmax(100px, auto) 1fr 50px; /* 'minmax' on veut que notre header face 100px de base et s'il n'a de valeur il l'adapte à la hauteur de l'élément, si l'élément est petit il fera 100px sinon il adaptera la largeur */
+    grid-template-columns: 2fr 8fr; /* On peut nommer nos colonnes - [body] 1fr, ensuite dans l'enfant - grid-column-start: body  */
+    gap: 10px;
+
+    grid-template-areas:
+        'header header'
+        'sidebar body'
+        'footer footer'
+    ; /* Permet de définir des zones au niveau du parent et les rempir au niveau de l'enfant et peut être utile pour le responsive */
+    justify-items: center;
+}
+
+.site header {
+    border: 1px solid #CCC;
+    background-color: #f3f1f1;
+
+    /* grid-column: 1 / span 2; -- Ou.. */
+    grid-area: header; /* Va le placer dans la zone 'header' */
+    height: 50px;
+    justify-self: center;
+    align-self: center;
+}
+
+.site main {
+    border: 1px solid #ec9f9f;
+    background-color: #fb9898;
+
+    grid-area: body;
+}
+
+.site aside {
+    border: 1px solid #c8bee7;
+    background-color: #dbf8fb;
+
+    grid-area: sidebar;
+}
+
+.site footer {
+    border: 1px solid #CCC;
+    background-color: #f3f1f1;
+
+    /* grid-column: 1 / span 2; */
+    grid-area: footer;
+}
+
+.bootstrap {
+    display: grid;
+    grid-template: auto / repeat(12, 1fr); /* Un raccourci pour grid-template-rows,grid-template-column */
+}
+
+.bootstrap .col-2 {
+    grid-column-end: span 2;
+}
+
+.bootstrap .col-3 {
+    grid-column-end: span 3;
+}
+
+.bootstrap .col-5 {
+    grid-column-end: span 5;
+}
+
+.bootstrap div {
+    border: 1px solid #CCC;
+    background-color: #f3f1f1;
+}
+/* ----- */
+.float {
+    float: left; /*
+        - right : Permet de positionner un element à droite, il devient floatant et les autres éléments se placent au tour de lui
+        - left : !! à gauche
+    */
+
+    background-color: #A91101;
+    margin-right: 10px;
+}
+
+.clear {
+    clear: both; /*
+        - Pour éffacer les effets de bord du float quand il déborde
+            - 'right' permet de nettoyer les float right
+            - 'left' !! de nettoyer les floats left
+            - 'both' pour les 2
+    */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.hero {
+    height: calc(100vh - 80px); /* Si on veut un background dans hero qui fasse 100vh - la zone du header */
+    font-size: calc(1rem + 3vw); /* 'calc' permet de faire des calcules, ici la police s'agrandira si l'écran grandit */
+    font-size: min(6rem, calc(1rem + 3vw)); /* 'min' prend la valeur minimale entre les deux, on a aussi 'max' pour la valeur maximale */
+    font-size: clamp(2rem, calc(1rem + 3vw), 6rem); /* Prend en 1er paramètre la valeur minimale, en 2ème notre valeur dynamique et en 3ème la valeur maximale, ce qui va bloquer la valeur en 2 et 6 */
+}
+
+.products {
+    display: flex;
+    overflow: auto;
+    scroll-snap-type: x proximity;
+}
+
+.product {
+    scroll-snap-align: center;
+    width: 205px;
+    flex: none; /* Astuce pour un carrousel sur mobile */
+}
+
+
+.dialog {
+    position: fixed; /*
+        - 'fixed' pour que les valeurs de top,left.. soit relatif à l'écran et va suivre l'écran et n'est pas influencé par le postion relative parent
+        - Si on met 'absolute' et qu'il n'y a pas relative au parent automatiquement les positions top,left.. vont se faire par rapport à l'écran visible 
+    */
+    inset: 0; /*
+        - Va se situer au dessus des autres éléments
+    */
+    background-color: #0000000f;
+    z-index: 10;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dialog-body {
+    background-color: #FFF;
+    border-radius: 16px;
+    padding: 1rem;
+}
+
+header { /* Pour que le header suive le scroll mais ne fonctionne pas i l'élément à une largeur ou hauteur de 100% ou align-item à skretch */
+    position: sticky;
+    top: 1rem;
+}
+
+
+/* Les pseudo éléments */
+input::placeholder {
+    color: #0d6efd;
+}
+
+::selection { /* Permet de changer le style de la sélection */
+    color: #4158D0;
+    background-color: #A91101;
+}
+
+ul li::before { /* Avant l'élément */
+    content: '- '; /*
+        - Permet de spécifier le contenu qu'on veut mettre dans ce pseudo élément
+    */
+    background-color: #BF5B36;
+    display: block; /*
+        - Par défaut le '::before' fonctionne en inline
+    */
+    width: 10px;
+    height: 10px;
+}
+
+ul li::after { /* Après l'élément */
+    content: '..';
+}
+
+ol {
+    counter-reset: ol; /*
+        - Pour le cas ou on a des 'ol' imbriqués il va le réinitialisé
+    */
+}
+
+li {
+    counter-increment: ol; /*
+        - A chaque qu'il rencontre un 'li' il incrémente le compteur 'ol'
+    */
+}
+
+ol li::before {
+    content: counter(ol) ". "; /*
+        - Pour avoir un nombre incrémenté, 'attr' 
+        - On peut aussi utiliser 'attr(data-int)' qui utilise la valeur de l'attribut 'data-int' dans le html
+    */
+    margin-right: .5rem;
+}
+
+.required::before { /* utile pour les champs réquis */
+    content: ' *';
+    color: red;
+}
+
+/* Astuce pour affiché le nombre de notification */
+a[data-notification] {
+    position: relative;
+}
+
+a[data-notification]::after {
+    --size: 1rem;
+    content: attr(data-notification);
+    position: absolute;
+    top: -0.5rem; /* On peut le changer en 'calc(var(--size) * -0.5)' */
+    right: -0.5rem;
+    text-align: center;
+    line-height: var(--size); /*
+        - Permet de bien centrer le texte ou 'display: flex, align-items: center, justify-content: center' ou 'display: grid, place-items: center'
+    */
+    border-radius: var(--size);
+    width: var(--size);
+    height: var(--size);
+    color: #FFF;
+    background-color: red;
+    font-size: .8rem; /* Ou.. 'calc(var(--size) * 0.6)' pour une valeur cohérente */
+}
+
+/*
+    Aspect-ratio
+        - La valeur du aspect-ratio n'est pas forcé, elle est une valeur de base donc si l'élément déborde ce ratio n'est plus respecté
+
+    Utile pour les vidéos
+*/
+iframe {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9; /* Permet d'assurer que l'élément garde ce ratio quoi qu'il arrive en largeur et en hauteur */
+    max-width: 900px; /* aspect-ratio est influencé par lui */
+}
+
+.ban {
+    aspect-ratio: 300 / 100;
+    width: 100%;
+    height: auto;
+    object-fit: cover; /* 'contain' si on veut l'image se centre parmi l'élément */
+    min-height: 200px; /* Sur les petits écran l'image ne pourra plus concerver le ratio à cause du min-height */
+}
+
+/* - Média Query - Responsive
+    - Type de média qu'on souhaite supporté
+        - all : Pour tous les appareils
+        - screen : Pour les écrans
+        - print : Pour l'impression et on peut même créer un css dédié
+        - speech : Pour les logiciels de syntèse vocale
+
+    - Caractéristique du média du périphérique de l'utilisateur
+        - width : La largeur de la zone d'affichage
+        - height : La hauteur de la zone d'affichage
+        - aspect-ratio : Le rapport largeur et hauteur de la zone d'affichage
+        - orientation : L'orientation du périphérique de l'utilisateur, portrait ou paysage
+        - resolution : La densité de pixel pour l'appareil d'affichage
+        - scan : Le processus de scan de l'appareil d'affichage
+        - grid : Le type d'écran de l'appareil, matriciel ou grille
+        - ...
+
+    - Opérateurs logiques pour combiner plusieurs règles entre elles
+        - and : Le et
+        - not : Pour inverser une condition
+        - only : Permet d'appliquer un style uniquement si la condition est vérifié
+        - , : Permet de mettre plusieurs règles et si l'une d'entre elle est vrai on considère que tout est vrai
+*/
+@media only screen and (min-width: 576px) {
+}
+@media only screen and (min-width: 768px) {
+}
+@media only screen and (min-width: 992px) {
+}
+@media only screen and (min-width: 1200px) {
+}
+@media only screen and (min-width: 1400px) {
+}
+
+
+
+
+
+
+
+/* -- Card -- */
+body {
+    background-color: #F6F1E8;
+}
+
+.product {
+    width: 350px;
+    border: 1px solid #D9CFC0;
+    background-color: #FFFDF8;
+    border-radius: 1rem;
+    box-shadow: 0 0 2px #3823140F;
+    color: #5F5A53;
+}
+
+.product-img {
+    width: 100%; /*
+        - Va prendre comme largeur celle du parent
+    */
+    height: auto;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+}
+
+.product-body {
+    padding: 1.5rem;
+}
+
+.product-category {
+    font-weight: bold;
+    font-size: .85rem;
+    color: #BF5B36;
+    margin-bottom: 10px;
+}
+
+.product-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 1rem;
+}
+
+.product-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #1C1917;
+}
+
+.product-price {
+    font-weight: bold;
+}
+
+.product-description {
+    line-height: 1.7;
+}
+
+.product-link {
+    color: #1C1917;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.product-link:hover {
+    color: #BF5B36;
+}
+
+
+
+
+/* -- Import et imbrication -- */
+@import "./ui.css" (min-width: 200px); /*
+    - Se fait dès le début du fichier et on peut l'importer que si l'écran fait.. 'L'import conditionné
+*/
+
+.link {
+    text-decoration: none;
+
+    a {
+        padding: 10px;
+
+        &:hover { /*
+                - '&' va être remplacer par le sélecteur précédent '.link a:hover'
+            */
+            color: #000;
+        }
+    } /* Va '.link a' on peut aussi faire '& a' on aura le même résultat  */
+
+    @media (min-width: 100px) { /*
+            - Pour imbriquer des règles média query directement dans l'élément
+        */
+        display: flex;
+    }
+
+    /* '&-right' ne marche pas vu qu'on ne peut pas utiliser le '&' pour créer un nouveau nom */
+}
+
+@layer reset, base, theme; /* Voir 'layer.css' et se place au dessus des 'import' */
+@import './ui.css' layer(base); /* On peut de spécifier le layer correspondant à un import css */
+
+/* -- L'organisartion -- */
+@layer reset, base, layout, components, module, utilities; /*
+    - Vu qu'en terme de performence cette approche fait qu'on vas importer beaucoup de fichiers css différents ce qui peut avoir un impact sur les performences une fois le site en ligne, pour ça il y'a des outils qui peuvent lire notre css et générer un seule fichier css en sortie comme 'Lightning css'
+*/
+:root {
+    --size: 8px;
+}
+
+/* Dans 'visibility.css' */
+.desktop-only {
+    display: none;
+    @media (min-width: 700px) {
+        display: block;
+    }
+}
+
+.bg-red {
+    background-color: red;
+}
+
+.flex {
+    display: flex;
+} /*
+    - On peut procéder ainsi pour gérer l'alignement des éléments mais il y'a l'outil 'tailwind.css' qui fait cette notion
+*/
+.flex-center {
+    align-items: center;
+}

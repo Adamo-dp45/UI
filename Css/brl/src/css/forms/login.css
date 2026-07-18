@@ -1,0 +1,151 @@
+* {
+    box-sizing: border-box;
+}
+
+.container-fb {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 0 15px;
+}
+
+.facebook-page {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; 
+    max-width: 1000px;
+    width: 100%;
+}
+
+.facebook-page .text {
+    margin-bottom: 90px;
+}
+
+.facebook-page h1 {
+    font-size: 4rem;
+    color: #1877f2;
+    margin-bottom: 10px;
+}
+
+.facebook-page p {
+    font-size: 1.7rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    width: 100%;
+    background: #FFF;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+form input {
+    height: 55px;
+    width: 100%;
+    padding: 0 15px;
+    border: 1px solid #CCC;
+    border-radius: 6px;
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #1877f2;
+}
+
+::placeholder {
+    color: #777;
+    font-size: 1.063rem;
+}
+
+.login-link {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+}
+
+.login-link .login-btn {
+    padding: 15px 0;
+    outline: none;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    background: #1877f2;
+    border-radius: 6px;
+    color: #FFF;
+    cursor: pointer;
+    transition: .3s ease-in-out;
+}
+
+.login-link .login-btn:hover {
+    background: #0d65d9;
+}
+
+form a {
+    text-decoration: none;
+}
+
+.login-link .forgot-password {
+    color: #1877f2;
+    font-size: 0.875rem;
+}
+
+.login-link .forgot-password:hover {
+    text-decoration: underline;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background: #CCC;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.create-acount {
+    margin-top: 25px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.create-acount a {
+    padding: 15px 20px;
+    background: #42b72a;
+    border-radius: 6px;
+    color: #FFF;
+    font-size: 1.063rem;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+
+.create-acount a:hover {
+    background-color: #3ba626;
+}
+
+@media only screen and (max-width: 900px) {
+    .facebook-page {
+        flex-direction: column;
+        text-align: center;
+    }
+    .facebook-page .text {
+        margin-bottom: 30px;
+    }
+}
+
+@media only screen and (max-width: 460px) {
+    .facebook-page h1 {
+        font-size: 3.5rem;
+    }
+    .facebook-page p {
+        font-size: 1.3rem;
+    }
+    form {
+        padding: 15px;
+    }
+}

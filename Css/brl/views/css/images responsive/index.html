@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Responsive</title>
+    <link rel="stylesheet" href="./css-mobile.css">
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    img {
+        width: 100%;
+    }
+</style>
+<body>
+
+    <picture>
+        <!--
+            Ici j'ai 1x car le navigateur prend en compte le nombre de pixel, sur un android il chargera le 1x, mais si j'en mais une image meilleur avec 2x - Comme le cas des iphone, il chargera le 2x, On appelle ca le ratio de pixel
+        -->
+        <source media="(max-width: 500px)" srcset="image_petit.jpg 1x">
+        <img srcset="image.jpg 6000w, image_moyen.jpg 2000w" src="./image.jpg" height="200px" style="margin-bottom: 100px;" alt="">
+    </picture>
+
+    <picture>
+        <source media="(max-width: 500px)" srcset="image_petit.jpg">
+        <source media="(max-width: 700px)" srcset="image_moyen.jpg">
+        <source media="(max-width: 1100px)" srcset="image.jpg">
+        <img src="image.jpg" alt="">
+    </picture>
+    <!--
+        <img
+            srcset="image.jpg 6000w, image_moyen.jpg 2000w, image_petit.jpg 300w"
+            src="./image.jpg" width="100%" height="200px" alt="">
+
+        - 'picture' est une 2ème manière de faire les choses
+    -->
+
+    <img
+        srcset="image.jpg 1100w, image_moyen.jpg 700w, image_petit.jpg 400w"
+        sizes="(max-width: 400px) 400w, (max-width: 700px) 7000w, (max-width:1100px) 1100w, 1920w" 
+        src="./image.jpg" width="100%" height="200px" alt="">
+    <!-- 1920w : Ou l'au dela -->
+    <div class="text">
+        Mon texte 
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,400 @@
+* {
+    box-sizing: border-box;
+}
+
+body, html {
+    font-size: 18px;
+    color: rgba(0, 0, 0, .87);
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.topbar {
+    position: fixed; /* Permet aussi de dégager les flotants, ou overflow: hidden */
+    top: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    padding: 30px;
+    z-index: 3;
+}
+
+.topbar nav {
+    float: left;
+}
+
+.topbar nav a {
+    color: #9F9F9F;
+    text-decoration: none;
+    font-weight: 500;
+    margin: 0 53px;
+    transition: color .5s;
+}
+
+.topbar nav a:hover, .topbar .active {
+    color: #000;
+}
+
+.social {
+    float: right;
+}
+
+.social a {
+    padding: 0 12px;
+    opacity: .5;
+    transition: opacity .3s;
+}
+
+.social a:hover {
+    opacity: 1;
+}
+
+.banniere {
+    height: 450px;
+    background: no-repeat center center / cover url('./img/wallhaven-8o8xxy.jpg');
+}
+
+.container {
+    margin: 0 auto;
+    max-width: 940px;
+}
+
+.main {
+    float: left;
+    background: #FFF;
+    width: calc(100% - 375px); /* Permet de faire un calcule de largeur */
+    box-shadow: 0 4px 30px rgba(0, 0, 0, .05); /* Permet de donner une ombre, x,y,blur,color */
+    position: relative;
+    z-index: 2; /* Pour que le z-index soit pris en compte il faut mettre l'élément en relative quand on n'a un float */
+}
+
+.sidebar {
+    float: right;
+    background-color: #FBFBFB;
+    width: 375px;
+    padding: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar-title {
+    font-size: 30px;
+    color: #000;
+    margin: 15px 0;
+}
+
+.sidebar-title:first-child {
+    margin-top: 0;
+}
+
+.sidebar a {
+    color: #9F9F9F;
+    text-decoration: none;
+}
+
+.sidebar a:hover {
+    text-decoration: underline;
+    color: #000;
+}
+
+.sidebar hr  {
+    /* border: 1px solid #C4C4C4; */
+    border: none;
+    background-color: #C4C4C4;
+    height: 1px;
+    margin: 50px 0;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 17px;
+}
+
+.sidebar li {
+    padding: 6px 0;
+}
+
+.sidebar li:first-child {
+    padding-top: 0;
+}
+
+.sidebar li:last-child {
+    padding-bottom: 0;
+}
+
+/*
+    .sidebar ul {
+        counter-reset: sidebarList; -- Dès que tu rencontre cet élément je veux que tu reset le compteur
+    }
+
+    .sidebar li::before {
+        counter-increment: sidebarList; -- Dès que tu rencontre cet élément je veux que tu incrémente le compteur
+        content: counter(sidebarList) '. ';
+    }
+*/
+
+.sidebar li a::after {
+    content: attr(data-count); /* Pour utiliser la valeur de cet attribut depuis le HTML */
+    float: right;
+    background: gray;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    color: #FFF;
+    border-radius: 25px;
+    font-size: .8rem;
+    font-weight: bold;
+    line-height: 25px;
+}
+
+.article {
+    position: relative;
+    margin: 50px 0;
+    padding-left: 333px; /* Largeur de mon image + le padding prevue */ 
+    min-height: 203px; /* On veut que l'article face au minimum la hauteur prévue pour notre image */
+}
+
+.article-img {
+    /* float: left; */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 308px;
+    margin-right: 25px;
+}
+
+.article-img img {
+    width: 100%;
+    height: auto;
+}
+
+.article-date {
+    font-weight: 300;
+    color: rgba(0, 0, 0, .6);
+    margin-bottom: 2px;
+}
+
+.article-title {
+    font-size: 2.25rem;
+    margin: 0 0 12px 0;
+}
+
+.article a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.article a:hover {
+    text-decoration: underline;
+}
+
+footer {
+    clear: both;
+}
+
+blockquote {
+    background-color: rgba(0, 0, 0, .1);
+    padding: 10px;
+    position: relative;
+}
+
+blockquote::before {
+    content: '"';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    font-size: 60px;
+    line-height: 1.4rem;
+}
+
+blockquote::after {
+    content: '"';
+    position: absolute;
+    bottom: -26px;
+    right: 5px;
+    font-size: 60px;
+    line-height: 1.4rem;
+}
+
+/* --- Transform : Permet de transformer les objets avec de fonctions de transformations
+
+    - L'ordre des transformations est importante
+    - On peut utiliser les fonctions de manière individuel comme des propriétés
+    - Si on des enfants avec des z-index dans un élément transformé les z-index ne vont plus être rélatif au document mais à leur parent
+--- */
+.article-img {
+    transform: rotateY(30deg); /* L'avantage des transformations est que notre élément va être déplacer sans changé la structure du HTML contrairement au position et donne de meilleur performence
+        - rotate(80deg) : Permet de faire une rotation dans le sens des aiguilles d'une montre, on peut utiliser le turn qui indique le nombre de tour, 1turn = 360deg, on n'a aussi rotateX(), rotateY(), rotateZ() un axe qui est de l'écran vers nous, rotate3d().. si on utilise la 3d on doit avoir la perspective sur le parent pour savoir ou est placé la caméra et positionné les éléments correctement
+        - translate(100px, 100px) : Pour déplacer un élément par rapport à sa position original, Permet de changer la valeur en x et y, on n'a aussi translateX(), translateY(), translateZ(), translate3d()
+            - La valeur peut être en 'vw' et autre mais pour le '%' ce n'est forçement exprimer par rapport à la taille du parent mais sont relatif à la taille de l'élément
+        - scale(2) : Permet de zoomer, on peut changer la valeur du x et y scale(0.5, 1), on n'a aussi scaleX(), scaleY(), scaleZ(), scale3d()
+        - skew(30deg) : Pour donner un effet d'oblige, on n'a aussi skewX(), skewY()
+    */
+    transform-origin: left top; /* Permet de spécifier l'origine de la transformation, la rotation se fera à partir de la gauche et le haut on peut aussi 'px', par defaut le transform s'applique au centre et influe que le scale(), rotate() */
+    /* transform-style: flat; -- Permet d'indiquer comment les éléments vont être influés par rapport à leur parent */
+}
+
+.article-img:hover {
+    transform: scale(1.1) rotate(10deg) skew(20deg) translate3d(0, 0, 30px); /*
+        - translate3d(x,y,z) : Prend 3 valeurs et la 3éme indique la profondeur et prend en compte la propriété 'perspective' qui permet d'indiquer à quel point la caméra qui est représenté par l'écran est proche du centre et sert aussi pour la rotation
+    */
+}
+
+.article {
+    perspective: 500px; /* Pour pouvoir exprimer la profondeur du genre bouger la caméra par rapport à l'élément */
+    perspective-origin: top center; /* Point principal de la perpective */
+}
+
+.article-img span {
+    background-color: red;
+    color: #FFF;
+    border-radius: 50%;
+    padding: 5px 15px;
+    font-weight: bold;
+
+    position: absolute;
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%); /* Dans le cas du transform les % font reférence par rapport à la largeur de l'élément contrairement au top,left.. au parent */
+}
+
+.article-img .layer {
+    background-color: green;
+    color: #FFF;
+    border-radius: 50%;
+    padding: 5px 15px;
+    font-weight: bold;
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* --- Transition ou Animation --- */
+.article-im {
+    transition: transform ease-in-out .5s; /* Le principe des transitions est de dire au css lorsque tu vas passé d'une valeur à l'autre, plutôt que de le faire brutalement je veux que tu anime les choses
+        - transform ease-in-out .5s .7s : La propriété qu'on veut animé, 'ease-in-out' si on veut indiquer l'acceleration et la decceleration, ensiuite la durée et le delai
+            - On n'a aussi pour la fonction d'animation ease, ease-in, ease-out ou cubic-bezier(..)
+        - color .3s : Pour la couleur
+        - all .3s : Pour toute les propriétés, on peut omettre le all
+    */
+    transition-delay: 1s; /* Permet de spécifier un délai avant de commencer l'animation */
+    /*
+        - 'transition' est un raccourci pour ces propriétés
+            - transition-property: color; -- Les propriétés à transitionnés
+            - transition-duration: .3s; -- La durée
+            - transition-delay: 1s; -- Le délai
+            - transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1); -- La fonction d'animation pour définir comment l'animation se joue
+                - 'linear', 'ease'..
+    */
+}
+
+/* L'animation ne fonctionne pas sur le 'display' mais pour y remédier on a une propriété 'transition-behavior' qui permet de spécifier le comportant de notre transition
+    - 'allow-discrete' quand le display passe de block à none il ne passera à none qu'à la fin de l'animation
+    Mais ne fonctionne pas à l'apparition pour ça on a le '@starting-style' qui permet de choisir le point de démarrage d'un élément lorsqu'on a un éffet d'animation et on peut le mettre à l'intérieur de notre sélecteur
+*/
+@starting-style {
+    .article-im {
+        opacity: 0;
+        transform: scale(1);
+    }
+}
+
+.article-img {
+    animation: slideDown 4s;
+    animation-delay: 2s; /* Permet de lui d'attendre avant de commencer l'animation */
+    animation-iteration-count: infinite; /* Le nombre de fois que l'animation doit se dérouler ou le mettre en 3eme paramètre de 'animation' */
+    animation-direction: reverse; /* La direction de l'animation, dans ce cas commence par le 'to' */
+    /* animation-fill-mode: both; -- Pas utile quand on utilise le 'infinite' */
+
+    /*
+        - 'animation' est un raccourci pour ces propriétés
+            - animation-name: slideDown; -- Nom de l'animation
+            - animation-duration: 2s; -- La durée de l'animation
+            - animation-timing-function: ease-in-out; -- La fonction d'animation
+            - animation-delay: 1s; -- Le délai avant l'animation
+            - animation-iteration-count: infinite; -- Le nombre de fois que l'animation doit se dérouler, on peut mettre un nombre '3'
+            - animation-direction: reverse; -- La direction de l'animation, par défaut normal
+            - animation-fill-mode: both; -- Permet d'indiquer une fois qu'il a fini quel valeur il doit prendre
+                - none : L'animation n'applique aucun style à la fin, par défaut
+                - backwards : Prend les valeurs appliqués au début de l'animation
+                - forwards : Garde les dernières valeurs de l'animation
+                - both : Applique suivant la situation la bone fin, par défaut prend la fin mais si on utilise un direction reverse prend le début
+    */
+}
+
+.article-img:hover {
+    animation-play-state: paused; /* Permet de mettre en pause une animation */
+}
+
+@keyframes slideDown {
+    0% {
+        transform: translateY(200px);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-200px);
+        opacity: 0;
+    }
+}
+
+/*
+    @keyframes slideDown {
+        from { -- Les valeurs que prennet l'element au départ de l'animation
+            transform: translateY(200px);
+            opacity: 0;
+        }
+        to { -- Les valeurs que prennet l'element à la fin de l'animation
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+*/
+
+
+svg {
+    animation-name: spinner;
+    animation-duration: 1s;
+    animation-timing-function: linear; /*
+        - Pour éviter l'éffet de progression à la fin et à l'arriveé
+    */
+    animation-iteration-count: infinite;
+}
+
+@keyframes spinner {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes hithere { /*
+        - animation: hithere 2s infinite;
+    */
+    30% {
+        transform: scale(1.2);
+    }
+    40%, 60% {
+        transform: rotate(-20deg) scale(1.2);
+    }
+    50% {
+        transform: rotate(20deg) scale(1.2);
+    }
+    70% {
+        transform: rotate(0) scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}

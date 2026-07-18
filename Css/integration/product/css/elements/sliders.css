@@ -1,0 +1,35 @@
+.slider-navigation {
+    display: flex;
+    gap: 12px;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.slider-navigation button {
+    border: 1px solid var(--category-border);
+    background-color: var(--text-inverse);
+    width: 60px;
+    height: 60px;
+    border-radius: 60px;
+
+    display: grid;
+    place-items: center;
+    color: var(--nav-color);
+    transition: .3s;
+
+    &:hover {
+        border-color: var(--contrast);
+        color: var(--contrast);
+    }
+
+    svg {
+        width: 23px;
+        height: 17px;
+    }
+
+    &:disabled {
+        opacity: .3;
+        pointer-events: none; /* La souris ne peut pas plus cliqué dessus */
+    }
+}

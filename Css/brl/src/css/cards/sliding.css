@@ -1,0 +1,57 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #222;
+}
+
+.wrapper {
+    width: 100%;
+    max-width: 600px;
+    height: 400px;
+    background-color: red;
+    display: flex;
+    align-items: stretch; /* -- */
+    justify-content: center;
+    gap: 1.2rem;
+    transition: .4s;
+}
+
+.wrapper .card {
+    flex: 1;
+    height: 100%;
+    background-color: beige;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+    transition: .4s;
+}
+
+.wrapper .card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.wrapper .card:hover {
+    flex: 4;
+}
+
+.wrapper .card:nth-child(even) {
+    translate: 0 20px;
+}
+
+.wrapper .card:nth-child(odd) {
+    translate: 0 -20px;
+}
+
+.wrapper:hover .card:not(:hover) {
+    filter: grayscale(100%);
+}

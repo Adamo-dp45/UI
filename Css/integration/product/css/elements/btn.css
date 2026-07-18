@@ -1,0 +1,178 @@
+.btn-bordered,
+.btn-filled,
+.btn-bordered-white,
+.btn-bordered-grey {
+    display: inline-flex; /* Nous permet de centrer les enfants du bouton correctement */
+    align-items: center;
+    gap: .5rem;
+
+    font-size: 1.125rem;
+    line-height: 1.56;
+    font-weight: 500;
+    padding: 0.75rem 2.25rem; /* Relatif à la taille de la police */
+    border-radius: 2rem;
+    color: var(--contrast);
+    border: 1px solid var(--contrast);
+    background: transparent;
+    transition: .3s;
+    width: max-content; /* Même si il est déjà dessus par défaut dans le cas des liens */
+
+    @media (min-width: 1100px) {
+        padding-block: 1.125rem;
+    }
+
+    &:hover {
+        background-color: var(--contrast);
+        color: var(--text-inverse);
+    }
+
+    svg {
+        width: 1.375rem;
+        height: 1.375rem;
+    }
+}
+
+.btn-filled {
+    background-color: var(--contrast);
+    color: var(--text-inverse);
+    border-color: var(--contrast-border);
+
+    &:hover {
+        background-color: var(--text-inverse);
+        color: var(--contrast);
+    }
+}
+
+.btn-bordered-grey {
+    border-color: var(--text-light);
+    color: var(--text-light);
+}
+
+.btn-bordered-white {
+    color: var(--text-inverse);
+    border-color: var(--text-inverse);
+
+    &:hover {
+        background-color: var(--text-inverse);
+        border-color: var(--text-inverse);
+        color: var(--contrast);
+    }
+}
+
+.btn-icon,
+.btn-square {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+
+    border-radius: 44px;
+    border: 1px solid var(--border);
+    transition: .3s;
+
+    &[aria-disabled="true"] {
+        opacity: .3;
+        pointer-events: none; /* Pour rendre l'élément désactiver même au survol */
+    }
+
+    &[aria-selected="true"] {
+        background-color: var(--contrast)!important;
+        color: var(--text-inverse)!important;
+    }
+
+    &:hover {
+        border-color: var(--contrast);
+        color: var(--contrast);
+    }
+
+    svg {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.btn-square {
+    border-radius: 14px;
+}
+
+.btn-like {
+    z-index: 3;
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 100%;
+    display: grid;
+    place-items: center; /* Centrer l'élément enfant */
+
+    position: absolute;
+    top: 16px; /* En pixel vu que les unités n'était pas en rem */
+    right: 16px;
+    transition: .3s;
+    --icon-size: 14px;
+
+    svg {
+        width: var(--icon-size);
+        height: var(--icon-size);
+    }
+
+    &:hover {
+        color: var(--price);
+        transform: scale(1.1);
+        background: rgba(255, 255, 255, 0.6);
+    }
+
+    &.is-bigger {
+        width: 40px;
+        height: 40px;
+        --icon-size: 16px;
+    }
+
+    @media (min-width: 1100px) {
+        width: 48px;
+        height: 48px;
+        top: 28px;
+        right: 28px;
+        --icon-size: 21px;
+
+        &.is-bigger {
+            width: 60px;
+            height: 60px;
+            --icon-size: 26px;
+        }
+    }
+
+}
+
+.btn-icon-text {
+    border-radius: 14px;
+    background-color: var(--text-inverse);
+    border: 1px solid var(--border);
+    font-weight: 500;
+    padding: 6px 28px 6px 6px;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+
+    &:hover {
+        border-color: var(--contrast);
+    }
+
+    span {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background-color: var(--contrast-light);
+        display: grid;
+        place-items: center;
+        color: var(--contrast);
+    }
+
+    svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    @media (min-width: 1100px) {
+        font-size: 1.125rem;
+    }
+}

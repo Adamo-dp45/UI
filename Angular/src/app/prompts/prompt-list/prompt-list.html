@@ -1,0 +1,41 @@
+@if (loading()) {
+    <div class="flex justify-content-center py-6">
+        <p-progress-spinner /> <!--
+            - Pour modifier le style on 'app.config.ts'
+        -->
+    </div>
+} @else {
+    @for (prompt of promptsT(); track prompt.id) {
+        <!--
+            <div style="border: 1px solid black; margin-bottom: 1rem; padding: 1rem;">
+                <div>{{ prompt.title }} par {{ prompt.author.username }} <button>Edit</button><button>Copier</button></div>
+                <textarea name="" style="width: 100%;" rows="8" id="" readonly>
+                    {{ prompt.content }}
+                </textarea>
+                <div>
+                    <span>{{ prompt.category.name }}</span>
+                    <button>Upvote</button>
+                    <span>{{ prompt.score }}</span>
+                    <button>Downvote</button>
+                </div>
+            </div>
+        -->
+        <app-prompt-card [prompt]="prompt"></app-prompt-card> <!--
+            - '[prompt]' vu que c'est un input on doit binding '[]'
+        -->
+    }
+}
+
+@for (prompt of prompts$ | async; track prompt.id) {
+    <div>
+        {{ prompt.title }}
+    </div>
+}
+
+<hr class="mb-2">
+
+@for (prompt of prompts(); track prompt.id) {
+    <div>
+        {{ prompt.title }}
+    </div>
+}

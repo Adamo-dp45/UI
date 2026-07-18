@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product | Pretium</title>
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=montserrat:400,500,600,700,800" rel="stylesheet"/>
+    <link rel="stylesheet" href="./css/app.css">
+</head>
+<body>
+
+    <header class="topbar container">
+        <div class="topbar_top">
+            <a href="menu.html" class="btn-icon" title="Ouvrir le menu">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 19.5 13.9">
+                    <g fill="currentColor" fill-rule="evenodd">
+                        <path d="M0 .8C0 .3.3 0 .8 0h9.4a.8.8 0 0 1 0 1.5H.8A.8.8 0 0 1 0 .7ZM0 7c0-.5.3-.8.8-.8h18a.8.8 0 0 1 0 1.5H.8a.8.8 0 0 1-.8-.8ZM0 13.1c0-.4.3-.7.8-.7h9.4a.8.8 0 0 1 0 1.5H.8A.8.8 0 0 1 0 13Z"/>
+                    </g>
+                </svg>
+            </a>
+            <a href="index.html" class="topbar_logo">
+                <img src="./img/logo.svg" alt="Logo Pretium" width="148" height="43">
+            </a>
+            <a href="search.html" class="btn-icon" title="Rechercher un produit">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 22.2 22.2">
+                    <g fill="currentColor" fill-rule="evenodd">
+                        <path d="M9.6.8a8.8 8.8 0 1 0 0 17.6A8.8 8.8 0 0 0 9.6.8Zm-7 8.8a7 7 0 1 1 14 0 7 7 0 0 1-14 0Z"/>
+                        <path d="M17.3 16a.9.9 0 0 0-1.3 1.3l1.7 1.7a.9.9 0 0 0 1.3-1.3L17.3 16Z"/>
+                    </g>
+                </svg>
+            </a>
+            <div class="topbar_right">
+                <form action="" class="topbar_search">
+                    <input type="search" placeholder="Rechercher un produit, une marque..."
+                        aria-label="Rechercher un produit, une marque...">
+                    <button type="submit" title="Rechercher">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 22.21 22.21">
+                            <g fill="currentColor" fill-rule="evenodd">
+                                <path d="M10.6425.851C5.2348.851.851 5.2348.851 10.6425c0 5.4076 4.3838 9.7914 9.7915 9.7914 5.4076 0 9.7914-4.3838 9.7914-9.7914 0-5.4077-4.3838-9.7915-9.7914-9.7915ZM2.851 10.6425c0-4.3032 3.4883-7.7915 7.7915-7.7915 4.3031 0 7.7914 3.4883 7.7914 7.7915 0 4.3031-3.4883 7.7914-7.7914 7.7914-4.3032 0-7.7915-3.4883-7.7915-7.7914Z"/>
+                                <path d="M19.2151 17.8009c-.3905-.3905-1.0237-.3905-1.4142 0-.3905.3905-.3905 1.0237 0 1.4142l1.8508 1.8508c.3905.3906 1.0237.3906 1.4142 0 .3906-.3905.3906-1.0236 0-1.4142l-1.8508-1.8508Z"/>
+                            </g>
+                        </svg>
+                    </button>
+                </form>
+                <div class="topbar_actions">
+                    <a href="#" class="btn-bordered">Vendez vos objets</a>
+                    <a href="#" class="btn-bordered-grey">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 26 26">
+                            <g fill="currentColor" fill-rule="evenodd">
+                                <path d="M13 1.2A5.8 5.8 0 1 0 18.8 7c0-3.2-2.6-5.8-5.8-5.8ZM9.2 7a3.8 3.8 0 1 1 7.6 0 3.8 3.8 0 0 1-7.6 0Z"/>
+                                <path d="M19.2 15a10.9 10.9 0 0 0-6-1.7 11 11 0 0 0-6 1.6c-1.5 1-2.4 2.5-2.4 4 0 1.6.9 3 2.4 4 1.7 1.2 3.9 1.7 6 1.7s4.3-.5 6-1.6c1.5-1 2.4-2.5 2.4-4 0-1.6-1-3-2.4-4ZM6.8 19c0-.8.4-1.7 1.5-2.4a9 9 0 0 1 4.9-1.3c1.8 0 3.6.4 4.8 1.3 1.1.7 1.6 1.6 1.6 2.3 0 .8-.5 1.7-1.6 2.4-1.2.9-3 1.3-4.8 1.3-1.8 0-3.6-.4-4.9-1.3-1-.7-1.5-1.6-1.5-2.3Z"/>
+                            </g>
+                        </svg>
+                        Se connecter
+                    </a>
+                </div>
+            </div>
+        </div>
+        <ul class="topbar_nav">
+            <li><a href="#">Immobilier</a></li>
+            <li><a href="#">Mode</a></li>
+            <li><a href="#" aria-current="true">Véhicules</a></li>
+            <li><a href="#">Locations</a></li>
+            <li><a href="#">Emploi</a></li>
+            <li><a href="#">Famille</a></li>
+            <li><a href="#">Électronique</a></li>
+            <li><a href="#">Loisirs</a></li>
+            <li><a href="#">Jeux vidéos</a></li>
+            <li><a href="#">Autres</a></li>
+        </ul>
+
+    </header>
+
+    <main class="product-page container">
+        <header class="product-page_header">
+            <picture>
+                <source
+                    srcset="./img/product.jpg"
+                    media="(min-width: 850px)"
+                >
+                <img src="./img/product.jpg"
+                    alt=""
+                    width="354"
+                    height="330"
+                    class="product-page_image">
+            </picture>
+            <div class="image-slider">
+                <button class="btn-icon" title="Images précédentes" aria-disabled="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 26 26"
+                        style="transform: rotate(180deg)">
+                        <g fill="currentColor" fill-rule="evenodd">
+                            <path d="M16.1633 5.8937a.75.75 0 0 0-1.0606 1.0606l6.0455 6.0455-6.0455 6.0455a.75.75 0 0 0 1.0606 1.0607l6.5759-6.5758a.75.75 0 0 0 0-1.0607l-6.5759-6.5758Z"/>
+                            <path d="M3.042 13a.75.75 0 0 1 .75-.75h18.2325a.75.75 0 0 1 0 1.5H3.792a.75.75 0 0 1-.75-.75Z"/>
+                        </g>
+                    </svg>
+                </button>
+                <div class="image-slider_wrapper">
+                    <button aria-current="true">
+                        <img src="./img/product-slider.jpg" width="53" height="53" alt="">
+                    </button>
+                    <button data-repeat="8">
+                        <img src="./img/product-slider.jpg" width="53" height="53" alt="">
+                    </button>
+                </div>
+                <button class="btn-icon" title="Images suivantes">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 26 26">
+                        <g fill="currentColor" fill-rule="evenodd">
+                            <path d="M16.1633 5.8937a.75.75 0 0 0-1.0606 1.0606l6.0455 6.0455-6.0455 6.0455a.75.75 0 0 0 1.0606 1.0607l6.5759-6.5758a.75.75 0 0 0 0-1.0607l-6.5759-6.5758Z"/>
+                            <path d="M3.042 13a.75.75 0 0 1 .75-.75h18.2325a.75.75 0 0 1 0 1.5H3.792a.75.75 0 0 1-.75-.75Z"/>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+            <div class="product-page_detail">
+                <h1 class="section-title">Lit avec tête de lit en tissu gris</h1>
+                <div class="product-page_review text-title">
+                    <div class="stars">
+                        <svg data-repeat="5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path fill="currentColor" fill-rule="evenodd"
+                                d="m13.7299 3.5095 1.76 3.52c.24.49.88.96 1.42 1.05l3.19.53c2.04.34 2.52 1.82 1.05 3.28l-2.48 2.48c-.42.42-.65 1.23-.52 1.81l.71 3.07c.56 2.43-.73 3.37-2.88 2.1l-2.99-1.77c-.54-.32-1.43-.32-1.98 0l-2.99 1.77c-2.14 1.27-3.44.32-2.88-2.1l.71-3.07c.13-.58-.1-1.39-.52-1.81l-2.48-2.48c-1.46-1.46-.99-2.94 1.05-3.28l3.19-.53c.53-.09 1.17-.56 1.41-1.05l1.76-3.52c.96-1.91 2.52-1.91 3.47 0Z"/>
+                        </svg>
+                    </div>
+                    ( 5.0 review )
+                </div>
+                <div class="product-page_price-quantity">
+                    <div class="product-page_price">
+                        <div class="text-price">299.00 €</div>
+                        <del class="text-label">350.00 €</del>
+                    </div>
+                    <div class="product-page_quantity">
+                        <button>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <path fill="currentColor" fill-rule="evenodd"
+                                    d="M5.25 12a.75.75 0 0 1 .75-.75h12a.75.75 0 0 1 0 1.5H6a.75.75 0 0 1-.75-.75Z"/>
+                            </svg>
+                        </button>
+                        <span>01</span>
+                        <button>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <g fill="currentColor" fill-rule="evenodd">
+                                    <path d="M5.25 12a.75.75 0 0 1 .75-.75h12a.75.75 0 0 1 0 1.5H6a.75.75 0 0 1-.75-.75Z"/>
+                                    <path d="M12 5.25a.75.75 0 0 1 .75.75v12a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Z"/>
+                                </g>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn-bordered">
+                    Acheter ce produit
+                </button>
+                <div class="product-page_infos">
+                    <div class="text-title medium">
+                        En savoir plus
+                    </div>
+                    <a href="#" class="btn-icon-text">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5">
+                                    <path d="M3.01 11.22v4.49C3.01 20.2 4.81 22 9.3 22h5.39c4.49 0 6.29-1.8 6.29-6.29v-4.49"/>
+                                    <path d="M12.0001 12c1.83 0 3.18-1.49 3-3.32l-.66-6.68h-4.67l-.67 6.68c-.18 1.83 1.17 3.32 3 3.32 0 0 0 0 0 0Z"/>
+                                    <path d="M18.31 12c2.02 0 3.5-1.64 3.3-3.65l-.28-2.75C20.97 3 19.97 2 17.35 2H14.3l.7 7.01c.17 1.65 1.66 2.99 3.31 2.99 0 0 0 0 0 0ZM5.6401 12c1.65 0 3.14-1.34 3.3-2.99l.22-2.21.48-4.8h-3.05c-2.62 0-3.62 1-3.98 3.6l-.27 2.75c-.2 2.01 1.28 3.65 3.3 3.65 0 0 0 0 0 0ZM12 17c-1.67 0-2.5.83-2.5 2.5V22h5v-2.5c0-1.67-.83-2.5-2.5-2.5 0 0 0 0 0 0Z"/>
+                                </g>
+                            </svg>
+                        </span>
+                        Voir la boutique
+                    </a>
+                    <a href="#" class="btn-icon-text">
+                        <span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 26 26">
+                                <g fill="currentColor" fill-rule="evenodd">
+                                    <path d="M13.0003 1.317C6.5726 1.317 1.317 6.5726 1.317 13.0003c0 6.4278 5.2556 11.6834 11.6833 11.6834 6.4278 0 11.6834-5.2556 11.6834-11.6834 0-6.4277-5.2556-11.6833-11.6834-11.6833ZM3.017 13.0003c0-5.4889 4.4944-9.9833 9.9833-9.9833s9.9834 4.4944 9.9834 9.9833-4.4945 9.9834-9.9834 9.9834c-5.4889 0-9.9833-4.4945-9.9833-9.9834Z"/>
+                                    <path d="M13 7.817a.85.85 0 0 1 .85.85v5.4167a.85.85 0 0 1-1.7 0V8.667a.85.85 0 0 1 .85-.85ZM11.744 17.333c0-.6904.5596-1.25 1.25-1.25h.0097c.6904 0 1.25.5596 1.25 1.25s-.5596 1.25-1.25 1.25h-.0097c-.6904 0-1.25-.5596-1.25-1.25Z"/>
+                                </g>
+                            </svg>
+                        </span>
+                        Voir plus de détail
+                    </a>
+                    <a href="#" class="btn-icon-text">
+                        <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 26 26">
+                            <g fill="currentColor" fill-rule="evenodd">
+                                <path d="M8.358 11.375a.85.85 0 0 1 .85-.85h7.5833a.85.85 0 1 1 0 1.7H9.208a.85.85 0 0 1-.85-.85Z"/>
+                                <path d="M7.5837 1.783c-1.8182 0-3.3994.6098-4.5282 1.7385-1.1287 1.1288-1.7385 2.71-1.7385 4.5282v6.5c0 1.8181.6098 3.3993 1.7385 4.5281 1.1288 1.1288 2.71 1.7385 4.5282 1.7385H11.66l4.6063 3.064.0008.0005c1.2761.8498 2.9999-.0573 2.9999-1.607v-1.5036c1.4605-.1613 2.7291-.7434 3.6781-1.6924 1.1288-1.1288 1.7386-2.71 1.7386-4.5281v-6.5c0-1.8182-.6098-3.3994-1.7386-4.5282-1.1288-1.1287-2.7099-1.7385-4.5281-1.7385H7.5837Zm5.3333 17.4756-1 1v-.0001l1-.9999Zm4.2916 3.2067-4.8208-3.2067a.85.85 0 0 0-.4708-.1423H7.5837c-1.4319 0-2.559-.4735-3.326-1.2406-.7671-.767-1.2407-1.8942-1.2407-3.326v-6.5c0-1.4319.4736-2.559 1.2406-3.326.767-.7671 1.8942-1.2407 3.326-1.2407H18.417c1.4318 0 2.559.4736 3.326 1.2406.7671.767 1.2407 1.8942 1.2407 3.326v6.5001c0 1.4318-.4736 2.559-1.2407 3.326-.767.7671-1.8942 1.2406-3.326 1.2406a.85.85 0 0 0-.85.85v2.3075c0 .1834-.2038.2945-.3577.192l-.0007-.0005Z"/>
+                            </g>
+                        </svg>
+                        </span>
+                        Envoyer un message
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <div class="product-page_text text-body">
+            <h2 class="section-title">Description</h2>
+            <p>
+                Alliant confort moderne et style intemporel, notre lit ÉLÉGANCE avec sa tête de lit en tissu gris apportera une touche de raffinement à votre chambre. Sa tête de lit généreusement rembourrée, habillée d'un textile gris de haute qualité, offre un dossier confortable pour vos moments de lecture ou de détente.
+            </p>
+            <p>
+                L'assemblage est simple et tous les accessoires de montage sont inclus. Le sommier et le matelas sont vendus séparément.
+                Créez une ambiance cosy et sophistiquée dans votre chambre avec ce lit au design contemporain qui allie parfaitement esthétique et fonctionnalité.
+            </p>
+        </div>
+
+        <div class="reviews card text-body">
+            <div class="reviews_body">
+                <h2 class="text-title">Avis utilisateurs</h2>
+                <div class="reviews_recap">
+                    5.00 sur 5
+                    <strong>Basé sur 13 avis</strong>
+                    <div class="stars">
+                        <svg data-repeat="5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <path fill="currentColor" fill-rule="evenodd"
+                                d="m13.7299 3.5095 1.76 3.52c.24.49.88.96 1.42 1.05l3.19.53c2.04.34 2.52 1.82 1.05 3.28l-2.48 2.48c-.42.42-.65 1.23-.52 1.81l.71 3.07c.56 2.43-.73 3.37-2.88 2.1l-2.99-1.77c-.54-.32-1.43-.32-1.98 0l-2.99 1.77c-2.14 1.27-3.44.32-2.88-2.1l.71-3.07c.13-.58-.1-1.39-.52-1.81l-2.48-2.48c-1.46-1.46-.99-2.94 1.05-3.28l3.19-.53c.53-.09 1.17-.56 1.41-1.05l1.76-3.52c.96-1.91 2.52-1.91 3.47 0Z"/>
+                        </svg>
+                    </div>
+                </div>
+                <button class="btn-bordered">Écrire un avis</button>
+            </div>
+            <div class="reviews_ratings">
+                <div class="reviews_rating" data-repeat="5">
+                    5 étoiles
+                    <div class="reviews_progress">
+                        <div style="width: 50%;"></div>
+                    </div>
+                    100%
+                </div>
+            </div>
+        </div>
+
+        <section class="section-promos">
+            <h2 class="section-title">Produits recommandés</h2>
+
+            <div class="slider-navigation">
+                <button disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 23.4 17">
+                        <g fill="currentColor" fill-rule="evenodd">
+                            <path d="M7.9 16.7A.9.9 0 0 0 9 15.4l-7-7 7-6.9A.9.9 0 0 0 8 .3L.3 7.9A.9.9 0 0 0 .3 9l7.6 7.6Z"/>
+                            <path d="M23.4 9c0 .6-.4 1-1 1h-21a.9.9 0 1 1 0-1.8h21c.6 0 1 .4 1 .9Z"/>
+                        </g>
+                    </svg>
+                </button>
+                <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 23.4 17">
+                        <g fill="currentColor" fill-rule="evenodd">
+                            <path d="M15.5.3a.9.9 0 0 0-1.2 1.2l7 7-7 7a.9.9 0 0 0 1.2 1.2l7.6-7.6a.9.9 0 0 0 0-1.2L15.5.3Z"/>
+                            <path d="M0 7.9c0-.5.4-.9.9-.9h21a.9.9 0 1 1 0 1.8H1a.9.9 0 0 1-.9-.9Z"/>
+                        </g>
+                    </svg>
+                </button>
+            </div>
+            <div class="slider-promos">
+                <article class="product-card card" data-repeat="8">
+                    <picture>
+                        <source
+                                width="362"
+                                height="416"
+                                media="(min-width: 1100px)"
+                                srcset="./img/product-thumb-desktop.jpg">
+                        <img src="./img/product-thumb.jpg" alt="" width="269" height="258" class="product-card_image">
+                    </picture>
+                    <div class="location">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 18">
+                            <g fill="currentColor" fill-rule="evenodd">
+                                <path d="M9 4.6a3 3 0 1 0 0 6.2 3 3 0 0 0 0-6.2ZM7.4 7.7a1.6 1.6 0 1 1 3.2 0 1.6 1.6 0 0 1-3.2 0Z"/>
+                                <path d="M9 .8a7 7 0 0 1 7 5.4c1 4.2-1.7 7.7-3.8 9.7a4.6 4.6 0 0 1-6.4 0C3.7 14 1 10.4 2 6.2A7 7 0 0 1 9 .8ZM3.4 6.5C4.1 3.7 6.5 2.2 9 2.2c2.5 0 5 1.5 5.6 4.3.7 3.4-1.4 6.4-3.4 8.4a3.1 3.1 0 0 1-4.4 0c-2-2-4.1-5-3.4-8.4Z"/>
+                            </g>
+                        </svg>
+                        Montpellier, 34000
+                    </div>
+                    <div class="product-card_body">
+                        <a href="product.html" class="product-card_title">
+                            Zarsun Sneakers For Men
+                        </a>
+                        <div class="product-card_price">
+                            15 €
+                        </div>
+                    </div>
+                    <button class="btn-like">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 26 26">
+                            <path fill="currentColor" fill-rule="evenodd"
+                                d="M8.2 2.6c1.9 0 3.6.8 4.8 2a6.8 6.8 0 0 1 11.6 4.8c0 4-1.9 7.2-4.1 9.5a18 18 0 0 1-6.6 4.4H12a18 18 0 0 1-6.5-4.4 13.5 13.5 0 0 1-4-9.5c0-3.7 3-6.8 6.7-6.8ZM2.9 9.4c0-3 2.4-5.3 5.3-5.3 1.7 0 3.2.8 4.2 2.1a.8.8 0 0 0 1.2 0c1-1.3 2.5-2 4.2-2 3 0 5.3 2.3 5.3 5.2a12 12 0 0 1-3.7 8.5c-2 2.1-4.5 3.4-6 4h-.8c-1.5-.6-4-1.9-6-4A12 12 0 0 1 3 9.4ZM13 5.8l1 1-1-1Z"/>
+                        </svg>
+                    </button>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <img src="./img/logo-footer.svg" alt="" width="50" height="62" class="footer_logo">
+            <div class="footer_section">
+                <div class="text-title">À propos de pretium</div>
+                <ul>
+                    <li><a href="#">Qui somme nous</a></li>
+                    <li><a href="#">Nous rejoindre</a></li>
+                    <li><a href="#">Nos engagements</a></li>
+                    <li><a href="#">Notre équipe</a></li>
+                    <li><a href="#">Presse</a></li>
+                    <li><a href="#">Status de nos services</a></li>
+                    <li><a href="#">Espace annonceur</a></li>
+                </ul>
+            </div>
+            <div class="footer_section">
+                <div class="text-title">Informations légales</div>
+                <ul>
+                    <li><a href="#">Conditions d'utilisation</a></li>
+                    <li><a href="#">Conditions de ventes</a></li>
+                    <li><a href="#">Affiliation</a></li>
+                    <li><a href="#">Avis utilisateurs</a></li>
+                    <li><a href="#">Code de conduite</a></li>
+                    <li><a href="#">Accessibilité</a></li>
+                </ul>
+            </div>
+            <div class="footer_section">
+                <div class="text-title">Nos solutions professionnelles</div>
+                <ul>
+                    <li><a href="#">Publicité</a></li>
+                    <li><a href="#">Recrutement</a></li>
+                    <li><a href="#">Professionnel immobilier</a></li>
+                </ul>
+            </div>
+            <div class="footer_socials">
+                <a href="#" title="Nous rejoindre sur Facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 13.405 23.321">
+                        <path fill="currentColor" fill-rule="evenodd"
+                            d="M7.9405 0a4.9643 4.9643 0 0 0-4.9643 4.9643v3.2202H.5a.5.5 0 0 0-.5.5v3.7203a.5.5 0 0 0 .5.5h2.4762v9.9166a.5.5 0 0 0 .5.5h4.4643a.5.5 0 0 0 .5-.5v-9.9166h2.4762a.5.5 0 0 0 .4642-.3143l1.4881-3.7203a.5.5 0 0 0-.4642-.6857H8.4405V5.7083a.9881.9881 0 0 1 .988-.988h1.4882a.5.5 0 0 0 .5-.5V.5a.5.5 0 0 0-.5-.5H7.9405Zm4.4643 8.6845 1 1-1-.9999Zm-4.4643.5h3.7257l-1.0881 2.7203H7.9405a.5.5 0 0 0-.5.5v9.9166H3.9762v-9.9166a.5.5 0 0 0-.5-.5H1V9.1845h2.4762a.5.5 0 0 0 .5-.5V4.9643A3.9643 3.9643 0 0 1 7.9405 1h2.4762v2.7202h-.9881a1.988 1.988 0 0 0-1.9881 1.9881v2.9762a.5.5 0 0 0 .5.5Z"/>
+                    </svg>
+                </a>
+                <a href="#" title="Nous rejoindre sur LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 21.645 21.645">
+                        <path fill="currentColor" fill-rule="evenodd"
+                            d="M2.7056 5.4113C1.214 5.4113 0 4.1973 0 2.7056 0 1.214 1.214 0 2.7056 0c1.4917 0 2.7057 1.214 2.7057 2.7056 0 1.4917-1.214 2.7057-2.7057 2.7057Zm0-4.5094C1.711.9019.902 1.7109.902 2.7056c0 .9948.809 1.8038 1.8037 1.8038.9948 0 1.8038-.809 1.8038-1.8038 0-.9947-.809-1.8037-1.8038-1.8037ZM21.1941 21.645h-4.5094a.451.451 0 0 1-.4509-.4509v-8.1169c0-1.0236-.4266-1.792-1.1716-2.1068-.7693-.3265-1.7081-.1262-2.4359.5015v9.7222a.451.451 0 0 1-.451.4509H7.6659a.4508.4508 0 0 1-.4509-.4509V7.6659a.451.451 0 0 1 .451-.4509h4.5093a.4508.4508 0 0 1 .4365.3382c1.4466-1.0408 3.8565-1.6198 5.7838-.9596 1.4547.4987 3.198 1.8696 3.2494 5.5763v9.0251a.4507.4507 0 0 1-.4509.45Zm-4.0585-.9019h3.6075v-8.5678c-.0342-2.5117-.9478-4.1495-2.6397-4.7285-2.1014-.7197-4.7493.367-5.5763 1.4024a.452.452 0 0 1-.7185-.022.452.452 0 0 1-.0842-.2594v-.451H8.1169v12.6263h3.6075v-9.4697a.451.451 0 0 1 .1362-.3228c1.0083-.9795 2.4053-1.2951 3.5525-.8108 1.0948.4636 1.7225 1.5341 1.7216 2.9374l.0009 7.6659Zm-12.1753.9019H.451A.4508.4508 0 0 1 0 21.1941V7.6659a.451.451 0 0 1 .451-.4509h4.5093a.451.451 0 0 1 .451.451V21.194a.4507.4507 0 0 1-.451.4509ZM.902 20.7431h3.6075V8.1169H.9019V20.743Z"/>
+                    </svg>
+                </a>
+                <a href="#" title="Nous rejoindre sur Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 21.628 21.629">
+                        <g fill="currentColor" fill-rule="evenodd">
+                            <path d="M6.9182.1C3.1492.1.1 3.1492.1 6.9182v7.7922c0 3.769 3.0492 6.8182 6.8182 6.8182h7.7922c3.769 0 6.8182-3.0492 6.8182-6.8182V6.9182C21.5286 3.1492 18.4794.1 14.7104.1H6.9182Zm0 .974h7.7922c3.2459 0 5.8441 2.5982 5.8441 5.8442v7.7922c0 3.2459-2.5982 5.8441-5.8441 5.8441H6.9182c-3.246 0-5.8442-2.5982-5.8442-5.8441V6.9182c0-3.246 2.5982-5.8442 5.8442-5.8442Z"/>
+                            <path d="M6.9182 0C3.094 0 0 3.094 0 6.9182v7.7922c0 3.8242 3.094 6.9182 6.9182 6.9182h7.7922c3.8242 0 6.9182-3.094 6.9182-6.9182V6.9182C21.6286 3.094 18.5346 0 14.7104 0H6.9182ZM.2 6.9182C.2 3.2044 3.2044.2 6.9182.2h7.7922c3.7138 0 6.7182 3.0044 6.7182 6.7182v7.7922c0 3.7138-3.0044 6.7182-6.7182 6.7182H6.9182C3.2044 21.4286.2 18.4242.2 14.7104V6.9182ZM6.9182.974C3.617.974.974 3.617.974 6.9182v7.7922c0 3.3012 2.643 5.9441 5.9442 5.9441h7.7922c3.3012 0 5.9441-2.6429 5.9441-5.9441V6.9182c0-3.3012-2.6429-5.9442-5.9441-5.9442H6.9182ZM1.174 6.9182c0-3.1907 2.5535-5.7442 5.7442-5.7442h7.7922c3.1907 0 5.7441 2.5535 5.7441 5.7442v7.7922c0 3.1907-2.5534 5.7441-5.7441 5.7441H6.9182c-3.1907 0-5.7442-2.5534-5.7442-5.7441V6.9182Z"/>
+                            <path d="M16.6583 3.509c-.8011 0-1.461.6599-1.461 1.461 0 .8012.6599 1.461 1.461 1.461s1.461-.6598 1.461-1.461c0-.8011-.6599-1.461-1.461-1.461Zm.013.974c.282 0 .5.218.5.5 0 .282-.218.5-.5.5-.282 0-.5-.218-.5-.5 0-.282.218-.5.5-.5Zm-5.8572.974c-2.9527 0-5.3571 2.4044-5.3571 5.3572s2.4044 5.3571 5.3571 5.3571c2.9528 0 5.3572-2.4043 5.3572-5.3571S13.7669 5.457 10.8141 5.457Zm0 .974c2.4263 0 4.3832 1.9569 4.3832 4.3832 0 2.4263-1.9569 4.3831-4.3832 4.3831-2.4263 0-4.383-1.9568-4.383-4.3831 0-2.4263 1.9567-4.3831 4.383-4.3831Z"/>
+                            <path d="M16.6583 3.409c-.8564 0-1.561.7047-1.561 1.561 0 .8564.7046 1.561 1.561 1.561.8564 0 1.561-.7046 1.561-1.561 0-.8563-.7046-1.561-1.561-1.561Zm-1.361 1.561c0-.7459.6151-1.361 1.361-1.361s1.361.6151 1.361 1.361c0 .746-.6151 1.361-1.361 1.361s-1.361-.615-1.361-1.361Zm1.361-.587c-.3299 0-.587.2571-.587.587 0 .33.2571.587.587.587.3299 0 .587-.257.587-.587 0-.3299-.2571-.587-.587-.587Zm-.387.7c0-.2835.2165-.5.5-.5s.5.2165.5.5-.2165.5-.5.5-.5-.2165-.5-.5Zm-5.4572.274c-3.008 0-5.4571 2.4492-5.4571 5.4572 0 3.008 2.4492 5.4571 5.4571 5.4571 3.008 0 5.4572-2.4491 5.4572-5.4571 0-3.008-2.4492-5.4571-5.4572-5.4571ZM5.557 10.8143c0-2.8975 2.3596-5.2571 5.2571-5.2571 2.8976 0 5.2572 2.3596 5.2572 5.257 0 2.8976-2.3596 5.2572-5.2572 5.2572-2.8975 0-5.2571-2.3596-5.2571-5.2571Zm5.2571-4.4831c-2.4815 0-4.483 2.0016-4.483 4.483 0 2.4816 2.0015 4.4832 4.483 4.4832 2.4816 0 4.4832-2.0016 4.4832-4.4831 0-2.4815-2.0016-4.4831-4.4832-4.4831Zm-4.283 4.483c0-2.371 1.912-4.283 4.283-4.283 2.3711 0 4.2832 1.912 4.2832 4.283 0 2.3712-1.912 4.2832-4.2832 4.2832-2.371 0-4.283-1.912-4.283-4.2831Z"/>
+                        </g>
+                    </svg>
+                </a>
+                <a href="#" title="Nous rejoindre sur X">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 19.047 19.048">
+                        <path fill="currentColor" fill-rule="evenodd"
+                            d="M19.0476 19.0476h-5.6762c-.0114-.0215-.0207-.0445-.0347-.0645-1.6897-2.4029-3.3806-4.805-5.0671-7.21-.0833-.1186-.1206-.0881-.1969-.0012-1.2724 1.4483-2.5485 2.8936-3.8218 4.3411-.8596.9771-1.7164 1.9563-2.5745 2.9346H.0384c-.0016-.0915.0574-.1463.1152-.1999.0195-.0181.0388-.036.0556-.0551a6424.7085 6424.7085 0 0 1 7.1143-8.0744c.0827-.0935.0977-.1525.02-.2626A6507.6547 6507.6547 0 0 1 .6208.9082C.4098.6082.182.3192 0 .0002h5.6762c.0184.0319.0343.0656.0555.0956a18267.997 18267.997 0 0 0 4.7825 6.7962c.0239.034.0383.0803.0943.0882.0197-.0213.0413-.0435.0619-.0669 1.9951-2.2644 3.9904-4.529 5.9843-6.7947a.2372.2372 0 0 1 .0263-.0241c.0281-.0233.0575-.0476.0426-.0945h1.6761c.0241.0583-.013.0856-.0479.1114-.0127.0094-.0252.0185-.0343.029a4724.5608 4724.5608 0 0 1-6.853 7.7771c-.1009.114-.1058.1828-.017.3084 2.1903 3.1031 4.3766 6.209 6.5597 9.3171.3508.499.7208.9853 1.0404 1.5046ZM2.2702 1.2346l.923 1.2887c3.6245 5.0637 7.2491 10.127 10.8708 15.1923.0767.1072.1541.1529.2914.1515.4951-.0049.9901-.0045 1.4852-.0041.2412.0001.4825.0003.7238-.0001.0114 0 .0229.0007.0347.0014.0432.0027.0893.0056.1385-.026-.0456-.066-.0859-.1264-.1283-.1856-2.9526-4.1249-5.9054-8.2495-8.858-12.3744-.9334-1.304-1.8666-2.608-2.8001-3.9119l-.0096-.0135c-.0457-.0644-.0869-.1226-.1937-.1219-.6175.005-1.235.0044-1.871.0039-.2001-.0002-.4022-.0003-.6067-.0003Z"/>
+                    </svg>
+                </a>
+            </div>
+            <div class="footer_apps">
+                <a href="#" title="Télécharger l'application Android">
+                    <img
+                            src="./img/android.png"
+                            srcset="./img/android@2x.png 1.4x"
+                            alt="Badge Android" width="206" height="68">
+                </a>
+                <a href="" title="Télécharger l'application iOS">
+                    <img src="./img/ios.png"
+                        srcset="./img/ios@2x.png 1.4x" alt="Badge iOS" width="206" height="68">
+                </a>
+            </div>
+            <div class="footer_mentions">
+                <ul>
+                    <li><a href="#">Conditions d'utilisation</a></li>
+                    <li><a href="#">Politique des données</a></li>
+                </ul>
+                <p class="footer_copyright">
+                    © Pretium 2025. Tous droits réservés.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.querySelectorAll("[data-repeat]").forEach((el) => {
+            const count = parseFloat(el.dataset.repeat)
+            for (let i = 0; i < count - 1; i++) {
+                el.insertAdjacentHTML("afterend", el.outerHTML)
+            }
+        })
+    </script>
+</body>
+</html>

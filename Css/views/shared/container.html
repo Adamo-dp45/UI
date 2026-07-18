@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Container</title>
+</head>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .content {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 20px;
+        text-align: justify;
+    }
+
+    .black {
+        color: #FFF;
+        background: #000;
+    }
+
+    /* - La méthode ancienne pour faire des container
+        .container {
+            box-sizing: border-box;
+            margin-top: 55px;
+            width: 100%; -- Ou calc(100% - 40px) en enlevant les propriétés padding et laisser le max-width à 1000px
+            max-width: 1040px; -- Le 40 est la somme des padding  
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+    */
+
+    :root {
+        --container-max: 1000px;
+        --padding: 20px;
+        --container: calc(100% - 40px);
+    }
+
+    .container-margin {
+        box-sizing: border-box;
+        width: calc(100% - var(--padding) * 2);
+        max-width: var(--container-max);
+        margin-left: auto;
+        margin-right: auto;
+    } /* Le principe est d'utiliser les marges automatique pour centrer un élément */
+
+    .container-padding {
+        box-sizing: border-box;
+        width: 100%;
+        padding-left: calc(50% - var(--container) / 2);
+        padding-right: calc(50% - var(--container) / 2);
+    } /* Le principe est d'utiliser les padding, a l'avantage d'avoir une couleur de fond sur le container mais l'inconvenient est qu'il faut mettre les breackpoint en dur */
+
+    @media only screen and (min-width: 1040px) {
+        :root {
+            --container: 1000px;
+        }
+    }
+
+    /*
+     * Une autre manière est de stylisé directement les enfants ce qui va permettre à des éléments de sortir du flux comme les images
+     */
+    /*
+    body {
+        --container-width: 1100px;
+        --container-padding: 1rem;
+    }
+
+    .container > * {
+        display: block;
+        max-width: min( -- On veut que la largeur maximal soit le minimun entre ces valeurs ou utilisé le 'padding-inline'
+            var(--container-width),
+            calc(100% - 2 * var(--container-padding))
+        );
+        margin-inline: auto;
+    }
+
+    .container.narrow {
+        --container-width: 700px;
+    }
+
+    .container img {
+        max-width: 100%;
+    }
+
+    .container iframe {
+        max-width: 900px;
+        height: auto;
+        aspect-ratio: 16/9;
+        width: 100%;
+    }
+
+    .gray {
+        box-sizing: border-box; /* Pour éviter qu'il déborde du conteneur *
+        background-color: gray;
+        padding: 2rem;
+    }
+    */
+</style>
+<body>
+
+    <div class="container-margin">
+        <div class="content">
+            <div>
+                <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rem velit, sit alias dolore dolorem ea impedit provident exercitationem nam iste earum saepe officia omnis blanditiis laudantium doloribus, optio nemo ipsum?</p>
+                <p>Doloremque vero saepe, ea unde illo quae quibusdam adipisci magnam nostrum ab impedit similique voluptatibus debitis maiores labore eos. Voluptate, numquam! Minima harum dolores culpa assumenda ipsum expedita, facere repudiandae?</p>
+            </div>
+            <div>
+                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptates in, rerum sint et explicabo commodi rem incidunt distinctio reiciendis. Veritatis, aliquam aperiam! Necessitatibus sequi neque ducimus voluptas animi architecto repudiandae?</p>
+                <p>Deserunt in veniam nisi molestias fugiat culpa totam, eum vitae ut corporis sit tenetur, libero molestiae, quia magni eos illum quam? Facilis numquam adipisci tenetur ullam? Et, reprehenderit! Esse, velit.</p>
+                <p>Molestiae explicabo optio repudiandae illum inventore nemo sunt ratione rerum exercitationem, libero ipsa voluptatem architecto impedit quibusdam ipsam quod, consectetur qui. Harum culpa ullam quos sequi laborum. Unde, consequatur vitae?</p>
+            </div>
+        </div>
+    </div>
+    <div class="content black container-padding">
+        <div>
+            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rem velit, sit alias dolore dolorem ea impedit provident exercitationem nam iste earum saepe officia omnis blanditiis laudantium doloribus, optio nemo ipsum?</p>
+            <p>Doloremque vero saepe, ea unde illo quae quibusdam adipisci magnam nostrum ab impedit similique voluptatibus debitis maiores labore eos. Voluptate, numquam! Minima harum dolores culpa assumenda ipsum expedita, facere repudiandae?</p>
+        </div>
+        <div>
+            <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Voluptates in, rerum sint et explicabo commodi rem incidunt distinctio reiciendis. Veritatis, aliquam aperiam! Necessitatibus sequi neque ducimus voluptas animi architecto repudiandae?</p>
+            <p>Deserunt in veniam nisi molestias fugiat culpa totam, eum vitae ut corporis sit tenetur, libero molestiae, quia magni eos illum quam? Facilis numquam adipisci tenetur ullam? Et, reprehenderit! Esse, velit.</p>
+            <p>Molestiae explicabo optio repudiandae illum inventore nemo sunt ratione rerum exercitationem, libero ipsa voluptatem architecto impedit quibusdam ipsam quod, consectetur qui. Harum culpa ullam quos sequi laborum. Unde, consequatur vitae?</p>
+        </div>
+    </div>
+
+</body>
+</html>

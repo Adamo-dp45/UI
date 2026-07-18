@@ -1,0 +1,67 @@
+.has-menu {
+    overflow: hidden; /* Lorsque le body a la class 'has-menu' on ne peut plus scrollé la page */
+}
+
+.mobile-menu {
+    position: fixed;
+    z-index: 101;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: 336px;
+    border-radius: 0 20px 20px 0;
+    background: var(--text-inverse);
+    padding: 20px 0 20px 20px;
+
+    display: none;
+    flex-direction: column;
+    gap: 1.5rem;
+    justify-content: center;
+}
+
+.has-menu .mobile-menu {
+    display: flex;
+}
+
+.mobile-menu_actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.has-menu::after { /* Overlay sur le body */
+    content:'';
+    z-index: 100;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    /* backdrop-filter: blur(5px); -- Si on veut le flou */
+}
+
+.mobile-menu_header {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+}
+
+.mobile-menu_header .btn-icon svg {
+    width: 14px;
+    height: 14px;
+}
+
+.mobile-menu_logo {
+    display: block;
+    width: 139px;
+    height: 29px;
+}
+
+.mobile-menu_nav {
+    overflow: auto; /* Pour rendre le menu scrollable */
+    line-height: 1.5;
+    padding-left: 1.5rem;
+}
+
+.mobile-menu_nav > * + * {
+    margin-top: 1.75rem;
+}

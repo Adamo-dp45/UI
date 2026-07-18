@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glowing corner hover</title>
+    <link rel="stylesheet" href="../../src/css/cards/glowing.css">
+</head>
+<body>
+
+    <div class="card"></div>
+
+    <script>
+        const card = document.querySelector('.card')
+        card.addEventListener('mousemove', e => {
+            let x = e.pageX - card.offsetLeft
+            let y = e.pageY - card.offsetTop
+            card.style.setProperty('--x', x + 'px')
+            card.style.setProperty('--y', y + 'px')
+        })
+    </script>
+</body>
+</html>

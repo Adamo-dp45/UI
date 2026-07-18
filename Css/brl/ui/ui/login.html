@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="fr" class="">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Connexion — TransportApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-bg:        #f5f5f3;
+  --color-surface:   #fff;
+  --color-surface-2: #f0efed;
+  --color-surface-3: #e8e7e4;
+  --color-surface-4: #dfdedd;
+  --color-border:    #e4e3e0;
+  --color-border-2:  #cccbc7;
+  --color-text:      #171715;
+  --color-text-2:    #5e5e5a;
+  --color-text-3:    #96968f;
+  --color-text-4:    #bbbbb3;
+  --color-amber:      #d97706;
+  --color-amber-light: #fef3c7;
+  --color-amber-dark:  #92400e;
+  --color-amber-glow:  rgba(217,119,6,.18);
+  --color-green:       #059669;
+  --color-green-light: #d1fae5;
+  --color-red:         #dc2626;
+  --color-red-light:   #fee2e2;
+  --radius-xs: 4px;
+  --radius-sm: 7px;
+  --radius:    11px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,.16), 0 8px 20px rgba(0,0,0,.08);
+  --ease: cubic-bezier(.4,0,.2,1);
+  --duration-fast: 150ms;
+  --duration-slow: 260ms;
+
+  /* Panel gauche sombre */
+  --panel-bg: #171715;
+  --panel-surface: rgba(255,255,255,.07);
+  --panel-border:  rgba(255,255,255,.10);
+  --panel-text:    rgba(255,255,255,.48);
+}
+
+.theme-dark {
+  --color-bg:        #0d0d0c;
+  --color-surface:   #191917;
+  --color-surface-2: #212120;
+  --color-surface-3: #282826;
+  --color-surface-4: #303030;
+  --color-border:    #2b2b28;
+  --color-border-2:  #3c3c38;
+  --color-text:      #eaeae6;
+  --color-text-2:    #97978f;
+  --color-text-3:    #5c5c56;
+  --color-text-4:    #3a3a36;
+  --color-amber:       #f59e0b;
+  --color-amber-light: #261f09;
+  --color-amber-dark:  #fbbf24;
+  --color-amber-glow:  rgba(245,158,11,.15);
+  --color-green:       #10b981;
+  --color-green-light: #092018;
+  --color-red:         #f87171;
+  --color-red-light:   #220d0d;
+  --shadow-xl: 0 24px 60px rgba(0,0,0,.70), 0 8px 20px rgba(0,0,0,.45);
+  --panel-bg: #111110;
+  --panel-surface: rgba(255,255,255,.04);
+  --panel-border:  rgba(255,255,255,.07);
+}
+
+html, body {
+  height: 100%;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+svg { display: block; flex-shrink: 0; }
+:focus-visible { outline: 2px solid var(--color-amber); outline-offset: 2px; border-radius: var(--radius-xs); }
+
+
+/* ═══════════════════════════════
+   LAYOUT
+═══════════════════════════════ */
+
+.app {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: 420px 1fr;
+}
+
+
+/* ═══════════════════════════════
+   PANNEAU GAUCHE
+═══════════════════════════════ */
+
+.panel {
+  background: var(--panel-bg);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 36px;
+  min-height: 100dvh;
+}
+
+.theme-dark .panel {
+  border-right: 1px solid var(--color-border);
+}
+
+/* Pattern de fond */
+.panel-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.panel-pattern svg {
+  width: 100%;
+  height: 100%;
+  opacity: .05;
+}
+
+/* Badge "en ligne" */
+.panel-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 99px;
+  padding: 5px 13px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: rgba(255,255,255,.7);
+  width: fit-content;
+  position: relative;
+  z-index: 1;
+}
+
+.badge-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-amber);
+  flex-shrink: 0;
+  box-shadow: 0 0 8px var(--color-amber);
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { box-shadow: 0 0 6px var(--color-amber); }
+  50%       { box-shadow: 0 0 14px var(--color-amber), 0 0 24px var(--color-amber-glow); }
+}
+
+/* Contenu central */
+.panel-main {
+  position: relative;
+  z-index: 1;
+}
+
+.panel-logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 48px;
+}
+
+.panel-logo-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: var(--color-amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 2px 12px var(--color-amber-glow);
+  flex-shrink: 0;
+}
+
+.panel-logo-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -.35px;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.panel-logo-tag {
+  font-size: 10.5px;
+  color: rgba(255,255,255,.38);
+  margin-top: 2px;
+}
+
+.panel-title {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -1.1px;
+  line-height: 1.12;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.panel-title em {
+  color: var(--color-amber);
+  font-style: normal;
+}
+
+.panel-sub {
+  font-size: 14px;
+  color: rgba(255,255,255,.42);
+  line-height: 1.65;
+  max-width: 300px;
+}
+
+/* Séparateur */
+.panel-divider {
+  height: 1px;
+  background: rgba(255,255,255,.08);
+  margin: 32px 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Stats */
+.panel-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.pstat {
+  background: var(--panel-surface);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 12px;
+  transition: background var(--duration-fast);
+}
+
+.pstat:hover { background: rgba(255,255,255,.1); }
+
+.pstat-val {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -.4px;
+  line-height: 1;
+}
+
+.pstat-val sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,.38);
+  vertical-align: baseline;
+  letter-spacing: 0;
+}
+
+.pstat-lbl {
+  font-size: 10.5px;
+  color: rgba(255,255,255,.38);
+  margin-top: 5px;
+  line-height: 1.35;
+}
+
+
+/* ═══════════════════════════════
+   CÔTÉ FORMULAIRE
+═══════════════════════════════ */
+
+.form-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 40px;
+  background: var(--color-surface);
+  position: relative;
+}
+
+/* Header flottant */
+.form-topbar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Icon button (réutilisé du dashboard) */
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-2);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+.icon-btn:hover { background: var(--color-surface-3); color: var(--color-text); border-color: var(--color-border-2); }
+
+/* Boîte formulaire */
+.form-box {
+  width: 100%;
+  max-width: 380px;
+  animation: form-appear .36s var(--ease) both;
+}
+
+@keyframes form-appear {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.form-head {
+  margin-bottom: 28px;
+}
+
+.form-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.55px;
+  margin-bottom: 6px;
+}
+
+.form-sub {
+  font-size: 13px;
+  color: var(--color-text-3);
+  line-height: 1.55;
+}
+
+/* Groupes de champ */
+.fgroup { margin-bottom: 14px; }
+
+.fgroup label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-2);
+  margin-bottom: 6px;
+}
+
+label .req { color: var(--color-amber); margin-left: 2px; }
+
+/* Wrapper input avec icônes */
+.field-wrap { position: relative; }
+
+.field-icon-left {
+  position: absolute;
+  left: 11px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-3);
+  pointer-events: none;
+  transition: color var(--duration-fast);
+}
+
+.field-icon-right {
+  position: absolute;
+  right: 9px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-3);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-xs);
+  transition: color var(--duration-fast), background var(--duration-fast);
+}
+.field-icon-right:hover { color: var(--color-text); background: var(--color-surface-2); }
+
+.field-wrap:focus-within .field-icon-left { color: var(--color-amber); }
+
+/* Inputs */
+.field-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--color-text);
+  outline: none;
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+  -webkit-appearance: none;
+}
+.field-input.has-icon-left  { padding-left: 38px; }
+.field-input.has-icon-right { padding-right: 40px; }
+.field-input::placeholder { color: var(--color-text-4); }
+.field-input:focus {
+  border-color: var(--color-amber);
+  box-shadow: 0 0 0 3px var(--color-amber-glow);
+}
+.field-input.is-error { border-color: var(--color-red); }
+.field-input.is-error:focus { box-shadow: 0 0 0 3px rgba(220,38,38,.12); }
+
+/* Alerte */
+.alert {
+  display: flex;
+  gap: 10px;
+  padding: 11px 13px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  margin-bottom: 18px;
+  line-height: 1.5;
+  animation: form-appear .22s var(--ease) both;
+}
+
+.alert svg { flex-shrink: 0; margin-top: 1px; }
+.alert b   { font-weight: 700; display: block; margin-bottom: 2px; }
+
+.alert--error {
+  background: var(--color-red-light);
+  color: var(--color-red);
+  border: 1px solid color-mix(in srgb, var(--color-red) 22%, transparent);
+}
+
+/* Ligne "se souvenir + mot de passe oublié" */
+.check-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.fcheck {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--color-text-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.fcheck input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  accent-color: var(--color-amber);
+  flex-shrink: 0;
+}
+
+.flink {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-amber);
+  white-space: nowrap;
+  transition: opacity var(--duration-fast);
+}
+.flink:hover { opacity: .72; }
+
+/* Bouton principal — identique au .btn--primary du dashboard */
+.btn-primary {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--color-amber);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--color-amber-glow);
+  transition: opacity var(--duration-fast), box-shadow var(--duration-fast), transform var(--duration-fast);
+}
+.btn-primary:hover  { opacity: .91; box-shadow: 0 4px 18px var(--color-amber-glow); transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+/* Spinner dans le bouton */
+.spin {
+  display: none;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.btn-primary.is-loading .spin    { display: block; }
+.btn-primary.is-loading .btn-lbl { display: none; }
+
+/* Lien inscription */
+.form-switch {
+  text-align: center;
+  margin-top: 22px;
+  font-size: 13px;
+  color: var(--color-text-3);
+}
+.form-switch a { color: var(--color-amber); font-weight: 600; }
+.form-switch a:hover { text-decoration: underline; }
+
+
+/* ═══════════════════════════════
+   RESPONSIVE
+═══════════════════════════════ */
+
+@media (max-width: 960px) {
+  .app { grid-template-columns: 340px 1fr; }
+  .panel { padding: 32px 28px; }
+  .panel-title { font-size: 28px; }
+}
+
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; }
+  .panel { display: none; }
+  .form-side { min-height: 100dvh; padding: 80px 24px 40px; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  .form-side { padding: 72px 16px 32px; }
+  .form-box  { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ═══════════ PANNEAU GAUCHE ═══════════ -->
+  <aside class="panel" aria-hidden="true">
+
+    <!-- Pattern SVG de fond -->
+    <div class="panel-pattern">
+      <svg viewBox="0 0 420 900" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid" width="44" height="44" patternUnits="userSpaceOnUse">
+            <path d="M44 0L0 0 0 44" fill="none" stroke="white" stroke-width=".7"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+        <circle cx="80"  cy="160" r="110" fill="none" stroke="white" stroke-width="1.1"/>
+        <circle cx="380" cy="680" r="170" fill="none" stroke="white" stroke-width="1.1"/>
+        <circle cx="380" cy="680" r="100" fill="none" stroke="white" stroke-width=".7"/>
+        <path d="M0 380 Q210 280 420 400" stroke="white" stroke-width=".8" fill="none"/>
+        <path d="M0 420 Q210 320 420 440" stroke="white" stroke-width=".8" fill="none"/>
+        <path d="M0 460 Q210 360 420 480" stroke="white" stroke-width=".8" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- Badge statut -->
+    <div class="panel-badge">
+      <div class="badge-dot"></div>
+      Système opérationnel
+    </div>
+
+    <!-- Logo + titre -->
+    <div class="panel-main">
+      <div class="panel-logo">
+        <div class="panel-logo-mark">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/>
+          </svg>
+        </div>
+        <div>
+          <div class="panel-logo-name">TransportApp</div>
+          <div class="panel-logo-tag">Gestion de flotte</div>
+        </div>
+      </div>
+
+      <h2 class="panel-title">Pilotez votre<br>flotte en<br><em>temps réel</em></h2>
+      <p class="panel-sub">Gérez vos véhicules, voyages, tickets et personnel depuis une interface unifiée et sécurisée.</p>
+    </div>
+
+    <!-- Séparateur -->
+    <div class="panel-divider"></div>
+
+    <!-- Stats -->
+    <div class="panel-stats">
+      <div class="pstat">
+        <div class="pstat-val">48</div>
+        <div class="pstat-lbl">Voyages / jour</div>
+      </div>
+      <div class="pstat">
+        <div class="pstat-val">37<sub>/42</sub></div>
+        <div class="pstat-lbl">Véhicules actifs</div>
+      </div>
+      <div class="pstat">
+        <div class="pstat-val">842<sub>K</sub></div>
+        <div class="pstat-lbl">Recettes FCFA</div>
+      </div>
+    </div>
+
+  </aside>
+
+
+  <!-- ═══════════ FORMULAIRE ═══════════ -->
+  <main class="form-side">
+
+    <!-- Topbar -->
+    <div class="form-topbar">
+      <button class="icon-btn"
+              id="btn-theme"
+              onclick="toggleDark()"
+              aria-label="Basculer le thème sombre / clair">
+        <svg id="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1"  x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22"   x2="5.64"  y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1"  y1="12" x2="3"  y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22"  y1="19.78" x2="5.64"  y2="18.36"/>
+          <line x1="18.36" y1="5.64"  x2="19.78" y2="4.22"/>
+        </svg>
+        <svg id="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Boîte de connexion -->
+    <div class="form-box">
+
+      <div class="form-head">
+        <h1 class="form-title">Bon retour 👋</h1>
+        <p class="form-sub">Connectez-vous à votre espace d'administration.</p>
+      </div>
+
+      <!-- Alerte erreur -->
+      <div id="alert-box"
+           class="alert alert--error"
+           style="display:none"
+           role="alert"
+           aria-live="polite">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8"  x2="12"   y2="12"/>
+          <line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <div>
+          <b>Erreur de connexion</b>
+          Email ou mot de passe incorrect.
+        </div>
+      </div>
+
+      <form id="login-form" novalidate onsubmit="handleSubmit(event)">
+
+        <!-- Email -->
+        <div class="fgroup">
+          <label for="email">Adresse email <span class="req" aria-hidden="true">*</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon-left" aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
+            <input type="email"
+                   id="email"
+                   class="field-input has-icon-left"
+                   placeholder="admin@transportapp.ci"
+                   autocomplete="email"
+                   required
+                   aria-required="true"/>
+          </div>
+        </div>
+
+        <!-- Mot de passe -->
+        <div class="fgroup">
+          <label for="password">Mot de passe <span class="req" aria-hidden="true">*</span></label>
+          <div class="field-wrap">
+            <svg class="field-icon-left" aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <rect x="3" y="11" width="18" height="11" rx="2"/>
+              <path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+            <input type="password"
+                   id="password"
+                   class="field-input has-icon-left has-icon-right"
+                   placeholder="••••••••"
+                   autocomplete="current-password"
+                   required
+                   aria-required="true"/>
+            <button type="button"
+                    class="field-icon-right"
+                    id="btn-toggle-pwd"
+                    onclick="togglePwd()"
+                    aria-label="Afficher ou masquer le mot de passe"
+                    tabindex="-1">
+              <svg id="eye-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Se souvenir + mot de passe oublié -->
+        <div class="check-row">
+          <label class="fcheck">
+            <input type="checkbox" name="remember"/>
+            Se souvenir de moi
+          </label>
+          <a href="/mot-de-passe-oublie" class="flink">Mot de passe oublié ?</a>
+        </div>
+
+        <!-- Bouton -->
+        <button type="submit" class="btn-primary" id="btn-submit" aria-label="Se connecter">
+          <div class="spin" aria-hidden="true"></div>
+          <span class="btn-lbl">Se connecter</span>
+        </button>
+
+      </form>
+
+      <div class="form-switch">
+        Pas encore de compte ? <a href="/inscription">Créer un compte</a>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+
+<script>
+/* ── Thème persistant ── */
+(function () {
+  const stored = localStorage.getItem('transport-theme');
+  const prefersDark = matchMedia('(prefers-color-scheme:dark)').matches;
+  const isDark = stored !== null ? stored === 'dark' : prefersDark;
+  if (isDark) applyDark(true, false);
+})();
+
+function applyDark(on, save = true) {
+  document.documentElement.classList.toggle('theme-dark', on);
+  document.getElementById('icon-sun').style.display  = on ? 'none'  : 'block';
+  document.getElementById('icon-moon').style.display = on ? 'block' : 'none';
+  if (save) localStorage.setItem('transport-theme', on ? 'dark' : 'light');
+}
+
+function toggleDark() {
+  const isDark = document.documentElement.classList.contains('theme-dark');
+  applyDark(!isDark);
+}
+
+/* ── Afficher/masquer mot de passe ── */
+function togglePwd() {
+  const inp = document.getElementById('password');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  document.getElementById('eye-icon').innerHTML = show
+    ? `<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+       <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+       <line x1="1" y1="1" x2="23" y2="23"/>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+       <circle cx="12" cy="12" r="3"/>`;
+}
+
+/* ── Soumission formulaire ── */
+function handleSubmit(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const pwd   = document.getElementById('password').value;
+  const alert = document.getElementById('alert-box');
+
+  alert.style.display = 'none';
+  document.getElementById('email').classList.remove('is-error');
+  document.getElementById('password').classList.remove('is-error');
+
+  if (!email || !pwd) {
+    alert.style.display = 'flex';
+    if (!email) document.getElementById('email').classList.add('is-error');
+    if (!pwd)   document.getElementById('password').classList.add('is-error');
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.classList.add('is-loading');
+
+  /* Simulation — remplacer par appel API réel */
+  setTimeout(() => {
+    btn.disabled = false;
+    btn.classList.remove('is-loading');
+    alert.style.display = 'flex';
+    // En succès : window.location.href = '/dashboard';
+  }, 1600);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+.products-page {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    align-items: flex-start;
+}
+
+/* -- Astuce pour faire passer le filtre au dessus de la grille au clique sur le bouton de filtre sur mobile */
+.filter, .products-page_grid {
+    grid-column: 1 / span 1;
+    grid-row: 2 / span 1;
+}
+
+.products-page_header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+
+    .sort-direction {
+        margin-left: auto;
+    }
+}
+
+.products-page_grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem .5rem;
+}
+
+.sort-direction {
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-dark);
+}
+
+.sort-direction select { /* Style du select */
+    appearance: none; /* Pour annuler le style du navigateur par défaut */
+    background: url(../../img/select.svg) center right 1rem / 15px 8px no-repeat; /* 15px 8px size de l'icone */
+    padding: 0 2.5rem 0 1rem;
+    height: 44px;
+    font-weight: 500;
+    border-radius: 16px;
+    border: solid 1px var(--contrast);
+    color: var(--contrast);
+}
+
+/* -- Le style des autres champs dans reset.css */
+.filter {
+    position: relative; /* Pour l'astuce sur mobile */
+    z-index: 4; /* -- */
+
+    padding: 20px;
+    --columns: 2;
+    --input-spacing: 1.25rem;
+    --spacing: 30px;
+
+    .text-title {
+        color: var(--text-dark);
+    }
+}
+
+.filter_section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.625rem;
+
+    & + .filter_section {
+        margin-top: var(--spacing);
+        border-top: 1px solid var(--border);
+        padding-top: var(--spacing);
+    }
+}
+
+.filter_price {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+}
+
+.filter_field { /* Style de input */
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    input {
+        height: 39px;
+        border-radius: 8px;
+        border: 1px solid var(--input-border);
+        padding-inline: 0.75rem;
+    }
+
+    input:focus {
+        outline-color: var(--price);
+    }
+}
+
+.filter_colors {
+    display: flex;
+    gap: 14px 25px;
+}
+
+.filter_color { /* Style du color */
+    position: relative;
+    background-color: var(--color);
+    width: 26px;
+    height: 26px;
+    border-radius: 26px;
+
+    input {
+        position: absolute;
+        z-index: 2;
+        inset:0 ; /* Pour prendre la totalité de largeur et hauteur */
+        opacity: 0;
+    }
+
+    label {
+         position: absolute;
+         overflow: hidden;
+        white-space: nowrap;
+        border-radius: 26px;
+         inset: -2px;
+         text-indent: 30px;
+     }
+
+    input:focus + label,
+    input:hover + label {
+        border: 2px solid var(--price);
+    }
+
+    input:checked + label {
+        background: url(../../img/color-check.svg) center center / 12px 9px no-repeat;
+    }
+}
+
+.filter_radios,
+.filter_checkboxes {
+    display: grid;
+    gap: var(--input-spacing);
+    grid-template-columns: repeat(var(--columns), 1fr);
+}
+
+.filter_radio { /* Style du radio */
+    position: relative;
+
+    input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+    }
+
+    label {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+    }
+
+    label::before {
+        content:'';
+        width: 26px;
+        height: 26px;
+        border-radius: 26px;
+        border: 1px solid var(--input-border);
+    }
+
+    input:checked + label::before {
+        background-color: var(--price);
+        border: solid 7px var(--text-inverse);
+        outline: solid 1px var(--price); /* Un autre niveau de bordure */
+    }
+
+    input:focus + label::before {
+        outline: solid 2px var(--price);
+    }
+}
+
+.filter_checkbox { /* Style du checkbox */
+    position: relative;
+
+    input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+    }
+
+    label {
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+    }
+
+    label::before {
+        content:'';
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        border: 1px solid var(--input-border);
+    }
+
+    input:checked + label::before {
+        background: url(../../img/check.svg) center center / 13px 10px no-repeat;
+        border-color: var(--price);
+    }
+
+    input:focus + label::before {
+        border: 2px solid var(--price);
+    }
+}
+
+@media (min-width: 1100px) {
+    .products-page {
+        display: grid;
+        align-items: flex-start;
+        grid-template-columns: 350px 1fr;
+        gap: 2rem 57px;
+    }
+    .filter, .products-page_grid {
+        grid-column: auto;
+        grid-row: auto;
+    }
+    .products-page_header {
+        grid-column-end: span 2;
+    }
+    .products-page .pagination {
+        grid-column-start: 2;
+    }
+    .sort-direction select {
+        height: 50px;
+        padding-inline: 1.25rem 3rem;
+    }
+    .products-page_grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px 27px;
+    }
+    .filter {
+        --columns: 1;
+        --spacing: 41px;
+        --input-spacing: 1.75rem;
+        padding: 2.25rem 2rem;
+        border-radius: 30px;
+    }
+    .products-page_header .btn-square {
+        display: none;
+    }
+}

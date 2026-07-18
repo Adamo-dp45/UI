@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>shadcn/ui — Sidebar & Tabs</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ─── */
+    :root {
+      --background:            oklch(1 0 0);
+      --foreground:            oklch(0.145 0 0);
+      --card:                  oklch(1 0 0);
+      --card-foreground:       oklch(0.145 0 0);
+      --primary:               oklch(0.205 0 0);
+      --primary-foreground:    oklch(0.985 0 0);
+      --secondary:             oklch(0.97 0 0);
+      --secondary-foreground:  oklch(0.205 0 0);
+      --muted:                 oklch(0.97 0 0);
+      --muted-foreground:      oklch(0.556 0 0);
+      --accent:                oklch(0.97 0 0);
+      --accent-foreground:     oklch(0.205 0 0);
+      --destructive:           oklch(0.577 0.245 27.325);
+      --destructive-foreground:oklch(0.985 0 0);
+      --border:                oklch(0.922 0 0);
+      --input:                 oklch(0.922 0 0);
+      --ring:                  oklch(0.708 0 0);
+      --radius:                0.625rem;
+
+      /* Sidebar-specific tokens (exact shadcn) */
+      --sidebar:               oklch(0.985 0 0);
+      --sidebar-foreground:    oklch(0.145 0 0);
+      --sidebar-primary:       oklch(0.205 0 0);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent:        oklch(0.97 0 0);
+      --sidebar-accent-foreground: oklch(0.205 0 0);
+      --sidebar-border:        oklch(0.922 0 0);
+      --sidebar-ring:          oklch(0.708 0 0);
+      --sidebar-width:         16rem;
+      --sidebar-width-icon:    3rem;
+    }
+    .dark {
+      --background:            oklch(0.145 0 0);
+      --foreground:            oklch(0.985 0 0);
+      --card:                  oklch(0.205 0 0);
+      --card-foreground:       oklch(0.985 0 0);
+      --primary:               oklch(0.985 0 0);
+      --primary-foreground:    oklch(0.205 0 0);
+      --secondary:             oklch(0.269 0 0);
+      --secondary-foreground:  oklch(0.985 0 0);
+      --muted:                 oklch(0.269 0 0);
+      --muted-foreground:      oklch(0.708 0 0);
+      --accent:                oklch(0.269 0 0);
+      --accent-foreground:     oklch(0.985 0 0);
+      --destructive:           oklch(0.396 0.141 25.723);
+      --destructive-foreground:oklch(0.985 0 0);
+      --border:                oklch(1 0 0 / 0.1);
+      --input:                 oklch(1 0 0 / 0.15);
+      --ring:                  oklch(0.556 0 0);
+
+      --sidebar:               oklch(0.205 0 0);
+      --sidebar-foreground:    oklch(0.985 0 0);
+      --sidebar-primary:       oklch(0.488 0.243 264.376);
+      --sidebar-primary-foreground: oklch(0.985 0 0);
+      --sidebar-accent:        oklch(0.269 0 0);
+      --sidebar-accent-foreground: oklch(0.985 0 0);
+      --sidebar-border:        oklch(1 0 0 / 0.1);
+      --sidebar-ring:          oklch(0.439 0.195 264.376);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+      font-size: 14px; line-height: 1.5;
+      background-color: var(--background); color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* ══════════════════════════════════════════════════
+       SIDEBAR
+       shadcn v2 sidebar: a compound component with
+       SidebarProvider, Sidebar, SidebarHeader, SidebarContent,
+       SidebarGroup, SidebarMenu, SidebarMenuItem,
+       SidebarMenuButton, SidebarFooter, SidebarTrigger,
+       SidebarRail, SidebarInset
+    ══════════════════════════════════════════════════ */
+
+    /* SidebarProvider — group/peer wrapper that provides context */
+    .sidebar-provider {
+      --sb-width: var(--sidebar-width);
+      display: flex;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Sidebar root:
+       group peer flex h-svh w-[--sidebar-width] flex-col
+       bg-sidebar text-sidebar-foreground
+       border-r border-sidebar-border */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      width: var(--sidebar-width);
+      height: 100%;
+      background-color: var(--sidebar);
+      color: var(--sidebar-foreground);
+      border-right: 1px solid var(--sidebar-border);
+      flex-shrink: 0;
+      position: relative;
+      transition: width 0.2s ease;
+      overflow: hidden;
+    }
+    .sidebar.collapsed { width: var(--sidebar-width-icon); }
+
+    /* SidebarHeader: flex flex-col gap-2 p-2 */
+    .sidebar-header {
+      display: flex; flex-direction: column; gap: 0.5rem;
+      padding: 0.5rem;
+      border-bottom: 1px solid var(--sidebar-border);
+      flex-shrink: 0;
+    }
+
+    /* SidebarContent: flex min-h-0 flex-1 flex-col gap-2 overflow-auto */
+    .sidebar-content {
+      display: flex; flex-direction: column; gap: 0.5rem;
+      flex: 1; overflow-y: auto; padding: 0.5rem 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--sidebar-border) transparent;
+    }
+
+    /* SidebarGroup: relative flex w-full min-w-0 flex-col p-2 */
+    .sidebar-group {
+      position: relative; display: flex;
+      flex-direction: column; width: 100%;
+      padding: 0 0.5rem;
+    }
+
+    /* SidebarGroupLabel: flex h-8 shrink-0 items-center
+       rounded-md px-2 text-xs font-medium
+       text-sidebar-foreground/70 outline-none */
+    .sidebar-group-label {
+      display: flex; align-items: center;
+      height: 2rem; flex-shrink: 0;
+      border-radius: calc(var(--radius) - 4px);
+      padding: 0 0.5rem;
+      font-size: 0.75rem; font-weight: 500;
+      color: color-mix(in oklab, var(--sidebar-foreground) 70%, transparent);
+      white-space: nowrap; overflow: hidden;
+      letter-spacing: 0.01em;
+    }
+
+    /* SidebarGroupContent */
+    .sidebar-group-content {
+      display: flex; flex-direction: column; gap: 0.25rem; width: 100%;
+    }
+
+    /* SidebarMenu: flex w-full min-w-0 flex-col gap-1 */
+    .sidebar-menu {
+      display: flex; flex-direction: column; gap: 0.25rem;
+      width: 100%; min-width: 0;
+      list-style: none;
+    }
+
+    /* SidebarMenuItem */
+    .sidebar-menu-item { position: relative; }
+
+    /* SidebarMenuButton:
+       peer/menu-button flex w-full items-center gap-2
+       overflow-hidden rounded-md p-2 text-left text-sm
+       outline-none ring-sidebar-ring
+       hover:bg-sidebar-accent hover:text-sidebar-accent-foreground
+       active:bg-sidebar-accent active:text-sidebar-accent-foreground
+       data-[active=true]:bg-sidebar-primary
+       data-[active=true]:font-medium
+       data-[active=true]:text-sidebar-primary-foreground
+       disabled:pointer-events-none disabled:opacity-50
+       group-has-[[data-sidebar=menu-action]]/menu-item:pr-8
+       aria-disabled:pointer-events-none aria-disabled:opacity-50 */
+    .sidebar-menu-btn {
+      display: flex; align-items: center; gap: 0.5rem;
+      width: 100%; overflow: hidden;
+      border-radius: calc(var(--radius) - 4px);
+      padding: 0.5rem;
+      font-size: 0.875rem; font-weight: 400;
+      text-align: left; outline: none;
+      border: none; background: none; cursor: pointer;
+      color: var(--sidebar-foreground);
+      font-family: inherit;
+      white-space: nowrap;
+      transition: background-color 0.1s, color 0.1s;
+    }
+    .sidebar-menu-btn:hover {
+      background-color: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+    .sidebar-menu-btn.active {
+      background-color: var(--sidebar-primary);
+      color: var(--sidebar-primary-foreground);
+      font-weight: 500;
+    }
+    .dark .sidebar-menu-btn.active {
+      background-color: var(--sidebar-primary);
+      color: var(--sidebar-primary-foreground);
+    }
+    .sidebar-menu-btn:disabled { opacity: 0.5; pointer-events: none; }
+    .sidebar-menu-btn svg {
+      width: 1rem; height: 1rem; flex-shrink: 0;
+    }
+    /* size="lg" variant: h-12 text-sm */
+    .sidebar-menu-btn.lg {
+      height: 3rem; padding: 0 0.5rem;
+      gap: 0.75rem;
+    }
+
+    /* SidebarMenuSub: ml-3.5 flex min-w-0 translate-x-px
+       flex-col gap-1 border-l border-sidebar-border px-2.5 py-0.5 */
+    .sidebar-menu-sub {
+      margin-left: 0.875rem;
+      border-left: 1px solid var(--sidebar-border);
+      padding: 0.125rem 0.625rem;
+      display: flex; flex-direction: column; gap: 0.25rem;
+      overflow: hidden; max-height: 0;
+      transition: max-height 0.2s ease;
+    }
+    .sidebar-menu-sub.open { max-height: 20rem; }
+
+    /* SidebarMenuSubButton:
+       flex h-7 min-w-0 -translate-x-px items-center
+       gap-2 overflow-hidden rounded-md px-2 text-sidebar-foreground
+       outline-none hover:bg-sidebar-accent
+       hover:text-sidebar-accent-foreground */
+    .sidebar-menu-sub-btn {
+      display: flex; align-items: center; gap: 0.5rem;
+      height: 1.75rem; min-width: 0;
+      border-radius: calc(var(--radius) - 4px);
+      padding: 0 0.5rem;
+      font-size: 0.8125rem; color: var(--sidebar-foreground);
+      border: none; background: none; cursor: pointer;
+      font-family: inherit; white-space: nowrap;
+      overflow: hidden; width: 100%; text-align: left;
+      transition: background-color 0.1s, color 0.1s;
+    }
+    .sidebar-menu-sub-btn:hover {
+      background-color: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+    .sidebar-menu-sub-btn.active {
+      background-color: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+      font-weight: 500;
+    }
+
+    /* SidebarMenuAction:
+       absolute right-1 top-1.5 flex aspect-square w-5
+       items-center justify-center rounded-md */
+    .sidebar-menu-action {
+      position: absolute; right: 0.375rem; top: 0.375rem;
+      display: flex; align-items: center; justify-content: center;
+      width: 1.25rem; height: 1.25rem;
+      border-radius: calc(var(--radius) - 4px);
+      opacity: 0; pointer-events: none;
+      border: none; background: none; cursor: pointer;
+      color: var(--sidebar-foreground);
+      transition: opacity 0.15s, background-color 0.1s;
+      font-family: inherit;
+    }
+    .sidebar-menu-action svg { width: 0.875rem; height: 0.875rem; }
+    .sidebar-menu-item:hover .sidebar-menu-action { opacity: 1; pointer-events: auto; }
+    .sidebar-menu-action:hover { background-color: var(--sidebar-accent); }
+
+    /* SidebarMenuBadge: absolute right-1 flex h-5 min-w-5
+       items-center justify-center rounded-md px-1
+       text-xs font-medium tabular-nums text-sidebar-foreground */
+    .sidebar-menu-badge {
+      margin-left: auto; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      min-width: 1.25rem; height: 1.25rem;
+      border-radius: calc(var(--radius) - 4px);
+      padding: 0 0.25rem;
+      font-size: 0.6875rem; font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      color: var(--sidebar-foreground);
+      background-color: var(--sidebar-accent);
+    }
+    .sidebar-menu-btn.active .sidebar-menu-badge {
+      background-color: color-mix(in oklab, var(--sidebar-primary-foreground) 20%, transparent);
+      color: var(--sidebar-primary-foreground);
+    }
+
+    /* SidebarMenuSkeleton */
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .sidebar-menu-skeleton {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem; border-radius: calc(var(--radius) - 4px);
+    }
+    .sk {
+      background-color: color-mix(in oklab, var(--sidebar-foreground) 8%, transparent);
+      border-radius: calc(var(--radius) - 4px);
+      animation: pulse 2s cubic-bezier(0.4,0,0.6,1) infinite;
+    }
+
+    /* SidebarSeparator: mx-2 w-auto bg-sidebar-border */
+    .sidebar-sep {
+      height: 1px;
+      background-color: var(--sidebar-border);
+      margin: 0.25rem 0.5rem;
+    }
+
+    /* SidebarFooter: flex flex-col gap-2 p-2 */
+    .sidebar-footer {
+      display: flex; flex-direction: column; gap: 0.5rem;
+      padding: 0.5rem;
+      border-top: 1px solid var(--sidebar-border);
+      flex-shrink: 0;
+    }
+
+    /* SidebarTrigger: -ml-1 (icon button) */
+    .sidebar-trigger {
+      display: flex; align-items: center; justify-content: center;
+      width: 2.25rem; height: 2.25rem;
+      border-radius: calc(var(--radius) - 4px);
+      border: none; background: none; cursor: pointer;
+      color: var(--sidebar-foreground);
+      transition: background-color 0.15s, color 0.15s;
+      font-family: inherit;
+    }
+    .sidebar-trigger:hover {
+      background-color: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+    }
+    .sidebar-trigger svg { width: 1rem; height: 1rem; }
+
+    /* SidebarRail: absolute inset-y-0 z-20 hidden w-4 -translate-x-1/2
+       transition-all ease-linear after:absolute after:inset-y-0
+       after:left-1/2 after:w-[2px] hover:after:bg-sidebar-border */
+    .sidebar-rail {
+      position: absolute; right: -0.5rem; top: 0; bottom: 0;
+      width: 1rem; z-index: 20; cursor: col-resize;
+    }
+    .sidebar-rail::after {
+      content: ''; position: absolute;
+      top: 0; bottom: 0; left: 50%; width: 2px;
+      background: transparent; transition: background 0.2s;
+    }
+    .sidebar-rail:hover::after { background: var(--sidebar-border); }
+
+    /* SidebarInset: relative flex min-h-svh flex-1 flex-col
+       bg-background peer-data-[variant=inset]:m-2 ... */
+    .sidebar-inset {
+      position: relative; display: flex;
+      flex-direction: column; flex: 1;
+      background-color: var(--background);
+      min-height: 0; overflow: hidden;
+    }
+
+    /* icon label hidden when collapsed */
+    .sidebar.collapsed .sidebar-label,
+    .sidebar.collapsed .sidebar-group-label,
+    .sidebar.collapsed .sidebar-menu-badge {
+      opacity: 0; width: 0; overflow: hidden; pointer-events: none;
+    }
+    .sidebar.collapsed .sidebar-menu-btn {
+      justify-content: center; padding: 0.5rem;
+    }
+    .sidebar.collapsed .sidebar-menu-btn.lg {
+      justify-content: center; padding: 0;
+    }
+    .sidebar.collapsed .sidebar-menu-sub { display: none; }
+
+    /* ══════════════════════════════════════════════════
+       TABS
+       shadcn Tabs: TabsList, TabsTrigger, TabsContent
+    ══════════════════════════════════════════════════ */
+
+    /* TabsList:
+       inline-flex h-9 items-center justify-center
+       rounded-lg bg-muted p-1 text-muted-foreground */
+    .tabs-list {
+      display: inline-flex; align-items: center; justify-content: center;
+      height: 2.25rem;
+      border-radius: calc(var(--radius) - 2px);
+      background-color: var(--muted);
+      padding: 0.25rem; gap: 0.125rem;
+      color: var(--muted-foreground);
+    }
+    .tabs-list.full { display: flex; width: 100%; }
+
+    /* TabsTrigger:
+       inline-flex items-center justify-center whitespace-nowrap
+       rounded-md px-3 py-1 text-sm font-medium ring-offset-background
+       transition-all focus-visible:outline-none focus-visible:ring-2
+       focus-visible:ring-ring focus-visible:ring-offset-2
+       disabled:pointer-events-none disabled:opacity-50
+       data-[state=active]:bg-background
+       data-[state=active]:text-foreground
+       data-[state=active]:shadow */
+    .tabs-trigger {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.375rem;
+      white-space: nowrap;
+      border-radius: calc(var(--radius) - 4px);
+      padding: 0.25rem 0.75rem;
+      font-size: 0.875rem; font-weight: 500;
+      color: inherit; border: none; background: none;
+      cursor: pointer; font-family: inherit;
+      transition: color 0.15s, background-color 0.15s, box-shadow 0.15s;
+      outline: none; flex: 0 0 auto;
+    }
+    .tabs-list.full .tabs-trigger { flex: 1; }
+    .tabs-trigger:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    .tabs-trigger[disabled] { opacity: 0.5; pointer-events: none; }
+    .tabs-trigger.active {
+      background-color: var(--background);
+      color: var(--foreground);
+      box-shadow: 0 1px 3px 0 rgb(0 0 0/.1), 0 1px 2px -1px rgb(0 0 0/.1);
+    }
+    .tabs-trigger svg { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+
+    /* TabsContent:
+       mt-2 ring-offset-background focus-visible:outline-none
+       focus-visible:ring-2 focus-visible:ring-ring
+       focus-visible:ring-offset-2 */
+    .tabs-content {
+      display: none; margin-top: 0.5rem; outline: none;
+    }
+    .tabs-content.active { display: block; }
+    .tabs-content:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    /* ─── SHARED ─── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.5rem; white-space: nowrap;
+      border-radius: calc(var(--radius) - 2px);
+      font-size: 0.875rem; font-weight: 500; font-family: inherit;
+      border: none; cursor: pointer; outline: none;
+      transition: background-color 0.15s, opacity 0.15s;
+      height: 2.5rem; padding: 0 1rem;
+    }
+    .btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    .btn svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+    .btn-default { background-color: var(--primary); color: var(--primary-foreground); }
+    .btn-default:hover { opacity: 0.9; }
+    .btn-outline { background-color: transparent; border: 1px solid var(--border); color: var(--foreground); }
+    .btn-outline:hover { background-color: var(--accent); }
+    .btn-ghost { background-color: transparent; color: var(--foreground); }
+    .btn-ghost:hover { background-color: var(--accent); }
+    .btn-sm { height: 2.25rem; padding: 0 0.75rem; border-radius: calc(var(--radius) - 4px); }
+    .btn-icon-sm { height: 2.25rem; width: 2.25rem; padding: 0; border-radius: calc(var(--radius) - 4px); }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      border-radius: 9999px; border: 1px solid transparent;
+      padding: 0.125rem 0.625rem;
+      font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+    }
+    .badge-secondary { background-color: var(--secondary); color: var(--secondary-foreground); }
+    .badge-outline { border-color: var(--border); color: var(--foreground); }
+    .badge-green { background-color: oklch(0.92 0.07 142); color: oklch(0.38 0.14 142); }
+    .dark .badge-green { background-color: oklch(0.28 0.06 142); color: oklch(0.72 0.14 142); }
+    .badge-yellow { background-color: oklch(0.95 0.08 90); color: oklch(0.42 0.13 80); }
+    .dark .badge-yellow { background-color: oklch(0.3 0.06 80); color: oklch(0.82 0.14 80); }
+    .badge-red { background-color: color-mix(in oklab, var(--destructive) 12%, var(--background)); color: var(--destructive); }
+
+    .field-input {
+      height: 2.5rem; width: 100%;
+      border-radius: calc(var(--radius) - 2px); border: 1px solid var(--input);
+      background-color: var(--background); padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-family: inherit; color: var(--foreground);
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+      display: flex;
+    }
+    .field-input:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 25%, transparent);
+    }
+    .field-input::placeholder { color: var(--muted-foreground); }
+
+    /* ─── LAYOUT ─── */
+    .page { min-height: 100vh; background-color: var(--background); padding: 2rem 1rem 4rem; }
+    .container { max-width: 960px; margin: 0 auto; }
+    .page-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+      margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .page-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; }
+    .page-subtitle { font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.25rem; }
+    .section-title { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 0.25rem; margin-top: 2.5rem; }
+    .section-title:first-of-type { margin-top: 0; }
+    .section-sub { font-size: 0.8125rem; color: var(--muted-foreground); margin-bottom: 1rem; }
+    .preview { border: 1px solid var(--border); border-radius: var(--radius); background-color: var(--card); overflow: hidden; }
+    .preview-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 1rem; padding: 1.25rem 1.5rem; }
+    .preview-row + .preview-row { border-top: 1px solid var(--border); }
+    .row-label { font-size: 0.75rem; font-weight: 500; color: var(--muted-foreground); width: 6rem; flex-shrink: 0; padding-top: 0.3rem; }
+    .sep { height: 1px; background-color: var(--border); margin: 2.5rem 0 0; }
+    .theme-toggle {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background-color: var(--secondary); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.375rem 0.75rem;
+      font-size: 0.8125rem; font-weight: 500; cursor: pointer;
+      color: var(--foreground); font-family: inherit; white-space: nowrap;
+    }
+    .theme-toggle:hover { background-color: var(--accent); }
+    .page-footer {
+      text-align: center; padding: 2rem 0 0.5rem;
+      border-top: 1px solid var(--border); margin-top: 3rem;
+      font-size: 0.75rem; color: var(--muted-foreground);
+    }
+    code {
+      font-family: 'Geist Mono', monospace; font-size: 0.8125rem;
+      background-color: var(--muted); padding: 0.125rem 0.375rem; border-radius: 4px;
+    }
+    .sub-heading {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 0.875rem;
+    }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 600px) { .grid2 { grid-template-columns: 1fr; } }
+
+    /* avatar in sidebar */
+    .sb-avatar {
+      width: 2rem; height: 2rem; border-radius: var(--radius);
+      background-color: var(--sidebar-accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--sidebar-accent-foreground); flex-shrink: 0;
+    }
+    .sb-avatar.circle { border-radius: 9999px; }
+
+    /* chevron for collapsible groups */
+    .chevron-btn {
+      margin-left: auto; display: flex; align-items: center; justify-content: center;
+      width: 1.25rem; height: 1.25rem; flex-shrink: 0;
+      transition: transform 0.2s ease;
+    }
+    .chevron-btn svg { width: 0.875rem; height: 0.875rem; color: var(--sidebar-foreground); opacity: 0.5; }
+    .open > .sidebar-menu-btn .chevron-btn { transform: rotate(180deg); }
+
+    /* tooltip placeholder shown when collapsed */
+    .sidebar.collapsed .sidebar-menu-btn:hover::after {
+      content: attr(data-tooltip);
+      position: absolute; left: calc(var(--sidebar-width-icon) + 0.5rem);
+      top: 50%; transform: translateY(-50%);
+      background: var(--primary); color: var(--primary-foreground);
+      padding: 0.25rem 0.5rem; border-radius: 4px;
+      font-size: 0.75rem; white-space: nowrap; z-index: 100;
+      pointer-events: none;
+    }
+
+    /* Tab underline variant */
+    .tabs-list.underline {
+      background: none; height: auto; padding: 0;
+      border-bottom: 1px solid var(--border);
+      border-radius: 0; gap: 0;
+    }
+    .tabs-list.underline .tabs-trigger {
+      border-radius: 0; height: 2.5rem; padding: 0 0.875rem;
+      color: var(--muted-foreground); margin-bottom: -1px;
+      border-bottom: 2px solid transparent; background: none; box-shadow: none;
+    }
+    .tabs-list.underline .tabs-trigger.active {
+      color: var(--foreground); font-weight: 500;
+      border-bottom-color: var(--foreground);
+      background: none; box-shadow: none;
+    }
+    .tabs-list.underline .tabs-trigger:hover:not(.active) {
+      color: var(--foreground); background: none;
+    }
+
+    /* Tab pills variant */
+    .tabs-list.pills {
+      background: none; height: auto; padding: 0; gap: 0.375rem;
+    }
+    .tabs-list.pills .tabs-trigger {
+      border-radius: 9999px; border: 1px solid var(--border);
+      color: var(--muted-foreground); box-shadow: none; background: none;
+    }
+    .tabs-list.pills .tabs-trigger.active {
+      background-color: var(--primary); color: var(--primary-foreground);
+      border-color: var(--primary); box-shadow: none;
+    }
+    .tabs-list.pills .tabs-trigger:hover:not(.active) {
+      background-color: var(--accent); color: var(--accent-foreground);
+    }
+
+    /* tab content card wrapper */
+    .tab-card {
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.5rem; background-color: var(--card);
+    }
+    .tab-card-title { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .tab-card-desc  { font-size: 0.8125rem; color: var(--muted-foreground); margin-bottom: 1rem; line-height: 1.5; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .field { display: flex; flex-direction: column; gap: 0.375rem; }
+    .field-label { font-size: 0.875rem; font-weight: 500; }
+
+    /* content pane mockup inside sidebar demo */
+    .content-pane {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden; min-width: 0;
+    }
+    .content-topbar {
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 0.75rem 1rem; border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .content-body { flex: 1; padding: 1rem; overflow-y: auto; }
+  </style>
+</head>
+<body>
+
+<div class="page">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span style="font-weight:600">shadcn/ui</span>
+        </div>
+        <h1 class="page-title">Sidebar &amp; Tabs</h1>
+        <p class="page-subtitle">Composable navigation shell with collapsible groups, and a tab interface for switching between views.</p>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <svg id="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg id="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </div>
+
+    <!-- ══ SIDEBAR ══ -->
+    <h2 class="section-title">Sidebar</h2>
+    <p class="section-sub">A composable, themeable sidebar with collapsible groups, sub-menus, badges and a rail toggle. Powered by the <code>sidebar</code> design tokens.</p>
+
+    <!-- Full sidebar demo -->
+    <div class="preview" style="overflow:hidden">
+      <div class="sidebar-provider" style="height:36rem">
+
+        <!-- ── THE SIDEBAR ── -->
+        <aside class="sidebar" id="main-sidebar">
+
+          <!-- SidebarHeader: brand + trigger -->
+          <div class="sidebar-header">
+            <div class="sidebar-menu-btn lg" style="cursor:default">
+              <div class="sb-avatar" style="background:var(--sidebar-primary);color:var(--sidebar-primary-foreground);border-radius:var(--radius);width:2rem;height:2rem">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              </div>
+              <div class="sidebar-label" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:0.125rem;overflow:hidden">
+                <span style="font-size:0.875rem;font-weight:600;line-height:1.2;white-space:nowrap">Transport CI</span>
+                <span style="font-size:0.75rem;color:color-mix(in oklab,var(--sidebar-foreground) 60%,transparent);white-space:nowrap">Enterprise plan</span>
+              </div>
+              <button class="sidebar-trigger" onclick="toggleSidebar()" title="Toggle sidebar" style="margin-left:auto;flex-shrink:0">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
+              </button>
+            </div>
+
+            <!-- Search -->
+            <div class="sidebar-menu-btn" style="cursor:default;color:var(--sidebar-muted-foreground);border:1px solid var(--sidebar-border)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="opacity:0.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <span class="sidebar-label" style="font-size:0.875rem;color:color-mix(in oklab,var(--sidebar-foreground) 50%,transparent)">Search…</span>
+              <kbd class="sidebar-label" style="margin-left:auto;font-size:0.6875rem;font-family:'Geist Mono',monospace;background:var(--sidebar-accent);padding:0.1rem 0.3rem;border-radius:3px;opacity:0.7">⌘K</kbd>
+            </div>
+          </div>
+
+          <!-- SidebarContent -->
+          <div class="sidebar-content">
+
+            <!-- Group: Main Navigation -->
+            <div class="sidebar-group">
+              <div class="sidebar-group-label sidebar-label">Platform</div>
+              <ul class="sidebar-menu">
+
+                <li class="sidebar-menu-item">
+                  <button class="sidebar-menu-btn active" data-tooltip="Dashboard" onclick="setSidebarActive(this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    <span class="sidebar-label">Dashboard</span>
+                  </button>
+                </li>
+
+                <!-- Collapsible: Exploitation -->
+                <li class="sidebar-menu-item open" id="group-exploitation">
+                  <button class="sidebar-menu-btn" data-tooltip="Exploitation" onclick="toggleGroup('group-exploitation', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                    <span class="sidebar-label">Exploitation</span>
+                    <span class="sidebar-menu-badge sidebar-label">4</span>
+                    <span class="chevron-btn sidebar-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+                  </button>
+                  <div class="sidebar-menu-sub open" id="sub-exploitation">
+                    <button class="sidebar-menu-sub-btn active" onclick="setSidebarActive(this)">Voyages</button>
+                    <button class="sidebar-menu-sub-btn" onclick="setSidebarActive(this)">Reservations</button>
+                    <button class="sidebar-menu-sub-btn" onclick="setSidebarActive(this)">Chauffeurs</button>
+                  </div>
+                </li>
+
+                <li class="sidebar-menu-item">
+                  <button class="sidebar-menu-btn" data-tooltip="Billetterie" onclick="setSidebarActive(this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                    <span class="sidebar-label">Billetterie</span>
+                    <span class="sidebar-menu-badge sidebar-label">12</span>
+                  </button>
+                </li>
+
+                <!-- Collapsible: Flotte -->
+                <li class="sidebar-menu-item" id="group-flotte">
+                  <button class="sidebar-menu-btn" data-tooltip="Flotte" onclick="toggleGroup('group-flotte', this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span class="sidebar-label">Flotte</span>
+                    <span class="chevron-btn sidebar-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></span>
+                  </button>
+                  <div class="sidebar-menu-sub" id="sub-flotte">
+                    <button class="sidebar-menu-sub-btn" onclick="setSidebarActive(this)">Véhicules</button>
+                    <button class="sidebar-menu-sub-btn" onclick="setSidebarActive(this)">Maintenance</button>
+                    <button class="sidebar-menu-sub-btn" onclick="setSidebarActive(this)">Assurances</button>
+                  </div>
+                </li>
+
+                <li class="sidebar-menu-item">
+                  <button class="sidebar-menu-btn" data-tooltip="Rapports" onclick="setSidebarActive(this)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    <span class="sidebar-label">Rapports</span>
+                  </button>
+                </li>
+
+              </ul>
+            </div>
+
+            <div class="sidebar-sep"></div>
+
+            <!-- Group: Projects / Companies -->
+            <div class="sidebar-group">
+              <div class="sidebar-group-label sidebar-label">Companies</div>
+              <ul class="sidebar-menu">
+                <li class="sidebar-menu-item">
+                  <button class="sidebar-menu-btn" data-tooltip="Trans Ivoire" onclick="setSidebarActive(this)">
+                    <div class="sb-avatar" style="width:1.25rem;height:1.25rem;border-radius:3px;font-size:0.5625rem;background:oklch(0.93 0.05 250);color:oklch(0.35 0.12 250)">TI</div>
+                    <span class="sidebar-label">Trans Ivoire</span>
+                    <button class="sidebar-menu-action" title="Options"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </button>
+                </li>
+                <li class="sidebar-menu-item">
+                  <button class="sidebar-menu-btn" data-tooltip="Yango Taxis" onclick="setSidebarActive(this)">
+                    <div class="sb-avatar" style="width:1.25rem;height:1.25rem;border-radius:3px;font-size:0.5625rem;background:oklch(0.92 0.07 142);color:oklch(0.38 0.14 142)">YT</div>
+                    <span class="sidebar-label">Yango Taxis</span>
+                    <button class="sidebar-menu-action" title="Options"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </button>
+                </li>
+                <li class="sidebar-menu-item">
+                  <button class="sidebar-menu-btn" data-tooltip="Add company" style="color:color-mix(in oklab,var(--sidebar-foreground) 60%,transparent)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    <span class="sidebar-label">Add company</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+
+          <!-- SidebarFooter: user menu -->
+          <div class="sidebar-footer">
+            <div class="sidebar-menu-btn lg" style="cursor:default">
+              <div class="sb-avatar circle">AK</div>
+              <div class="sidebar-label" style="flex:1;min-width:0;display:flex;flex-direction:column;gap:0.125rem;overflow:hidden">
+                <span style="font-size:0.875rem;font-weight:500;line-height:1.2;white-space:nowrap">Adamo Koné</span>
+                <span style="font-size:0.75rem;color:color-mix(in oklab,var(--sidebar-foreground) 60%,transparent);white-space:nowrap">adamo@transport.ci</span>
+              </div>
+              <button class="sidebar-trigger sidebar-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- SidebarRail -->
+          <div class="sidebar-rail" onclick="toggleSidebar()" title="Toggle sidebar"></div>
+        </aside>
+
+        <!-- Main content pane -->
+        <div class="content-pane">
+          <div class="content-topbar">
+            <button class="btn btn-ghost btn-icon-sm" onclick="toggleSidebar()" title="Toggle sidebar">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+            <nav style="display:flex;align-items:center;gap:0.375rem;font-size:0.875rem;color:var(--muted-foreground)">
+              <span>Exploitation</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+              <span style="color:var(--foreground);font-weight:500">Voyages</span>
+            </nav>
+            <div style="margin-left:auto;display:flex;gap:0.5rem">
+              <button class="btn btn-outline btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                Filter
+              </button>
+              <button class="btn btn-default btn-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                New voyage
+              </button>
+            </div>
+          </div>
+          <div class="content-body">
+            <div style="display:flex;flex-direction:column;gap:0.5rem">
+              <div style="border:1px solid var(--border);border-radius:var(--radius);padding:0.875rem 1rem;display:flex;align-items:center;gap:0.75rem;background:var(--accent)">
+                <div style="width:2.25rem;height:2.25rem;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary-foreground)"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <p style="font-weight:500;font-size:0.875rem">Abidjan → Yamoussoukro</p>
+                  <p style="font-size:0.75rem;color:var(--muted-foreground)">CI-5934-AB · 07:30 → 11:00 · 32/36 seats</p>
+                </div>
+                <span class="badge badge-green">En route</span>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:var(--radius);padding:0.875rem 1rem;display:flex;align-items:center;gap:0.75rem">
+                <div style="width:2.25rem;height:2.25rem;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted-foreground)"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <p style="font-weight:500;font-size:0.875rem">Abidjan → Bouaké</p>
+                  <p style="font-size:0.75rem;color:var(--muted-foreground)">CI-1122-CD · 09:00 → 14:30 · 48/54 seats</p>
+                </div>
+                <span class="badge badge-yellow">Boarding</span>
+              </div>
+              <div style="border:1px solid var(--border);border-radius:var(--radius);padding:0.875rem 1rem;display:flex;align-items:center;gap:0.75rem">
+                <div style="width:2.25rem;height:2.25rem;border-radius:50%;background:var(--muted);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted-foreground)"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <p style="font-weight:500;font-size:0.875rem">Man → Abidjan</p>
+                  <p style="font-size:0.75rem;color:var(--muted-foreground)">CI-7788-EF · 06:00 → 13:45 · 12/54 seats</p>
+                </div>
+                <span class="badge badge-secondary">Scheduled</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ TABS ══ -->
+    <div class="sep"></div>
+    <h2 class="section-title" style="margin-top:2rem">Tabs</h2>
+    <p class="section-sub">A set of layered sections of content — known as tab panels — that are displayed one at a time. Built on Radix UI Tabs.</p>
+
+    <div class="preview">
+
+      <!-- Default tabs -->
+      <div class="preview-row" style="flex-direction:column;gap:1rem">
+        <p class="sub-heading">Default — account settings</p>
+        <div>
+          <div class="tabs-list">
+            <button class="tabs-trigger active" onclick="switchTab(this,'tabs-account')">Account</button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-account')">Password</button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-account')">Notifications</button>
+            <button class="tabs-trigger" disabled>Billing</button>
+          </div>
+
+          <div class="tabs-content active" id="tab-account-0">
+            <div class="tab-card">
+              <h3 class="tab-card-title">Account</h3>
+              <p class="tab-card-desc">Make changes to your account here. Click save when you're done.</p>
+              <div class="form-row" style="margin-bottom:0.75rem">
+                <div class="field"><label class="field-label">Name</label><input class="field-input" value="Sofia Davis" /></div>
+                <div class="field"><label class="field-label">Username</label><input class="field-input" value="@sofiadavis" /></div>
+              </div>
+              <div style="display:flex;gap:0.5rem">
+                <button class="btn btn-default btn-sm">Save changes</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="tabs-content" id="tab-account-1">
+            <div class="tab-card">
+              <h3 class="tab-card-title">Password</h3>
+              <p class="tab-card-desc">Change your password here. After saving, you'll be logged out.</p>
+              <div style="display:flex;flex-direction:column;gap:0.625rem;margin-bottom:0.875rem">
+                <div class="field"><label class="field-label">Current password</label><input class="field-input" type="password" value="••••••••" /></div>
+                <div class="field"><label class="field-label">New password</label><input class="field-input" type="password" placeholder="New password" /></div>
+                <div class="field"><label class="field-label">Confirm password</label><input class="field-input" type="password" placeholder="Confirm password" /></div>
+              </div>
+              <button class="btn btn-default btn-sm">Save password</button>
+            </div>
+          </div>
+
+          <div class="tabs-content" id="tab-account-2">
+            <div class="tab-card">
+              <h3 class="tab-card-title">Notifications</h3>
+              <p class="tab-card-desc">Configure how you receive notifications.</p>
+              <div style="display:flex;flex-direction:column;gap:0.625rem">
+                <label style="display:flex;align-items:center;gap:0.625rem;cursor:pointer;font-size:0.875rem">
+                  <input type="checkbox" checked style="cursor:pointer" /> Email notifications
+                </label>
+                <label style="display:flex;align-items:center;gap:0.625rem;cursor:pointer;font-size:0.875rem">
+                  <input type="checkbox" style="cursor:pointer" /> SMS alerts
+                </label>
+                <label style="display:flex;align-items:center;gap:0.625rem;cursor:pointer;font-size:0.875rem">
+                  <input type="checkbox" checked style="cursor:pointer" /> Weekly digest
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full-width tabs -->
+      <div class="preview-row" style="flex-direction:column;gap:1rem;border-top:1px solid var(--border)">
+        <p class="sub-heading">Full-width</p>
+        <div style="max-width:28rem">
+          <div class="tabs-list full">
+            <button class="tabs-trigger active" onclick="switchTab(this,'tabs-full')">Overview</button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-full')">Analytics</button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-full')">Reports</button>
+          </div>
+          <div class="tabs-content active" id="tab-full-0">
+            <div class="tab-card" style="display:flex;flex-direction:column;gap:0.5rem">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+                <div style="border:1px solid var(--border);border-radius:calc(var(--radius)-2px);padding:0.875rem">
+                  <p style="font-size:0.75rem;color:var(--muted-foreground);margin-bottom:0.25rem">Revenue</p>
+                  <p style="font-size:1.25rem;font-weight:700;letter-spacing:-0.03em">2 534 400</p>
+                  <p style="font-size:0.75rem;color:oklch(0.6 0.19 142)">+12.5% this month</p>
+                </div>
+                <div style="border:1px solid var(--border);border-radius:calc(var(--radius)-2px);padding:0.875rem">
+                  <p style="font-size:0.75rem;color:var(--muted-foreground);margin-bottom:0.25rem">Voyages</p>
+                  <p style="font-size:1.25rem;font-weight:700;letter-spacing:-0.03em">142</p>
+                  <p style="font-size:0.75rem;color:oklch(0.6 0.19 142)">+8 this week</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="tabs-content" id="tab-full-1">
+            <div class="tab-card"><p style="font-size:0.875rem;color:var(--muted-foreground)">Analytics charts would render here — route performance, seat utilization, revenue trends.</p></div>
+          </div>
+          <div class="tabs-content" id="tab-full-2">
+            <div class="tab-card"><p style="font-size:0.875rem;color:var(--muted-foreground)">Download PDF/Excel reports here — Q1 2026 summary, per-company breakdown, monthly P&L.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Underline variant -->
+      <div class="preview-row" style="flex-direction:column;gap:1rem;border-top:1px solid var(--border)">
+        <p class="sub-heading">Underline variant</p>
+        <div>
+          <div class="tabs-list underline">
+            <button class="tabs-trigger active" onclick="switchTab(this,'tabs-ul')">All trips</button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-ul')">In progress</button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-ul')">Completed</button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-ul')">Cancelled</button>
+          </div>
+          <div class="tabs-content active" id="tab-ul-0" style="margin-top:1rem"><p style="font-size:0.875rem;color:var(--muted-foreground)">Showing all 142 trips for this period.</p></div>
+          <div class="tabs-content" id="tab-ul-1" style="margin-top:1rem"><p style="font-size:0.875rem;color:var(--muted-foreground)">2 trips currently in progress.</p></div>
+          <div class="tabs-content" id="tab-ul-2" style="margin-top:1rem"><p style="font-size:0.875rem;color:var(--muted-foreground)">138 trips completed successfully.</p></div>
+          <div class="tabs-content" id="tab-ul-3" style="margin-top:1rem"><p style="font-size:0.875rem;color:var(--muted-foreground)">2 trips cancelled this period.</p></div>
+        </div>
+      </div>
+
+      <!-- Pills variant -->
+      <div class="preview-row" style="flex-direction:column;gap:1rem;border-top:1px solid var(--border)">
+        <p class="sub-heading">Pills variant</p>
+        <div>
+          <div class="tabs-list pills">
+            <button class="tabs-trigger active" onclick="switchTab(this,'tabs-pills')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              Grid
+            </button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-pills')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              List
+            </button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-pills')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              Calendar
+            </button>
+          </div>
+          <div class="tabs-content active" id="tab-pills-0" style="margin-top:1rem">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem">
+              <div style="border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem;font-size:0.8125rem;font-weight:500">Abidjan → Yam.</div>
+              <div style="border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem;font-size:0.8125rem;font-weight:500">Abidjan → Bouaké</div>
+              <div style="border:1px solid var(--border);border-radius:var(--radius);padding:0.75rem;font-size:0.8125rem;font-weight:500">Man → Abidjan</div>
+            </div>
+          </div>
+          <div class="tabs-content" id="tab-pills-1" style="margin-top:1rem">
+            <div style="display:flex;flex-direction:column;gap:0.375rem">
+              <div style="border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 0.875rem;font-size:0.8125rem;font-weight:500;display:flex;align-items:center;justify-content:space-between"><span>Abidjan → Yamoussoukro</span><span class="badge badge-green">En route</span></div>
+              <div style="border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 0.875rem;font-size:0.8125rem;font-weight:500;display:flex;align-items:center;justify-content:space-between"><span>Abidjan → Bouaké</span><span class="badge badge-yellow">Boarding</span></div>
+              <div style="border:1px solid var(--border);border-radius:var(--radius);padding:0.5rem 0.875rem;font-size:0.8125rem;font-weight:500;display:flex;align-items:center;justify-content:space-between"><span>Man → Abidjan</span><span class="badge badge-secondary">Scheduled</span></div>
+            </div>
+          </div>
+          <div class="tabs-content" id="tab-pills-2" style="margin-top:1rem">
+            <p style="font-size:0.875rem;color:var(--muted-foreground)">Calendar view — March 2026.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs with icons -->
+      <div class="preview-row" style="flex-direction:column;gap:1rem;border-top:1px solid var(--border)">
+        <p class="sub-heading">With icons &amp; badge</p>
+        <div>
+          <div class="tabs-list">
+            <button class="tabs-trigger active" onclick="switchTab(this,'tabs-icons')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              Home
+            </button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-icons')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Team
+              <span style="background:var(--muted-foreground);color:var(--background);border-radius:9999px;padding:0 0.3rem;font-size:0.625rem;font-weight:700;line-height:1.6">3</span>
+            </button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-icons')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Billing
+            </button>
+            <button class="tabs-trigger" onclick="switchTab(this,'tabs-icons')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+              Settings
+            </button>
+          </div>
+          <div class="tabs-content active" id="tab-icons-0" style="margin-top:0.75rem"><p style="font-size:0.875rem;color:var(--muted-foreground)">Home dashboard content.</p></div>
+          <div class="tabs-content" id="tab-icons-1" style="margin-top:0.75rem"><p style="font-size:0.875rem;color:var(--muted-foreground)">3 team members with active access.</p></div>
+          <div class="tabs-content" id="tab-icons-2" style="margin-top:0.75rem"><p style="font-size:0.875rem;color:var(--muted-foreground)">Billing and subscription management.</p></div>
+          <div class="tabs-content" id="tab-icons-3" style="margin-top:0.75rem"><p style="font-size:0.875rem;color:var(--muted-foreground)">Application settings and preferences.</p></div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="page-footer">
+      shadcn/ui Sidebar &amp; Tabs — Pixel-perfect HTML preview · Real CSS variables &amp; design tokens
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ── Theme ── */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.classList.contains('dark');
+    html.classList.toggle('dark', !isDark);
+    document.getElementById('icon-sun').style.display  = isDark ? 'block' : 'none';
+    document.getElementById('icon-moon').style.display = isDark ? 'none'  : 'block';
+    document.getElementById('theme-label').textContent = isDark ? 'Dark mode' : 'Light mode';
+  }
+
+  /* ── Sidebar ── */
+  function toggleSidebar() {
+    document.getElementById('main-sidebar').classList.toggle('collapsed');
+  }
+
+  function setSidebarActive(btn) {
+    // only deactivate top-level btns, not sub-btns mixed
+    const isSubBtn = btn.classList.contains('sidebar-menu-sub-btn');
+    if (!isSubBtn) {
+      document.querySelectorAll('.sidebar-menu-btn.active').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    } else {
+      document.querySelectorAll('.sidebar-menu-sub-btn.active').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  }
+
+  function toggleGroup(id, triggerBtn) {
+    const sub = document.getElementById('sub-' + id.replace('group-', ''));
+    const li  = document.getElementById(id);
+    if (!sub) return;
+    const isOpen = sub.classList.contains('open');
+    sub.classList.toggle('open', !isOpen);
+    li.classList.toggle('open', !isOpen);
+  }
+
+  /* ── Tabs ── */
+  function switchTab(trigger, group) {
+    const list = trigger.closest('.tabs-list');
+    const triggers = list.querySelectorAll('.tabs-trigger');
+    const idx = Array.from(triggers).indexOf(trigger);
+
+    triggers.forEach(t => t.classList.remove('active'));
+    trigger.classList.add('active');
+
+    // find content pane group by prefix
+    const prefix = 'tab-' + group.replace('tabs-','') + '-';
+    let i = 0;
+    let pane;
+    while ((pane = document.getElementById(prefix + i)) !== null) {
+      pane.classList.toggle('active', i === idx);
+      i++;
+    }
+  }
+</script>
+</body>
+</html>

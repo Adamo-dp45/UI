@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sticky footer</title>
+</head>
+<style>
+    html, body {
+        margin: 0;
+        height: 100%; /* -- */
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    header {
+        height: 60px;
+        background-color: #f3f1f1;
+    }
+
+    footer {
+        height: 60px;
+        background-color: #f3f1f1;
+        margin-top: auto; /* Vu qu'on mis une marge auto le footer sera systématiquement placé en bas */
+        flex: none; /* Pour éviter qu'il perde sa hauteur dans le cas ou le contenu décend */
+    }
+
+    main {
+        display: flex;
+        flex: 1 0; /* Si on veut qu'il prenne l'espace restant */
+    }
+
+    article {
+        flex: 1 1; /* Pour qu'il grandisse ou width 100% */
+    }
+
+    aside {
+        width: 250px;
+        flex: none;
+        background-color: #EEE;
+    }
+</style>
+<body>
+
+    <!-- Stiky footer : Un footer qui reste en bas de l'écran -->
+    <header>Header</header>
+    <main>
+        <article>Article</article>
+        <aside>Sidebar</aside>
+    </main>
+    <footer>Footer</footer>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form checkbox</title>
+    <style>
+        html,
+        body {
+            font-family: sans-serif;
+            line-height: 1.4;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+    <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+
+    <!--
+        Vu qu'il est difficile de personalisé ce type de champ on a procédé ainsi
+            - On a crée un élément qui va englobé notre label et le input
+            - !! masqué l'input avec une 'opacity:0' et on le un 'position:absolute'
+            - !! transformé notre label en 'display:grid' et on l'a séparé en 2 parties, une partie à gauche qui contiendra nos pseudo élément 'before' et 'after' et une partie à droite qui contiendra le texte
+            - !! utilisé le pseudo élément 'before' pour créer l'espace arrondi qui va faire le fond du checkbox personalisé et 'after' pour créer le curseur au milieu
+        - On a fais en sorte que ça réagisse à la taille de la police
+    -->
+    <div class="container">
+        <div class="form-check">
+            <input type="checkbox" id="cgv" name="cgv">
+            <label for="cgv">
+                J'accepte les conditions générales de vente
+            </label>
+        </div>
+    </div>
+
+</body>
+</html>

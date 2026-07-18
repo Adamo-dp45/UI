@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="fr" class="">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard & Rapports — TransportApp</title>
+
+  <!-- Polices (déjà présentes dans le dashboard principal) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+  <!--
+    Dans le vrai projet Symfony :
+      1. styles.css    → CSS du dashboard principal (tokens, sidebar, header, card, etc.)
+      2. rapports.css  → Ce fichier (uniquement les nouveaux composants de ce module)
+  -->
+  <link rel="stylesheet" href="styles.css"/>
+  <link rel="stylesheet" href="rapports.css"/>
+</head>
+
+<body>
+<div class="app-layout">
+
+  <!-- ══════════════════════════════════════════════════════════
+       SIDEBAR + HEADER  →  identiques au dashboard principal
+       Dans Twig : {% include 'partials/_sidebar.html.twig' %}
+                   {% include 'partials/_header.html.twig' %}
+       Les blocs ci-dessous sont présents pour la démo standalone.
+  ══════════════════════════════════════════════════════════════ -->
+
+  <!-- [SIDEBAR — identique au dashboard principal, non reproduite ici] -->
+
+  <div class="app-main">
+
+    <!-- [HEADER — identique au dashboard principal, non reproduit ici] -->
+
+    <!-- ══════════════════════════════════════════════════════
+         SOUS-NAVIGATION DU MODULE  — NOUVEAU
+         Barre d'onglets sous le header, propre à ce module.
+    ══════════════════════════════════════════════════════════ -->
+    <nav class="report-subnav" role="tablist" aria-label="Sections du module Dashboard & Rapports">
+
+      <!-- Onglet Dashboard principal -->
+      <button class="report-subnav__tab is-active"
+              role="tab"
+              data-target="page-dashboard"
+              aria-selected="true"
+              aria-controls="page-dashboard">
+        <span class="report-subnav__tab-dot" aria-hidden="true"></span>
+        <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+          <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+          <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+        </svg>
+        Dashboard
+      </button>
+
+      <div class="report-subnav__separator" aria-hidden="true"></div>
+
+      <!-- Onglet Exploitation -->
+      <button class="report-subnav__tab"
+              role="tab"
+              data-target="page-exploitation"
+              aria-selected="false"
+              aria-controls="page-exploitation">
+        <span class="report-subnav__tab-dot" aria-hidden="true"></span>
+        <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+        </svg>
+        Exploitation
+      </button>
+
+      <!-- Onglet Financier -->
+      <button class="report-subnav__tab"
+              role="tab"
+              data-target="page-finance"
+              aria-selected="false"
+              aria-controls="page-finance">
+        <span class="report-subnav__tab-dot" aria-hidden="true"></span>
+        <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="1" x2="12" y2="23"/>
+          <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+        </svg>
+        Financier
+      </button>
+
+      <!-- Onglet Stock -->
+      <button class="report-subnav__tab"
+              role="tab"
+              data-target="page-stock"
+              aria-selected="false"
+              aria-controls="page-stock">
+        <span class="report-subnav__tab-dot" aria-hidden="true"></span>
+        <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 8l-9-6-9 6v8l9 6 9-6V8z"/>
+        </svg>
+        Stock
+      </button>
+
+      <!-- Onglet Flotte -->
+      <button class="report-subnav__tab"
+              role="tab"
+              data-target="page-flotte"
+              aria-selected="false"
+              aria-controls="page-flotte">
+        <span class="report-subnav__tab-dot" aria-hidden="true"></span>
+        <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 17l3-9h16l3 9M1 17h22"/>
+        </svg>
+        Flotte
+      </button>
+
+      <div class="report-subnav__separator" aria-hidden="true"></div>
+
+      <!-- Onglet Centre de rapports -->
+      <button class="report-subnav__tab"
+              role="tab"
+              data-target="page-centre"
+              aria-selected="false"
+              aria-controls="page-centre">
+        <span class="report-subnav__tab-dot" aria-hidden="true"></span>
+        <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Centre de rapports
+      </button>
+
+    </nav>
+    <!-- /sous-navigation -->
+
+
+    <!-- ══════════════════════════════════════════════════════
+         CONTENU DES PAGES  (role="tabpanel")
+    ══════════════════════════════════════════════════════════ -->
+
+    <!-- ╔══════════════════════════════════════════════════════
+         ║  PAGE : DASHBOARD PRINCIPAL
+         ╚══════════════════════════════════════════════════════ -->
+    <main id="page-dashboard"
+          class="page-content report-page"
+          role="tabpanel"
+          aria-labelledby="onglet-dashboard"
+          tabindex="0">
+
+      <!-- En-tête de page -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-header__title">Tableau de bord</h1>
+          <p class="page-header__subtitle">
+            Mars 2026 &nbsp;·&nbsp; Mise à jour <strong>il y a 2 min</strong>
+          </p>
+        </div>
+        <div class="page-header__actions">
+          <select class="period-select" aria-label="Sélectionner la période">
+            <option value="today">Aujourd'hui</option>
+            <option value="week">Cette semaine</option>
+            <option value="march-2026" selected>Ce mois — Mars 2026</option>
+            <option value="q1-2026">Q1 2026</option>
+          </select>
+          <!--
+            data-export="pdf"  →  géré par ExportButtons dans rapports.js
+            Pas d'onclick inline : le JS écoute les clics via délégation.
+          -->
+          <button class="btn btn--ghost" data-export="pdf" aria-label="Exporter en PDF">
+            <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Exporter PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- Alertes opérationnelles — NOUVEAU composant op-alert -->
+      <div role="alert" aria-label="Alertes opérationnelles">
+        <div class="op-alert op-alert--red">
+          <svg class="op-alert__icon" width="14" height="14" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+          </svg>
+          <span class="op-alert__text">
+            <strong>3 pièces en rupture de stock</strong> — Filtre à huile, Plaquettes arrière, Courroie distribution.
+          </span>
+          <button class="btn btn--ghost" style="margin-left:auto;flex-shrink:0;padding:5px 12px;font-size:12.5px"
+                  aria-label="Voir les ruptures de stock">Voir</button>
+        </div>
+        <div class="op-alert op-alert--amber">
+          <svg class="op-alert__icon" width="14" height="14" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span class="op-alert__text">
+            <strong>2 voyages retardés</strong> ce jour — VOY-0343 (+45 min), VOY-0347 (+20 min).
+          </span>
+        </div>
+      </div>
+
+      <!-- ── KPI row 4 colonnes ── -->
+      <!--
+        data-kpi-value  → valeur numérique cible pour l'animation du compteur (KpiAnimator)
+        data-kpi-suffix → suffixe affiché après le chiffre
+      -->
+      <section aria-labelledby="kpi-dash-title" style="margin-top:16px">
+        <h2 id="kpi-dash-title" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Indicateurs clés</h2>
+        <div class="grid grid--4-cols" style="margin-bottom:16px">
+
+          <article class="card kpi-card" style="--kpi-accent: var(--color-amber)" aria-label="Recettes mars 2026 : 12 480 000 FCFA, hausse de 14%">
+            <div class="kpi-card__icon" style="background:var(--color-amber-light)" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+            <div class="kpi-card__value"
+                 data-kpi-value="12480000"
+                 data-kpi-suffix=""
+                 aria-label="12 480 000 FCFA">12 480 000</div>
+            <div class="kpi-card__label">FCFA recettes mars</div>
+            <div class="kpi-card__delta kpi-card__delta--up">
+              <svg width="11" height="11" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+              +14% vs fév.
+            </div>
+          </article>
+
+          <article class="card kpi-card" style="--kpi-accent: var(--color-green)" aria-label="Passagers ce mois : 3 847, hausse de 8%">
+            <div class="kpi-card__icon" style="background:var(--color-green-light)" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            </div>
+            <div class="kpi-card__value kpi-card__value--default"
+                 data-kpi-value="3847"
+                 aria-label="3 847 passagers">3 847</div>
+            <div class="kpi-card__label">Passagers ce mois</div>
+            <div class="kpi-card__delta kpi-card__delta--up">
+              <svg width="11" height="11" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+              +8% vs fév.
+            </div>
+          </article>
+
+          <article class="card kpi-card" style="--kpi-accent: var(--color-orange)" aria-label="Voyages effectués : 284, hausse de 5%">
+            <div class="kpi-card__icon" style="background:var(--color-orange-light)" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-orange)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="kpi-card__value kpi-card__value--default"
+                 data-kpi-value="284"
+                 aria-label="284 voyages">284</div>
+            <div class="kpi-card__label">Voyages effectués</div>
+            <div class="kpi-card__delta kpi-card__delta--up">
+              <svg width="11" height="11" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+              +5% vs fév.
+            </div>
+          </article>
+
+          <article class="card kpi-card" style="--kpi-accent: var(--color-violet)" aria-label="Véhicules actifs : 22, 3 en maintenance">
+            <div class="kpi-card__icon" style="background:var(--color-violet-light)" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2"><path d="M1 17l3-9h16l3 9M1 17h22M6.5 17a2 2 0 100-4 2 2 0 000 4zM17.5 17a2 2 0 100-4 2 2 0 000 4z"/></svg>
+            </div>
+            <div class="kpi-card__value kpi-card__value--default"
+                 data-kpi-value="22"
+                 aria-label="22 véhicules actifs">22</div>
+            <div class="kpi-card__label">Véhicules actifs</div>
+            <div class="kpi-card__delta kpi-card__delta--down">
+              <svg width="11" height="11" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+              3 en maintenance
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ── Graphique recettes + KPI ponctualité/remplissage ── -->
+      <div class="grid grid--3-1" style="margin-bottom:16px">
+
+        <!-- Graphique barres recettes -->
+        <section class="card" style="padding:20px" aria-labelledby="chart-recettes-title">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <div>
+              <h2 id="chart-recettes-title" class="card__title" style="margin-bottom:3px">Recettes mensuelles</h2>
+              <p style="font-size:12px;color:var(--color-text-3)">12 derniers mois · FCFA (millions)</p>
+            </div>
+            <select class="period-select" aria-label="Choisir la métrique">
+              <option>Recettes</option>
+              <option>Passagers</option>
+              <option>Voyages</option>
+            </select>
+          </div>
+
+          <!-- Y axis + bars — rendus par BarChartMonthly dans rapports.js -->
+          <div class="chart-wrapper">
+            <div class="chart-y-axis" aria-hidden="true">
+              <span>14M</span><span>10M</span><span>5M</span><span>0</span>
+            </div>
+            <div class="chart-body">
+              <!--
+                id="bar-chart-monthly-bars"   → BarChartMonthly.render() injecte les .chart-bar
+                id="bar-chart-monthly-xaxis"  → BarChartMonthly.render() injecte les labels
+              -->
+              <div class="chart-bars-area"
+                   id="bar-chart-monthly-bars"
+                   role="img"
+                   aria-label="Histogramme des recettes sur 12 mois"></div>
+              <div class="chart-x-axis"
+                   id="bar-chart-monthly-xaxis"
+                   aria-hidden="true"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Jauge taux de remplissage + ponctualité -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+
+          <!-- Taux de remplissage -->
+          <article class="card" style="padding:18px;text-align:center" aria-label="Taux de remplissage : 84%, hausse de 3 points">
+            <h2 class="card__title" style="margin-bottom:4px">Taux de remplissage</h2>
+            <!--
+              Jauge SVG demi-cercle.
+              stroke-dasharray = arc (pct × circonférence/2) + reste
+              Rayon = 40, demi-circonférence ≈ 125.6
+              Pour 84% : 0.84 × 125.6 ≈ 105.5
+            -->
+            <div class="gauge-wrap" aria-hidden="true">
+              <svg class="gauge-svg" width="120" height="68" viewBox="0 0 120 68">
+                <!-- Piste grise -->
+                <path d="M 10 65 A 50 50 0 0 1 110 65"
+                      fill="none"
+                      stroke="var(--color-surface-3)"
+                      stroke-width="12"
+                      stroke-linecap="round"/>
+                <!-- Arc rempli amber (84%) -->
+                <path d="M 10 65 A 50 50 0 0 1 110 65"
+                      fill="none"
+                      stroke="var(--color-amber)"
+                      stroke-width="12"
+                      stroke-linecap="round"
+                      stroke-dasharray="132.0 157.1"
+                      style="transform-origin:center;transition:stroke-dasharray 1.2s cubic-bezier(.4,0,.2,1)"/>
+              </svg>
+              <div class="gauge-value" style="color:var(--color-amber)">84%</div>
+            </div>
+            <p class="gauge-label">Moyenne mars 2026</p>
+            <div class="kpi-card__delta kpi-card__delta--up" style="justify-content:center;margin-top:6px">
+              <svg width="11" height="11" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+              +3 pts vs fév.
+            </div>
+          </article>
+
+          <!-- Ponctualité -->
+          <article class="card" style="padding:18px;text-align:center" aria-label="Ponctualité des départs : 91%, hausse de 2 points">
+            <h2 class="card__title" style="margin-bottom:4px">Ponctualité départs</h2>
+            <div style="font-size:32px;font-weight:700;letter-spacing:-.7px;color:var(--color-green);margin:10px 0"
+                 aria-label="91 pourcent">91%</div>
+            <div class="kpi-card__delta kpi-card__delta--up" style="justify-content:center">
+              <svg width="11" height="11" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+              +2 pts vs fév.
+            </div>
+          </article>
+
+        </div>
+      </div>
+
+      <!-- ── 3 cards : top trajets / état flotte / tickets catégorie ── -->
+      <div class="grid grid--3-cols" style="margin-bottom:16px">
+
+        <!-- Top trajets -->
+        <section class="card" aria-labelledby="top-trajets-title">
+          <div class="card-section-header">
+            <h2 class="card-section-header__title" id="top-trajets-title">Top trajets — Mars</h2>
+          </div>
+          <div style="padding:16px 18px">
+            <div class="prog-row" role="group" aria-label="ABJ → Yamoussoukro : 1 284 voyages">
+              <span class="prog-row__label">ABJ → Yamoussoukro</span>
+              <div class="prog-row__track"><div class="prog-row__fill" style="width:100%;background:var(--color-amber)"></div></div>
+              <span class="prog-row__value" style="color:var(--color-amber)">1 284</span>
+            </div>
+            <div class="prog-row" role="group" aria-label="ABJ → Bouaké : 977 voyages">
+              <span class="prog-row__label">ABJ → Bouaké</span>
+              <div class="prog-row__track"><div class="prog-row__fill" style="width:76%;background:var(--color-violet)"></div></div>
+              <span class="prog-row__value" style="color:var(--color-violet)">977</span>
+            </div>
+            <div class="prog-row" role="group" aria-label="ABJ → Daloa : 796 voyages">
+              <span class="prog-row__label">ABJ → Daloa</span>
+              <div class="prog-row__track"><div class="prog-row__fill" style="width:62%;background:var(--color-orange)"></div></div>
+              <span class="prog-row__value" style="color:var(--color-orange)">796</span>
+            </div>
+            <div class="prog-row" role="group" aria-label="YKR → Abidjan : 617 voyages">
+              <span class="prog-row__label">YKR → Abidjan</span>
+              <div class="prog-row__track"><div class="prog-row__fill" style="width:48%;background:var(--color-cyan)"></div></div>
+              <span class="prog-row__value" style="color:var(--color-cyan)">617</span>
+            </div>
+            <div class="prog-row" role="group" aria-label="BKÉ → Abidjan : 436 voyages">
+              <span class="prog-row__label">BKÉ → Abidjan</span>
+              <div class="prog-row__track"><div class="prog-row__fill" style="width:34%;background:var(--color-teal)"></div></div>
+              <span class="prog-row__value" style="color:var(--color-teal)">436</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- État de la flotte — donut SVG -->
+        <section class="card" aria-labelledby="etat-flotte-title">
+          <div class="card-section-header">
+            <h2 class="card-section-header__title" id="etat-flotte-title">État de la flotte</h2>
+          </div>
+          <div style="padding:18px 16px;display:flex;flex-direction:column;align-items:center">
+            <div class="donut-center" style="width:120px;height:120px;margin-bottom:16px"
+                 role="img"
+                 aria-label="Flotte : 18 en service, 4 en maintenance, 3 hors service">
+              <svg class="donut-center__svg" width="120" height="120" viewBox="0 0 120 120"
+                   style="transform:rotate(-90deg)">
+                <circle cx="60" cy="60" r="48" fill="none" stroke="var(--color-surface-3)" stroke-width="16"/>
+                <!-- 18/25 = 72% → 180.6 sur 301.6 -->
+                <circle cx="60" cy="60" r="48" fill="none" stroke="var(--color-green)"
+                        stroke-width="16" stroke-dasharray="217.1 84.5" stroke-linecap="round"
+                        stroke-dashoffset="0"/>
+                <!-- 4/25 = 16% → 48.3 sur 301.6 -->
+                <circle cx="60" cy="60" r="48" fill="none" stroke="var(--color-amber)"
+                        stroke-width="16" stroke-dasharray="48.3 253.3" stroke-linecap="round"
+                        stroke-dashoffset="-217.1"/>
+                <!-- 3/25 = 12% → 36.2 sur 301.6 -->
+                <circle cx="60" cy="60" r="48" fill="none" stroke="var(--color-red)"
+                        stroke-width="16" stroke-dasharray="36.2 265.4" stroke-linecap="round"
+                        stroke-dashoffset="-265.4"/>
+              </svg>
+              <div class="donut-center__label" aria-hidden="true">
+                <span class="donut-center__label-value">25</span>
+                <span class="donut-center__label-sub">véhicules</span>
+              </div>
+            </div>
+
+            <dl style="display:flex;flex-direction:column;gap:8px;width:100%">
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px">
+                <dt style="display:flex;align-items:center;gap:8px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:var(--color-green);display:inline-block" aria-hidden="true"></span>
+                  En service
+                </dt>
+                <dd style="font-weight:700">18</dd>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px">
+                <dt style="display:flex;align-items:center;gap:8px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:var(--color-amber);display:inline-block" aria-hidden="true"></span>
+                  Maintenance
+                </dt>
+                <dd style="font-weight:700">4</dd>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px">
+                <dt style="display:flex;align-items:center;gap:8px">
+                  <span style="width:8px;height:8px;border-radius:50%;background:var(--color-red);display:inline-block" aria-hidden="true"></span>
+                  Hors service
+                </dt>
+                <dd style="font-weight:700">3</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+
+        <!-- Tickets par catégorie -->
+        <section class="card" aria-labelledby="tickets-cat-title">
+          <div class="card-section-header">
+            <h2 class="card-section-header__title" id="tickets-cat-title">Tickets par catégorie</h2>
+          </div>
+          <div style="padding:16px 18px">
+            <div class="prog-row" role="group" aria-label="Adulte : 78%">
+              <span class="prog-row__label">Adulte</span>
+              <div class="prog-row__track"><div class="prog-row__fill" style="width:78%;background:var(--color-amber)"></div></div>
+              <span class="prog-row__value" style="color:var(--color-amber)">78%</span>
+            </div>
+            <div class="prog-row" role="group" aria-label="Enfant : 14%">
+              <span class="prog-row__label">Enfant</span>
+              <div class="prog-row__track"><div class="prog-row__fill" style="width:14%;background:var(--color-green)"></div></div>
+              <span class="prog-row__value" style="color:var(--color-green)">14%</span>
+            </div>
+            <div class="prog-row" role="group" aria-label="VIP : 8%">
+              <span class="prog-row__label">VIP</span>
+              <div class="prog-row__track"><div class="prog-row__fill" style="width:8%;background:var(--color-violet)"></div></div>
+              <span class="prog-row__value" style="color:var(--color-violet)">8%</span>
+            </div>
+            <div style="padding-top:14px;border-top:1px solid var(--color-border);margin-top:6px">
+              <p style="font-size:11px;color:var(--color-text-3);margin-bottom:4px">Total billets émis</p>
+              <p style="font-size:22px;font-weight:700;letter-spacing:-.4px"
+                 aria-label="3 847 billets émis">3 847</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- ── Heatmap + Voyages récents ── -->
+      <div class="grid grid--sidebar-content">
+
+        <!-- Heatmap hebdomadaire -->
+        <section class="card" style="padding:18px" aria-labelledby="heatmap-title">
+          <h2 id="heatmap-title" class="card__title" style="font-size:13px;margin-bottom:3px">Activité hebdomadaire</h2>
+          <p style="font-size:12px;color:var(--color-text-3);margin-bottom:14px">Voyages par jour</p>
+
+          <!-- Labels jours — statiques -->
+          <div class="heatmap-day-labels" aria-hidden="true">
+            <span class="heatmap-day-label">L</span>
+            <span class="heatmap-day-label">M</span>
+            <span class="heatmap-day-label">M</span>
+            <span class="heatmap-day-label">J</span>
+            <span class="heatmap-day-label">V</span>
+            <span class="heatmap-day-label">S</span>
+            <span class="heatmap-day-label">D</span>
+          </div>
+
+          <!--
+            id="report-heatmap"  → Heatmap.render() dans rapports.js injecte les .heatmap-cell
+          -->
+          <div id="report-heatmap"
+               class="heatmap-grid"
+               role="img"
+               aria-label="Heatmap d'activité hebdomadaire sur 4 semaines"></div>
+
+          <div class="heatmap-legend" aria-hidden="true">
+            <div class="heatmap-legend__swatch" style="background:var(--color-surface-3)"></div>
+            <span>Faible</span>
+            <div class="heatmap-legend__swatch" style="background:var(--color-amber);margin-left:8px"></div>
+            <span>Élevé</span>
+          </div>
+        </section>
+
+        <!-- Tableau voyages récents -->
+        <section class="card" style="overflow:hidden" aria-labelledby="voyages-recents-title">
+          <div class="card-section-header">
+            <h2 class="card-section-header__title" id="voyages-recents-title">Voyages récents</h2>
+            <a href="/exploitation/voyages" class="card__link" aria-label="Voir tous les voyages">Voir tout →</a>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table" aria-label="Liste des voyages récents">
+              <thead>
+                <tr>
+                  <th scope="col">Voyage</th>
+                  <th scope="col">Trajet</th>
+                  <th scope="col">Départ</th>
+                  <th scope="col">Passagers</th>
+                  <th scope="col">Recette FCFA</th>
+                  <th scope="col">Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">VOY-0341</td>
+                  <td style="font-weight:500">ABJ → YKR</td>
+                  <td class="data-table__cell--mono data-table__cell--dim"><time datetime="06:00">06:00</time></td>
+                  <td class="data-table__cell--mono data-table__cell--muted">18/22</td>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">63 000</td>
+                  <td><span class="status-pill tag--green"><span class="status-pill__dot" aria-hidden="true"></span>En cours</span></td>
+                </tr>
+                <tr>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">VOY-0342</td>
+                  <td style="font-weight:500">ABJ → BKÉ</td>
+                  <td class="data-table__cell--mono data-table__cell--dim"><time datetime="07:30">07:30</time></td>
+                  <td class="data-table__cell--mono data-table__cell--muted">14/18</td>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">70 000</td>
+                  <td><span class="status-pill tag--sky"><span class="status-pill__dot" aria-hidden="true"></span>Programmé</span></td>
+                </tr>
+                <tr>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">VOY-0343</td>
+                  <td style="font-weight:500">ABJ → DLO</td>
+                  <td class="data-table__cell--mono" style="color:var(--color-amber)"><time datetime="09:45">09:45</time></td>
+                  <td class="data-table__cell--mono data-table__cell--muted">22/22</td>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">99 000</td>
+                  <td><span class="status-pill tag--amber"><span class="status-pill__dot" aria-hidden="true"></span>Retardé</span></td>
+                </tr>
+                <tr>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">VOY-0340</td>
+                  <td style="font-weight:500">YKR → ABJ</td>
+                  <td class="data-table__cell--mono data-table__cell--dim"><time datetime="06:30">06:30</time></td>
+                  <td class="data-table__cell--mono data-table__cell--muted">20/22</td>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">70 000</td>
+                  <td><span class="status-pill tag--green"><span class="status-pill__dot" aria-hidden="true"></span>Terminé</span></td>
+                </tr>
+                <tr>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">VOY-0339</td>
+                  <td style="font-weight:500">ABJ → MAN</td>
+                  <td class="data-table__cell--mono data-table__cell--dim"><time datetime="05:00">05:00</time></td>
+                  <td class="data-table__cell--mono data-table__cell--muted">16/22</td>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">112 000</td>
+                  <td><span class="status-pill tag--green"><span class="status-pill__dot" aria-hidden="true"></span>Terminé</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+      </div>
+
+    </main>
+    <!-- /page-dashboard -->
+
+
+    <!-- ╔══════════════════════════════════════════════════════
+         ║  PAGE : RAPPORT EXPLOITATION
+         ╚══════════════════════════════════════════════════════ -->
+    <main id="page-exploitation"
+          class="page-content report-page"
+          role="tabpanel"
+          aria-labelledby="onglet-exploitation"
+          tabindex="0"
+          hidden>
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-header__title">Rapport Exploitation</h1>
+          <p class="page-header__subtitle">Mars 2026 · Voyages, passagers, occupation, ponctualité</p>
+        </div>
+        <div class="page-header__actions">
+          <select class="period-select" aria-label="Sélectionner la période">
+            <option>Mars 2026</option><option>Février 2026</option><option>Janvier 2026</option><option>Q1 2026</option>
+          </select>
+          <button class="btn btn--ghost" data-export="excel" aria-label="Exporter en Excel">
+            <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Excel
+          </button>
+          <button class="btn btn--primary" data-export="pdf" aria-label="Exporter en PDF">
+            <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- KPIs exploitation -->
+      <div class="grid grid--4-cols-kpi" style="margin-bottom:16px">
+        <article class="card kpi-card" style="--kpi-accent:var(--color-orange)">
+          <div class="kpi-card__icon" style="background:var(--color-orange-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-orange)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="kpi-card__value kpi-card__value--default" data-kpi-value="284">284</div>
+          <div class="kpi-card__label">Voyages effectués</div>
+          <div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+5% vs fév.</div>
+        </article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-amber)">
+          <div class="kpi-card__icon" style="background:var(--color-amber-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+          <div class="kpi-card__value kpi-card__value--default" data-kpi-value="3847">3 847</div>
+          <div class="kpi-card__label">Passagers</div>
+          <div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+8% vs fév.</div>
+        </article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-green)">
+          <div class="kpi-card__icon" style="background:var(--color-green-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div class="kpi-card__value" style="color:var(--color-green)">91%</div>
+          <div class="kpi-card__label">Ponctualité</div>
+          <div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+2 pts vs fév.</div>
+        </article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-cyan)">
+          <div class="kpi-card__icon" style="background:var(--color-cyan-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-cyan)" stroke-width="2"><path d="M1 17l3-9h16l3 9M1 17h22"/><circle cx="6.5" cy="17" r="2"/><circle cx="17.5" cy="17" r="2"/></svg></div>
+          <div class="kpi-card__value" style="color:var(--color-cyan)">84%</div>
+          <div class="kpi-card__label">Taux remplissage</div>
+          <div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+3 pts</div>
+        </article>
+      </div>
+
+      <!-- Tableau voyages par trajet + barres passagers par semaine -->
+      <div class="grid grid--2-cols" style="margin-bottom:16px">
+        <section class="card" style="overflow:hidden" aria-labelledby="voyages-trajet-title">
+          <div class="card-section-header">
+            <h2 class="card-section-header__title" id="voyages-trajet-title">Voyages par trajet</h2>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="data-table" aria-label="Détail des voyages par trajet">
+              <thead>
+                <tr>
+                  <th scope="col">Trajet</th>
+                  <th scope="col">Voyages</th>
+                  <th scope="col">Passagers</th>
+                  <th scope="col">Remplissage</th>
+                  <th scope="col">Retards</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="font-weight:600">ABJ → YKR</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">84</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">1 284</td>
+                  <td>
+                    <div class="inline-progress">
+                      <div class="inline-progress__track"><div class="inline-progress__fill" style="width:88%;background:var(--color-green)"></div></div>
+                      <span class="inline-progress__value">88%</span>
+                    </div>
+                  </td>
+                  <td class="data-table__cell--mono" style="color:var(--color-amber);font-weight:600">4</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">ABJ → BKÉ</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">62</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">977</td>
+                  <td>
+                    <div class="inline-progress">
+                      <div class="inline-progress__track"><div class="inline-progress__fill" style="width:82%;background:var(--color-green)"></div></div>
+                      <span class="inline-progress__value">82%</span>
+                    </div>
+                  </td>
+                  <td class="data-table__cell--mono" style="color:var(--color-amber);font-weight:600">6</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">ABJ → DLO</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">48</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">796</td>
+                  <td>
+                    <div class="inline-progress">
+                      <div class="inline-progress__track"><div class="inline-progress__fill" style="width:93%;background:var(--color-amber)"></div></div>
+                      <span class="inline-progress__value">93%</span>
+                    </div>
+                  </td>
+                  <td class="data-table__cell--mono" style="color:var(--color-red);font-weight:600">8</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">YKR → ABJ</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">56</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">617</td>
+                  <td>
+                    <div class="inline-progress">
+                      <div class="inline-progress__track"><div class="inline-progress__fill" style="width:70%;background:var(--color-amber)"></div></div>
+                      <span class="inline-progress__value">70%</span>
+                    </div>
+                  </td>
+                  <td class="data-table__cell--mono data-table__cell--dim">2</td>
+                </tr>
+                <tr>
+                  <td style="font-weight:600">ABJ → MAN</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">34</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">436</td>
+                  <td>
+                    <div class="inline-progress">
+                      <div class="inline-progress__track"><div class="inline-progress__fill" style="width:76%;background:var(--color-green)"></div></div>
+                      <span class="inline-progress__value">76%</span>
+                    </div>
+                  </td>
+                  <td class="data-table__cell--mono data-table__cell--dim">1</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Passagers par semaine -->
+        <section class="card" style="padding:20px" aria-labelledby="passagers-semaine-title">
+          <h2 id="passagers-semaine-title" class="card__title" style="margin-bottom:3px">Passagers / semaine</h2>
+          <p style="font-size:12px;color:var(--color-text-3);margin-bottom:18px">Mars 2026</p>
+          <div style="display:flex;align-items:flex-end;gap:10px;height:140px;margin-bottom:12px"
+               role="img" aria-label="Barres : S1 928, S2 1012, S3 1104, S4 en cours">
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px">
+              <div style="width:100%;height:68%;background:var(--color-amber);border-radius:4px 4px 0 0;opacity:.65"></div>
+              <span style="font-size:10.5px;color:var(--color-text-3)">S1</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px">
+              <div style="width:100%;height:82%;background:var(--color-amber);border-radius:4px 4px 0 0;opacity:.75"></div>
+              <span style="font-size:10.5px;color:var(--color-text-3)">S2</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px">
+              <div style="width:100%;height:100%;background:var(--color-amber);border-radius:4px 4px 0 0"></div>
+              <span style="font-size:10.5px;color:var(--color-text-3)">S3</span>
+            </div>
+            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px">
+              <div style="width:100%;height:45%;background:var(--color-surface-3);border-radius:4px 4px 0 0;border:1px dashed var(--color-border-2)"></div>
+              <span style="font-size:10.5px;color:var(--color-text-3)">S4</span>
+            </div>
+          </div>
+          <div class="recap-mini-grid">
+            <div class="recap-mini-box">
+              <p class="recap-mini-box__label">Semaine record</p>
+              <p class="recap-mini-box__value">1 104</p>
+            </div>
+            <div class="recap-mini-box">
+              <p class="recap-mini-box__label">Moy. / voyage</p>
+              <p class="recap-mini-box__value">13.5</p>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Analyse des retards -->
+      <section class="card" style="overflow:hidden" aria-labelledby="retards-title">
+        <div class="card-section-header">
+          <h2 class="card-section-header__title" id="retards-title">Analyse des retards — 20 incidents</h2>
+        </div>
+        <div class="delay-detail-grid">
+          <div class="delay-detail-col">
+            <h3 class="delay-detail-col__title">Causes principales</h3>
+            <div class="prog-row"><span class="prog-row__label">Trafic / route</span><div class="prog-row__track"><div class="prog-row__fill" style="width:55%;background:var(--color-amber)"></div></div><span class="prog-row__value" style="color:var(--color-amber)">55%</span></div>
+            <div class="prog-row"><span class="prog-row__label">Panne véhicule</span><div class="prog-row__track"><div class="prog-row__fill" style="width:25%;background:var(--color-red)"></div></div><span class="prog-row__value" style="color:var(--color-red)">25%</span></div>
+            <div class="prog-row"><span class="prog-row__label">Attente passagers</span><div class="prog-row__track"><div class="prog-row__fill" style="width:20%;background:var(--color-sky)"></div></div><span class="prog-row__value" style="color:var(--color-sky)">20%</span></div>
+          </div>
+          <div class="delay-detail-col">
+            <h3 class="delay-detail-col__title">Par jour de semaine</h3>
+            <div class="prog-row"><span class="prog-row__label">Vendredi</span><div class="prog-row__track"><div class="prog-row__fill" style="width:80%;background:var(--color-red)"></div></div><span class="prog-row__value" style="color:var(--color-red)">8</span></div>
+            <div class="prog-row"><span class="prog-row__label">Samedi</span><div class="prog-row__track"><div class="prog-row__fill" style="width:60%;background:var(--color-amber)"></div></div><span class="prog-row__value" style="color:var(--color-amber)">6</span></div>
+            <div class="prog-row"><span class="prog-row__label">Lundi</span><div class="prog-row__track"><div class="prog-row__fill" style="width:30%;background:var(--color-amber)"></div></div><span class="prog-row__value" style="color:var(--color-amber)">3</span></div>
+          </div>
+          <div class="delay-detail-col">
+            <h3 class="delay-detail-col__title">Métriques retards</h3>
+            <div class="metric-block" style="margin-bottom:14px">
+              <span class="metric-block__label">Retard moyen</span>
+              <span class="metric-block__value" style="color:var(--color-amber)">28 min</span>
+            </div>
+            <div class="metric-block" style="margin-bottom:14px">
+              <span class="metric-block__label">Retard max enregistré</span>
+              <span class="metric-block__value" style="color:var(--color-red)">2h15</span>
+            </div>
+            <div class="metric-block">
+              <span class="metric-block__label">Voyages à l'heure</span>
+              <span class="metric-block__value" style="color:var(--color-green)">264 / 284</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+    <!-- /page-exploitation -->
+
+
+    <!-- ╔══════════════════════════════════════════════════════
+         ║  PAGE : RAPPORT FINANCIER
+         ╚══════════════════════════════════════════════════════ -->
+    <main id="page-finance"
+          class="page-content report-page"
+          role="tabpanel"
+          tabindex="0"
+          hidden>
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-header__title">Rapport Financier</h1>
+          <p class="page-header__subtitle">Mars 2026 · Recettes, dépenses, marges</p>
+        </div>
+        <div class="page-header__actions">
+          <select class="period-select" aria-label="Période"><option selected>Mars 2026</option><option>Février 2026</option><option>Q1 2026</option><option>Année 2025</option></select>
+          <button class="btn btn--ghost" data-export="excel">Excel</button>
+          <button class="btn btn--primary" data-export="pdf">PDF</button>
+        </div>
+      </div>
+
+      <div class="grid grid--4-cols-kpi" style="margin-bottom:16px">
+        <article class="card kpi-card" style="--kpi-accent:var(--color-amber)"><div class="kpi-card__icon" style="background:var(--color-amber-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div><div class="kpi-card__value" data-kpi-value="12480000">12 480 000</div><div class="kpi-card__label">FCFA recettes billetterie</div><div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+14%</div></article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-red)"><div class="kpi-card__icon" style="background:var(--color-red-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg></div><div class="kpi-card__value kpi-card__value--default" data-kpi-value="5240000">5 240 000</div><div class="kpi-card__label">FCFA dépenses totales</div><div class="kpi-card__delta kpi-card__delta--down"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>+8%</div></article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-green)"><div class="kpi-card__icon" style="background:var(--color-green-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="kpi-card__value" style="color:var(--color-green)" data-kpi-value="7240000">7 240 000</div><div class="kpi-card__label">FCFA bénéfice net</div><div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+18%</div></article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-violet)"><div class="kpi-card__icon" style="background:var(--color-violet-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2"><path d="M12 20v-6M6 20V10M18 20V4"/></svg></div><div class="kpi-card__value" style="color:var(--color-violet)">58%</div><div class="kpi-card__label">Marge nette</div><div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+2 pts</div></article>
+      </div>
+
+      <div class="grid grid--2-1" style="margin-bottom:16px">
+        <!-- Compte de résultat -->
+        <section class="card" style="overflow:hidden" aria-labelledby="compte-resultat-title">
+          <div class="card-section-header">
+            <h2 class="card-section-header__title" id="compte-resultat-title">Compte de résultat — Mars 2026</h2>
+          </div>
+          <div style="padding:18px">
+            <p class="compte-section-label">Recettes</p>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px">
+              <div class="compte-line"><span>Billetterie Adulte</span><span class="compte-line__amount" style="color:var(--color-green)">9 720 000</span></div>
+              <div class="compte-line"><span>Billetterie Enfant</span><span class="compte-line__amount" style="color:var(--color-green)">1 408 000</span></div>
+              <div class="compte-line"><span>Billetterie VIP</span><span class="compte-line__amount" style="color:var(--color-green)">1 352 000</span></div>
+              <div class="compte-line compte-line--total-green"><span>Total recettes</span><span class="compte-line__amount" style="color:var(--color-green)">12 480 000</span></div>
+            </div>
+            <p class="compte-section-label">Charges</p>
+            <div style="display:flex;flex-direction:column;gap:4px;margin-bottom:16px">
+              <div class="compte-line"><span>Carburant</span><span class="compte-line__amount" style="color:var(--color-red)">2 340 000</span></div>
+              <div class="compte-line"><span>Salaires chauffeurs</span><span class="compte-line__amount" style="color:var(--color-red)">1 480 000</span></div>
+              <div class="compte-line"><span>Maintenance &amp; pièces</span><span class="compte-line__amount" style="color:var(--color-red)">820 000</span></div>
+              <div class="compte-line"><span>Frais divers</span><span class="compte-line__amount" style="color:var(--color-red)">600 000</span></div>
+              <div class="compte-line compte-line--total-red"><span>Total charges</span><span class="compte-line__amount" style="color:var(--color-red)">5 240 000</span></div>
+            </div>
+            <div class="compte-line compte-line--result">
+              <span>BÉNÉFICE NET</span>
+              <span class="compte-line__amount" style="color:var(--color-green)">7 240 000 FCFA</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Répartition charges donut -->
+        <section class="card" style="padding:18px" aria-labelledby="repartition-charges-title">
+          <h2 id="repartition-charges-title" class="card__title" style="margin-bottom:16px">Répartition des charges</h2>
+          <div style="display:flex;justify-content:center;margin-bottom:18px">
+            <div class="donut-center" style="width:110px;height:110px"
+                 role="img" aria-label="Carburant 44.7%, Salaires 28.2%, Maintenance 15.6%, Divers 11.5%">
+              <svg class="donut-center__svg" width="110" height="110" viewBox="0 0 110 110" style="transform:rotate(-90deg)">
+                <circle cx="55" cy="55" r="42" fill="none" stroke="var(--color-surface-3)" stroke-width="16"/>
+                <circle cx="55" cy="55" r="42" fill="none" stroke="var(--color-amber)" stroke-width="16" stroke-dasharray="118 145.7" stroke-dashoffset="0"/>
+                <circle cx="55" cy="55" r="42" fill="none" stroke="var(--color-violet)" stroke-width="16" stroke-dasharray="74.8 189.2" stroke-dashoffset="-118"/>
+                <circle cx="55" cy="55" r="42" fill="none" stroke="var(--color-orange)" stroke-width="16" stroke-dasharray="41.4 222.6" stroke-dashoffset="-192.8"/>
+                <circle cx="55" cy="55" r="42" fill="none" stroke="var(--color-sky)" stroke-width="16" stroke-dasharray="30.5 233.5" stroke-dashoffset="-234.2"/>
+              </svg>
+              <div class="donut-center__label" aria-hidden="true">
+                <span style="font-size:11px;color:var(--color-text-3)">Total</span>
+                <span style="font-size:14px;font-weight:700">5.24M</span>
+              </div>
+            </div>
+          </div>
+          <dl style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:12.5px">
+              <dt style="display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:2px;background:var(--color-amber);display:inline-block"></span>Carburant</dt>
+              <dd style="font-family:'DM Mono',monospace;font-weight:600">44.7%</dd>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:12.5px">
+              <dt style="display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:2px;background:var(--color-violet);display:inline-block"></span>Salaires</dt>
+              <dd style="font-family:'DM Mono',monospace;font-weight:600">28.2%</dd>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:12.5px">
+              <dt style="display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:2px;background:var(--color-orange);display:inline-block"></span>Maintenance</dt>
+              <dd style="font-family:'DM Mono',monospace;font-weight:600">15.6%</dd>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;font-size:12.5px">
+              <dt style="display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;border-radius:2px;background:var(--color-sky);display:inline-block"></span>Divers</dt>
+              <dd style="font-family:'DM Mono',monospace;font-weight:600">11.5%</dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+
+      <!-- Évolution recettes vs charges 6 mois -->
+      <section class="card" style="padding:20px" aria-labelledby="evolution-6mois-title">
+        <h2 id="evolution-6mois-title" class="card__title" style="margin-bottom:3px">Évolution recettes vs charges — 6 mois</h2>
+        <p style="font-size:12px;color:var(--color-text-3);margin-bottom:16px">FCFA · millions</p>
+        <!--
+          Les barres paires recette/charge sont générées statiquement ici.
+          Dans le vrai projet Symfony, ce bloc sera rendu via un composant Twig
+          ou par Chart.js côté JS avec les données de l'API Platform.
+        -->
+        <div style="display:flex;gap:5px;align-items:flex-end;height:110px;margin-bottom:8px"
+             role="img" aria-label="Évolution sur 6 mois : Oct à Mars, recettes en hausse">
+          <!-- Oct -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:110px">
+              <div style="flex:1;height:63%;background:var(--color-amber);border-radius:3px 3px 0 0;opacity:.55"></div>
+              <div style="flex:1;height:32%;background:var(--color-red);border-radius:3px 3px 0 0;opacity:.55"></div>
+            </div>
+            <span style="font-size:10.5px;color:var(--color-text-3)">Oct</span>
+          </div>
+          <!-- Nov -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:110px">
+              <div style="flex:1;height:70%;background:var(--color-amber);border-radius:3px 3px 0 0;opacity:.62"></div>
+              <div style="flex:1;height:35%;background:var(--color-red);border-radius:3px 3px 0 0;opacity:.62"></div>
+            </div>
+            <span style="font-size:10.5px;color:var(--color-text-3)">Nov</span>
+          </div>
+          <!-- Déc -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:110px">
+              <div style="flex:1;height:80%;background:var(--color-amber);border-radius:3px 3px 0 0;opacity:.70"></div>
+              <div style="flex:1;height:39%;background:var(--color-red);border-radius:3px 3px 0 0;opacity:.70"></div>
+            </div>
+            <span style="font-size:10.5px;color:var(--color-text-3)">Déc</span>
+          </div>
+          <!-- Jan -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:110px">
+              <div style="flex:1;height:76%;background:var(--color-amber);border-radius:3px 3px 0 0;opacity:.78"></div>
+              <div style="flex:1;height:38%;background:var(--color-red);border-radius:3px 3px 0 0;opacity:.78"></div>
+            </div>
+            <span style="font-size:10.5px;color:var(--color-text-3)">Jan</span>
+          </div>
+          <!-- Fév -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:110px">
+              <div style="flex:1;height:84%;background:var(--color-amber);border-radius:3px 3px 0 0;opacity:.86"></div>
+              <div style="flex:1;height:38%;background:var(--color-red);border-radius:3px 3px 0 0;opacity:.86"></div>
+            </div>
+            <span style="font-size:10.5px;color:var(--color-text-3)">Fév</span>
+          </div>
+          <!-- Mar (actuel) -->
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+            <div style="width:100%;display:flex;gap:2px;align-items:flex-end;height:110px">
+              <div style="flex:1;height:100%;background:var(--color-amber);border-radius:3px 3px 0 0"></div>
+              <div style="flex:1;height:42%;background:var(--color-red);border-radius:3px 3px 0 0"></div>
+            </div>
+            <span style="font-size:10.5px;color:var(--color-text-3)">Mar</span>
+          </div>
+        </div>
+        <div class="chart-legend" style="justify-content:flex-end" aria-hidden="true">
+          <div class="chart-legend__item"><div class="chart-legend__swatch" style="background:var(--color-amber)"></div>Recettes</div>
+          <div class="chart-legend__item"><div class="chart-legend__swatch" style="background:var(--color-red)"></div>Charges</div>
+        </div>
+      </section>
+
+    </main>
+    <!-- /page-finance -->
+
+
+    <!-- ╔══════════════════════════════════════════════════════
+         ║  PAGE : RAPPORT STOCK
+         ╚══════════════════════════════════════════════════════ -->
+    <main id="page-stock"
+          class="page-content report-page"
+          role="tabpanel"
+          tabindex="0"
+          hidden>
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-header__title">Rapport Stock &amp; Approvisionnements</h1>
+          <p class="page-header__subtitle">Mars 2026 · Consommation, valeur, alertes</p>
+        </div>
+        <div class="page-header__actions">
+          <select class="period-select"><option selected>Mars 2026</option><option>Février 2026</option><option>Q1 2026</option></select>
+          <button class="btn btn--primary" data-export="pdf">PDF</button>
+        </div>
+      </div>
+
+      <div class="grid grid--4-cols-kpi" style="margin-bottom:16px">
+        <article class="card kpi-card" style="--kpi-accent:var(--color-violet)"><div class="kpi-card__icon" style="background:var(--color-violet-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div><div class="kpi-card__value kpi-card__value--default" data-kpi-value="4820000">4 820 000</div><div class="kpi-card__label">FCFA valeur stock</div><div class="kpi-card__delta kpi-card__delta--down"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>−3% consommé</div></article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-amber)"><div class="kpi-card__icon" style="background:var(--color-amber-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg></div><div class="kpi-card__value kpi-card__value--default" data-kpi-value="8">8</div><div class="kpi-card__label">Appros ce mois</div><div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>3 420 000 FCFA</div></article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-red)"><div class="kpi-card__icon" style="background:var(--color-red-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></div><div class="kpi-card__value" style="color:var(--color-red)">3</div><div class="kpi-card__label">Ruptures de stock</div><div class="kpi-card__delta kpi-card__delta--flat">+1 vs mois préc.</div></article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-green)"><div class="kpi-card__icon" style="background:var(--color-green-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="kpi-card__value kpi-card__value--default">148</div><div class="kpi-card__label">Références actives</div><div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+4 nouvelles</div></article>
+      </div>
+
+      <div class="grid grid--2-cols" style="margin-bottom:16px">
+        <section class="card" style="overflow:hidden" aria-labelledby="top-pieces-title">
+          <div class="card-section-header"><h2 class="card-section-header__title" id="top-pieces-title">Top pièces consommées</h2></div>
+          <div style="overflow-x:auto">
+            <table class="data-table" aria-label="Pièces les plus consommées">
+              <thead><tr><th scope="col">Référence</th><th scope="col">Désignation</th><th scope="col">Sorties</th><th scope="col">Valeur FCFA</th></tr></thead>
+              <tbody>
+                <tr><td class="data-table__cell--mono data-table__cell--dim">PIE-0055</td><td class="data-table__cell--muted">Huile Shell Rimula</td><td class="data-table__cell--mono" style="font-weight:700;color:var(--color-violet)">38</td><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">703 000</td></tr>
+                <tr><td class="data-table__cell--mono data-table__cell--dim">PIE-0023</td><td class="data-table__cell--muted">Filtre à huile Mann</td><td class="data-table__cell--mono" style="font-weight:700;color:var(--color-violet)">25</td><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">237 500</td></tr>
+                <tr><td class="data-table__cell--mono data-table__cell--dim">PIE-0088</td><td class="data-table__cell--muted">Plaquettes frein Bosch</td><td class="data-table__cell--mono" style="font-weight:700;color:var(--color-violet)">18</td><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">315 000</td></tr>
+                <tr><td class="data-table__cell--mono data-table__cell--dim">PIE-0031</td><td class="data-table__cell--muted">Filtre à air Mann</td><td class="data-table__cell--mono" style="font-weight:700;color:var(--color-violet)">15</td><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">270 000</td></tr>
+                <tr><td class="data-table__cell--mono data-table__cell--dim">PIE-0107</td><td class="data-table__cell--muted">Pneu Bridgestone R16C</td><td class="data-table__cell--mono" style="font-weight:700;color:var(--color-violet)">12</td><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">504 000</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+        <section class="card" style="overflow:hidden" aria-labelledby="appros-title">
+          <div class="card-section-header"><h2 class="card-section-header__title" id="appros-title">Approvisionnements — Mars</h2></div>
+          <div style="overflow-x:auto">
+            <table class="data-table" aria-label="Approvisionnements du mois">
+              <thead><tr><th scope="col">Référence</th><th scope="col">Fournisseur</th><th scope="col">Date</th><th scope="col">Montant</th><th scope="col">Statut</th></tr></thead>
+              <tbody>
+                <tr><td class="data-table__cell--mono data-table__cell--dim">APP-008</td><td class="data-table__cell--muted">AutoPieces CI</td><td class="data-table__cell--mono data-table__cell--dim">02/03</td><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">1 240 000</td><td><span class="status-pill tag--green"><span class="status-pill__dot"></span>Reçu</span></td></tr>
+                <tr><td class="data-table__cell--mono data-table__cell--dim">APP-007</td><td class="data-table__cell--muted">Pneus &amp; Co</td><td class="data-table__cell--mono data-table__cell--dim">24/02</td><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">840 000</td><td><span class="status-pill tag--amber"><span class="status-pill__dot"></span>En attente</span></td></tr>
+                <tr><td class="data-table__cell--mono data-table__cell--dim">APP-006</td><td class="data-table__cell--muted">Mécatech Abidjan</td><td class="data-table__cell--mono data-table__cell--dim">18/02</td><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">1 340 000</td><td><span class="status-pill tag--green"><span class="status-pill__dot"></span>Reçu</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+      <div class="grid grid--2-cols">
+        <section class="card" style="padding:18px" aria-labelledby="alertes-stock-title">
+          <h2 id="alertes-stock-title" class="card__title" style="margin-bottom:14px">Alertes actives</h2>
+          <div class="op-alert op-alert--red"><svg class="op-alert__icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg><span><strong>PIE-0023</strong> — Filtre à huile · Stock : 0 / min : 10</span></div>
+          <div class="op-alert op-alert--red"><svg class="op-alert__icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg><span><strong>PIE-0089</strong> — Courroie dist. · Stock : 0 / min : 4</span></div>
+          <div class="op-alert op-alert--amber"><svg class="op-alert__icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span><strong>PIE-0107</strong> — Pneu Bridgestone · Stock : 3 / min : 8</span></div>
+          <div class="op-alert op-alert--amber"><svg class="op-alert__icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span><strong>PIE-0031</strong> — Filtre à air · Stock : 4 / min : 6</span></div>
+        </section>
+        <section class="card" style="padding:18px" aria-labelledby="valeur-piece-title">
+          <h2 id="valeur-piece-title" class="card__title" style="margin-bottom:16px">Valeur par type de pièce</h2>
+          <div class="prog-row"><span class="prog-row__label">Moteur</span><div class="prog-row__track"><div class="prog-row__fill" style="width:62%;background:var(--color-violet)"></div></div><span class="prog-row__value" style="color:var(--color-violet)">2.99M</span></div>
+          <div class="prog-row"><span class="prog-row__label">Pneumatiques</span><div class="prog-row__track"><div class="prog-row__fill" style="width:20%;background:var(--color-amber)"></div></div><span class="prog-row__value" style="color:var(--color-amber)">0.98M</span></div>
+          <div class="prog-row"><span class="prog-row__label">Électrique</span><div class="prog-row__track"><div class="prog-row__fill" style="width:11%;background:var(--color-sky)"></div></div><span class="prog-row__value" style="color:var(--color-sky)">0.54M</span></div>
+          <div class="prog-row"><span class="prog-row__label">Consommable</span><div class="prog-row__track"><div class="prog-row__fill" style="width:6%;background:var(--color-green)"></div></div><span class="prog-row__value" style="color:var(--color-green)">0.31M</span></div>
+        </section>
+      </div>
+
+    </main>
+    <!-- /page-stock -->
+
+
+    <!-- ╔══════════════════════════════════════════════════════
+         ║  PAGE : RAPPORT FLOTTE
+         ╚══════════════════════════════════════════════════════ -->
+    <main id="page-flotte"
+          class="page-content report-page"
+          role="tabpanel"
+          tabindex="0"
+          hidden>
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-header__title">Rapport Flotte &amp; Maintenance</h1>
+          <p class="page-header__subtitle">Mars 2026 · Kilométrage, dépannages, coûts maintenance</p>
+        </div>
+        <div class="page-header__actions">
+          <select class="period-select"><option selected>Mars 2026</option><option>Février 2026</option><option>Q1 2026</option></select>
+          <button class="btn btn--primary" data-export="pdf">PDF</button>
+        </div>
+      </div>
+
+      <div class="grid grid--4-cols-kpi" style="margin-bottom:16px">
+        <article class="card kpi-card" style="--kpi-accent:var(--color-orange)"><div class="kpi-card__icon" style="background:var(--color-orange-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-orange)" stroke-width="2"><path d="M1 17l3-9h16l3 9M1 17h22M6.5 17a2 2 0 100-4 2 2 0 000 4zM17.5 17a2 2 0 100-4 2 2 0 000 4z"/></svg></div><div class="kpi-card__value kpi-card__value--default">25</div><div class="kpi-card__label">Véhicules total</div><div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>22 en service</div></article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-red)"><div class="kpi-card__icon" style="background:var(--color-red-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div><div class="kpi-card__value" style="color:var(--color-red)">7</div><div class="kpi-card__label">Dépannages ce mois</div><div class="kpi-card__delta kpi-card__delta--down"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>+2 vs fév.</div></article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-amber)"><div class="kpi-card__icon" style="background:var(--color-amber-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div><div class="kpi-card__value" style="color:var(--color-amber)" data-kpi-value="1840000">1 840 000</div><div class="kpi-card__label">FCFA coût maintenance</div><div class="kpi-card__delta kpi-card__delta--down"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>+18%</div></article>
+        <article class="card kpi-card" style="--kpi-accent:var(--color-green)"><div class="kpi-card__icon" style="background:var(--color-green-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div><div class="kpi-card__value kpi-card__value--default" data-kpi-value="124800">124 800</div><div class="kpi-card__label">km parcourus</div><div class="kpi-card__delta kpi-card__delta--up"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>+5% vs fév.</div></article>
+      </div>
+
+      <div class="grid grid--2-1" style="margin-bottom:16px">
+        <section class="card" style="overflow:hidden" aria-labelledby="etat-vehicules-title">
+          <div class="card-section-header"><h2 class="card-section-header__title" id="etat-vehicules-title">État par véhicule</h2></div>
+          <div style="overflow-x:auto">
+            <table class="data-table" aria-label="État de chaque véhicule">
+              <thead><tr><th scope="col">Plaque</th><th scope="col">Marque</th><th scope="col">Km ce mois</th><th scope="col">Usure</th><th scope="col">Dépannages</th><th scope="col">Coût maint.</th><th scope="col">Statut</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td class="data-table__cell--mono" style="font-weight:700;color:var(--color-amber)">CI-123-AB</td>
+                  <td class="data-table__cell--muted">Mercedes Sprinter</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">5 840</td>
+                  <td><div class="wear-bar"><div class="wear-bar__fill" style="width:72%;background:var(--color-amber)"></div></div></td>
+                  <td class="data-table__cell--mono data-table__cell--dim">1</td>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">185 000</td>
+                  <td><span class="status-pill tag--green"><span class="status-pill__dot"></span>En service</span></td>
+                </tr>
+                <tr>
+                  <td class="data-table__cell--mono" style="font-weight:700;color:var(--color-amber)">CI-456-CD</td>
+                  <td class="data-table__cell--muted">Iveco Daily</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">6 120</td>
+                  <td><div class="wear-bar"><div class="wear-bar__fill" style="width:45%;background:var(--color-green)"></div></div></td>
+                  <td class="data-table__cell--mono data-table__cell--dim">0</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">—</td>
+                  <td><span class="status-pill tag--green"><span class="status-pill__dot"></span>En service</span></td>
+                </tr>
+                <tr>
+                  <td class="data-table__cell--mono" style="font-weight:700;color:var(--color-amber)">CI-789-EF</td>
+                  <td class="data-table__cell--muted">Toyota Coaster</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">2 300</td>
+                  <td><div class="wear-bar"><div class="wear-bar__fill" style="width:88%;background:var(--color-red)"></div></div></td>
+                  <td class="data-table__cell--mono" style="color:var(--color-red);font-weight:600">2</td>
+                  <td class="data-table__cell--mono" style="font-weight:600;color:var(--color-red)">420 000</td>
+                  <td><span class="status-pill tag--amber"><span class="status-pill__dot"></span>Maintenance</span></td>
+                </tr>
+                <tr>
+                  <td class="data-table__cell--mono" style="font-weight:700;color:var(--color-amber)">CI-321-GH</td>
+                  <td class="data-table__cell--muted">Mercedes Sprinter</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">5 210</td>
+                  <td><div class="wear-bar"><div class="wear-bar__fill" style="width:60%;background:var(--color-green)"></div></div></td>
+                  <td class="data-table__cell--mono data-table__cell--dim">0</td>
+                  <td class="data-table__cell--mono data-table__cell--dim">—</td>
+                  <td><span class="status-pill tag--green"><span class="status-pill__dot"></span>En service</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card" style="padding:18px" aria-labelledby="cout-type-title">
+          <h2 id="cout-type-title" class="card__title" style="margin-bottom:16px">Coûts maintenance / type</h2>
+          <div class="prog-row"><span class="prog-row__label">Moteur</span><div class="prog-row__track"><div class="prog-row__fill" style="width:58%;background:var(--color-violet)"></div></div><span class="prog-row__value" style="color:var(--color-violet)">58%</span></div>
+          <div class="prog-row"><span class="prog-row__label">Freinage</span><div class="prog-row__track"><div class="prog-row__fill" style="width:22%;background:var(--color-red)"></div></div><span class="prog-row__value" style="color:var(--color-red)">22%</span></div>
+          <div class="prog-row"><span class="prog-row__label">Pneumatiques</span><div class="prog-row__track"><div class="prog-row__fill" style="width:12%;background:var(--color-amber)"></div></div><span class="prog-row__value" style="color:var(--color-amber)">12%</span></div>
+          <div class="prog-row"><span class="prog-row__label">Électrique</span><div class="prog-row__track"><div class="prog-row__fill" style="width:8%;background:var(--color-sky)"></div></div><span class="prog-row__value" style="color:var(--color-sky)">8%</span></div>
+          <div style="padding-top:14px;border-top:1px solid var(--color-border);margin-top:8px">
+            <p style="font-size:11px;color:var(--color-text-3)">Coût total</p>
+            <p style="font-size:20px;font-weight:700;color:var(--color-amber);margin-top:3px">1 840 000 FCFA</p>
+          </div>
+        </section>
+      </div>
+
+      <!-- Échéances réglementaires -->
+      <section class="card" style="overflow:hidden" aria-labelledby="echeances-title">
+        <div class="card-section-header"><h2 class="card-section-header__title" id="echeances-title">Échéances réglementaires à venir — 30 jours</h2></div>
+        <div style="overflow-x:auto">
+          <table class="data-table" aria-label="Échéances réglementaires">
+            <thead><tr><th scope="col">Véhicule</th><th scope="col">Type d'échéance</th><th scope="col">Date</th><th scope="col">Jours restants</th><th scope="col">Statut</th></tr></thead>
+            <tbody>
+              <tr><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">CI-789-EF</td><td style="font-weight:600">Visite technique</td><td class="data-table__cell--mono data-table__cell--dim"><time datetime="2026-03-10">10/03/2026</time></td><td style="font-weight:700;color:var(--color-red)">3 jours</td><td><span class="status-pill tag--red"><span class="status-pill__dot"></span>Urgent</span></td></tr>
+              <tr><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">CI-123-AB</td><td style="font-weight:600">Assurance</td><td class="data-table__cell--mono data-table__cell--dim"><time datetime="2026-03-18">18/03/2026</time></td><td style="font-weight:700;color:var(--color-amber)">11 jours</td><td><span class="status-pill tag--amber"><span class="status-pill__dot"></span>Attention</span></td></tr>
+              <tr><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">CI-654-IJ</td><td style="font-weight:600">Contrôle gaz</td><td class="data-table__cell--mono data-table__cell--dim"><time datetime="2026-03-25">25/03/2026</time></td><td style="font-weight:700;color:var(--color-amber)">18 jours</td><td><span class="status-pill tag--amber"><span class="status-pill__dot"></span>Attention</span></td></tr>
+              <tr><td class="data-table__cell--mono" style="font-weight:600;color:var(--color-amber)">CI-321-GH</td><td style="font-weight:600">Visite technique</td><td class="data-table__cell--mono data-table__cell--dim"><time datetime="2026-04-02">02/04/2026</time></td><td style="font-weight:700;color:var(--color-green)">26 jours</td><td><span class="status-pill tag--green"><span class="status-pill__dot"></span>OK</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+    <!-- /page-flotte -->
+
+
+    <!-- ╔══════════════════════════════════════════════════════
+         ║  PAGE : CENTRE DE RAPPORTS
+         ╚══════════════════════════════════════════════════════ -->
+    <main id="page-centre"
+          class="page-content report-page"
+          role="tabpanel"
+          tabindex="0"
+          hidden>
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-header__title">Centre de rapports</h1>
+          <p class="page-header__subtitle">Générez et planifiez vos rapports</p>
+        </div>
+        <div class="page-header__actions">
+          <button class="btn btn--primary" aria-label="Créer un rapport personnalisé">
+            <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Rapport personnalisé
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid--2-cols">
+
+        <!-- Rapports standard -->
+        <section class="card" style="overflow:hidden" aria-labelledby="rapports-std-title">
+          <div class="card-section-header">
+            <h2 class="card-section-header__title" id="rapports-std-title">Rapports standard</h2>
+          </div>
+
+          <!-- Chaque .report-card-row avec data-nav-target bascule vers la page correspondante -->
+          <div class="report-card-row" data-nav-target="page-exploitation" role="button" tabindex="0" aria-label="Ouvrir le rapport Exploitation">
+            <div class="report-card-row__icon" style="background:var(--color-orange-light)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-orange)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div><p class="report-card-row__title">Rapport Exploitation</p><p class="report-card-row__sub">Voyages, passagers, ponctualité, remplissage</p></div>
+            <span class="report-card-row__badge">Mensuel</span>
+          </div>
+          <div class="report-card-row" data-nav-target="page-finance" role="button" tabindex="0" aria-label="Ouvrir le rapport Financier">
+            <div class="report-card-row__icon" style="background:var(--color-amber-light)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            </div>
+            <div><p class="report-card-row__title">Rapport Financier</p><p class="report-card-row__sub">Recettes, charges, marges, compte de résultat</p></div>
+            <span class="report-card-row__badge">Mensuel</span>
+          </div>
+          <div class="report-card-row" data-nav-target="page-stock" role="button" tabindex="0" aria-label="Ouvrir le rapport Stock">
+            <div class="report-card-row__icon" style="background:var(--color-violet-light)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+            </div>
+            <div><p class="report-card-row__title">Rapport Stock &amp; Approvisionnements</p><p class="report-card-row__sub">Consommation, valeur, alertes, fournisseurs</p></div>
+            <span class="report-card-row__badge">Mensuel</span>
+          </div>
+          <div class="report-card-row" data-nav-target="page-flotte" role="button" tabindex="0" aria-label="Ouvrir le rapport Flotte">
+            <div class="report-card-row__icon" style="background:var(--color-orange-light)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-orange)" stroke-width="2"><path d="M1 17l3-9h16l3 9M1 17h22M6.5 17a2 2 0 100-4 2 2 0 000 4zM17.5 17a2 2 0 100-4 2 2 0 000 4z"/></svg>
+            </div>
+            <div><p class="report-card-row__title">Rapport Flotte &amp; Maintenance</p><p class="report-card-row__sub">Kilométrage, dépannages, coûts, échéances</p></div>
+            <span class="report-card-row__badge">Mensuel</span>
+          </div>
+        </section>
+
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- Rapports planifiés -->
+          <section class="card" style="overflow:hidden" aria-labelledby="rapports-planifies-title">
+            <div class="card-section-header">
+              <h2 class="card-section-header__title" id="rapports-planifies-title">Rapports planifiés</h2>
+            </div>
+            <div class="report-card-row">
+              <div class="report-card-row__icon" style="background:var(--color-green-light)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div><p class="report-card-row__title">Rapport hebdomadaire exploitation</p><p class="report-card-row__sub">Chaque lundi · 08:00 · Email direction</p></div>
+              <span class="status-pill tag--green" style="margin-left:auto;flex-shrink:0"><span class="status-pill__dot"></span>Actif</span>
+            </div>
+            <div class="report-card-row">
+              <div class="report-card-row__icon" style="background:var(--color-amber-light)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div><p class="report-card-row__title">Rapport mensuel financier</p><p class="report-card-row__sub">1er du mois · 09:00 · Email DG + DAF</p></div>
+              <span class="status-pill tag--green" style="margin-left:auto;flex-shrink:0"><span class="status-pill__dot"></span>Actif</span>
+            </div>
+            <div class="report-card-row">
+              <div class="report-card-row__icon" style="background:var(--color-surface-3)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-3)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              </div>
+              <div><p class="report-card-row__title">Rapport flotte trimestriel</p><p class="report-card-row__sub">Tous les 3 mois · Responsable technique</p></div>
+              <span class="status-pill tag--amber" style="margin-left:auto;flex-shrink:0"><span class="status-pill__dot"></span>Pausé</span>
+            </div>
+          </section>
+
+          <!-- Dernières générations -->
+          <section class="card" style="overflow:hidden" aria-labelledby="dernieres-gen-title">
+            <div class="card-section-header">
+              <h2 class="card-section-header__title" id="dernieres-gen-title">Dernières générations</h2>
+            </div>
+            <div class="report-card-row">
+              <div class="report-card-row__icon" style="background:var(--color-red-light)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div><p class="report-card-row__title">Rapport financier — Fév. 2026</p><p class="report-card-row__sub">Généré le 01/03/2026 · PDF · 2.4 Mo</p></div>
+              <!--
+                data-export="pdf"  → ExportButtons dans rapports.js déclenche le toast
+              -->
+              <button class="btn btn--ghost" style="padding:6px 10px;font-size:12px;flex-shrink:0;margin-left:auto"
+                      data-export="pdf" aria-label="Télécharger le rapport financier de février 2026">
+                <svg width="12" height="12" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </button>
+            </div>
+            <div class="report-card-row">
+              <div class="report-card-row__icon" style="background:var(--color-red-light)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </div>
+              <div><p class="report-card-row__title">Rapport exploitation — Fév. 2026</p><p class="report-card-row__sub">Généré le 01/03/2026 · PDF · 1.8 Mo</p></div>
+              <button class="btn btn--ghost" style="padding:6px 10px;font-size:12px;flex-shrink:0;margin-left:auto"
+                      data-export="pdf" aria-label="Télécharger le rapport exploitation de février 2026">
+                <svg width="12" height="12" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              </button>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+    </main>
+    <!-- /page-centre -->
+
+  </div>
+  <!-- /app-main -->
+
+</div>
+<!-- /app-layout -->
+
+
+<!--
+  ═══════════════════════════════════════════════════════════════
+  SCRIPTS
+  Dans le vrai projet Symfony :
+    1. app.js       → sidebar, header, spotlight, dark mode
+    2. rapports.js  → Ce fichier (uniquement les fonctionnalités du module)
+  ═══════════════════════════════════════════════════════════════
+-->
+<script src="app.js"></script>
+<script src="rapports.js"></script>
+
+<!--
+  PONT JS  —  connexion entre le Centre de rapports et la sous-navigation.
+  Les .report-card-row[data-nav-target] activent l'onglet correspondant.
+  Ce petit bloc est ici et non dans rapports.js car il dépend du DOM complet.
+-->
+<script>
+  document.querySelectorAll('.report-card-row[data-nav-target]').forEach(row => {
+    const activate = () => {
+      const targetId  = row.dataset.navTarget;
+      const targetTab = document.querySelector(
+        `.report-subnav__tab[data-target="${targetId}"]`
+      );
+      if (targetTab) targetTab.click();
+    };
+
+    row.addEventListener('click', activate);
+    row.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activate();
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

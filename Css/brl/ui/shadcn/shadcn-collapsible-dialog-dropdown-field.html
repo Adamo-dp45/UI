@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>shadcn/ui — Collapsible, Dialog, Dropdown Menu & Field</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ─── */
+    :root {
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --destructive-foreground: oklch(0.985 0 0);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --radius: 0.625rem;
+    }
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.985 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.396 0.141 25.723);
+      --destructive-foreground: oklch(0.985 0 0);
+      --border: oklch(1 0 0 / 0.1);
+      --input: oklch(1 0 0 / 0.15);
+      --ring: oklch(0.556 0 0);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+      font-size: 14px; line-height: 1.5;
+      background-color: var(--background); color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* ══════════════════════════════════════════════════
+       COLLAPSIBLE
+       Radix: open/closed state on root element
+    ══════════════════════════════════════════════════ */
+    .collapsible { width: 100%; }
+
+    /* CollapsibleTrigger — wraps a button */
+    .collapsible-trigger {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: calc(var(--radius) - 2px);
+      border: none; background: none; cursor: pointer;
+      font-family: inherit; font-size: 0.875rem; font-weight: 500;
+      color: var(--foreground);
+      transition: background-color 0.15s;
+      outline: none;
+    }
+    .collapsible-trigger:hover { background-color: var(--accent); }
+    .collapsible-trigger:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+    .collapsible-trigger svg {
+      width: 1rem; height: 1rem; flex-shrink: 0;
+      color: var(--muted-foreground);
+      transition: transform 0.2s ease;
+    }
+    .collapsible.open .collapsible-trigger svg.chevron { transform: rotate(180deg); }
+
+    /* CollapsibleContent */
+    .collapsible-content {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.25s ease;
+    }
+    .collapsible.open .collapsible-content { max-height: 600px; }
+
+    .collapsible-inner {
+      display: flex; flex-direction: column; gap: 0.5rem;
+      padding: 0.5rem 0 0.5rem;
+    }
+
+    /* row item inside collapsible */
+    .collapsible-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.5rem 0.75rem;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      font-size: 0.875rem;
+      font-family: 'Geist Mono', ui-monospace, monospace;
+    }
+
+    /* ══════════════════════════════════════════════════
+       DIALOG
+       fixed inset-0 z-50 + content panel
+    ══════════════════════════════════════════════════ */
+    .dialog-overlay {
+      position: fixed; inset: 0; z-index: 50;
+      background-color: oklch(0 0 0 / 0.8);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .dialog-overlay.open { opacity: 1; pointer-events: auto; }
+
+    /* DialogContent:
+       fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg
+       -translate-x-1/2 -translate-y-1/2
+       gap-4 border bg-background p-6 shadow-lg
+       duration-200 sm:rounded-lg */
+    .dialog-content {
+      background-color: var(--background);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      width: 100%; max-width: 32rem;
+      box-shadow: 0 20px 25px -5px rgb(0 0 0/.1), 0 8px 10px -6px rgb(0 0 0/.1);
+      display: grid; gap: 1rem;
+      position: relative;
+      transform: scale(0.95) translateY(6px);
+      opacity: 0;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+    }
+    .dialog-overlay.open .dialog-content {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    /* Close button: absolute right-4 top-4 */
+    .dialog-close {
+      position: absolute; top: 1rem; right: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      width: 1.5rem; height: 1.5rem;
+      border-radius: 4px; border: none; background: none;
+      cursor: pointer; color: var(--muted-foreground);
+      transition: color 0.15s, background-color 0.15s;
+      outline: none;
+    }
+    .dialog-close:hover { background-color: var(--accent); color: var(--foreground); }
+    .dialog-close:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    .dialog-close svg { width: 1rem; height: 1rem; }
+
+    /* DialogHeader: flex flex-col gap-2 */
+    .dialog-header { display: flex; flex-direction: column; gap: 0.5rem; }
+
+    /* DialogTitle: text-lg font-semibold leading-none tracking-tight */
+    .dialog-title {
+      font-size: 1rem; font-weight: 600;
+      line-height: 1; letter-spacing: -0.015em;
+      color: var(--foreground); padding-right: 1.5rem;
+    }
+
+    /* DialogDescription: text-sm text-muted-foreground */
+    .dialog-description { font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.5; }
+
+    /* DialogFooter: flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 */
+    .dialog-footer {
+      display: flex; flex-direction: row;
+      justify-content: flex-end; gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    /* ══════════════════════════════════════════════════
+       DROPDOWN MENU
+       Radix DropdownMenuContent:
+       z-50 min-w-[8rem] overflow-hidden rounded-md border
+       bg-popover p-1 text-popover-foreground shadow-md
+    ══════════════════════════════════════════════════ */
+    .dropdown-wrap { position: relative; display: inline-block; }
+
+    .dropdown-content {
+      position: absolute;
+      z-index: 50;
+      min-width: 10rem;
+      overflow: hidden;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background-color: var(--card);
+      padding: 0.25rem;
+      box-shadow: 0 4px 6px -1px rgb(0 0 0/.1), 0 2px 4px -2px rgb(0 0 0/.1);
+      /* animation */
+      opacity: 0; pointer-events: none;
+      transform: translateY(-4px) scale(0.97);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .dropdown-content.open {
+      opacity: 1; pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+    /* position variants */
+    .dropdown-content.bottom-start { top: calc(100% + 4px); left: 0; }
+    .dropdown-content.bottom-end   { top: calc(100% + 4px); right: 0; }
+    .dropdown-content.top-start    { bottom: calc(100% + 4px); left: 0; }
+
+    /* DropdownMenuItem:
+       relative flex cursor-default select-none items-center
+       gap-2 rounded-sm px-2 py-1.5 text-sm outline-none
+       transition-colors focus:bg-accent focus:text-accent-foreground
+       data-[disabled]:pointer-events-none data-[disabled]:opacity-50 */
+    .dropdown-item {
+      position: relative; display: flex; align-items: center;
+      gap: 0.5rem; cursor: default; user-select: none;
+      border-radius: calc(var(--radius) - 4px);
+      padding: 0.375rem 0.5rem;
+      font-size: 0.875rem; outline: none;
+      transition: background-color 0.1s, color 0.1s;
+      color: var(--foreground);
+      border: none; background: none; width: 100%; text-align: left;
+      font-family: inherit;
+    }
+    .dropdown-item:hover, .dropdown-item:focus {
+      background-color: var(--accent); color: var(--accent-foreground);
+    }
+    .dropdown-item.destructive { color: var(--destructive); }
+    .dropdown-item.destructive:hover {
+      background-color: color-mix(in oklab, var(--destructive) 10%, var(--accent));
+    }
+    .dropdown-item[disabled] { opacity: 0.5; pointer-events: none; }
+    .dropdown-item svg { width: 1rem; height: 1rem; flex-shrink: 0; color: var(--muted-foreground); }
+    .dropdown-item.destructive svg { color: var(--destructive); }
+
+    /* DropdownMenuLabel: px-2 py-1.5 text-xs font-medium text-muted-foreground */
+    .dropdown-label {
+      padding: 0.375rem 0.5rem 0.25rem;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--muted-foreground);
+      letter-spacing: 0.02em;
+    }
+
+    /* DropdownMenuSeparator: -mx-1 my-1 h-px bg-muted */
+    .dropdown-sep {
+      height: 1px; background-color: var(--border);
+      margin: 0.25rem -0.25rem;
+    }
+
+    /* Shortcut: ml-auto text-xs tracking-widest opacity-60 */
+    .dropdown-shortcut {
+      margin-left: auto;
+      font-size: 0.6875rem;
+      letter-spacing: 0.1em;
+      opacity: 0.6;
+      font-family: 'Geist Mono', monospace;
+    }
+
+    /* Checkmark / radio indicator */
+    .dropdown-indicator {
+      width: 0.875rem; height: 0.875rem;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Sub-menu arrow */
+    .dropdown-sub-arrow {
+      margin-left: auto;
+      width: 0.875rem; height: 0.875rem;
+      color: var(--muted-foreground);
+    }
+
+    /* ══════════════════════════════════════════════════
+       FIELD (Label + Input/Textarea/Select + helper text)
+       Not a formal shadcn component but the de-facto
+       pattern: Label + Input with optional description
+       and error message.
+    ══════════════════════════════════════════════════ */
+
+    /* Field wrapper */
+    .field { display: flex; flex-direction: column; gap: 0.375rem; }
+
+    /* Label: text-sm font-medium leading-none
+       peer-disabled:cursor-not-allowed peer-disabled:opacity-70 */
+    .field-label {
+      font-size: 0.875rem; font-weight: 500; line-height: 1;
+      color: var(--foreground);
+    }
+    .field-label.required::after {
+      content: ' *'; color: var(--destructive); font-size: 0.8125rem;
+    }
+
+    /* Input: flex h-10 w-full rounded-md border border-input
+       bg-background px-3 py-2 text-sm ring-offset-background
+       placeholder:text-muted-foreground
+       focus-visible:outline-none focus-visible:ring-2
+       focus-visible:ring-ring focus-visible:ring-offset-2
+       disabled:cursor-not-allowed disabled:opacity-50 */
+    .field-input {
+      display: flex; height: 2.5rem; width: 100%;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--input);
+      background-color: var(--background);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-family: inherit;
+      color: var(--foreground);
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field-input::placeholder { color: var(--muted-foreground); }
+    .field-input:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 25%, transparent);
+    }
+    .field-input:disabled { opacity: 0.5; cursor: not-allowed; }
+    .field-input.error {
+      border-color: var(--destructive);
+    }
+    .field-input.error:focus {
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--destructive) 20%, transparent);
+    }
+
+    /* Textarea */
+    .field-textarea {
+      display: flex; width: 100%; min-height: 5rem;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--input);
+      background-color: var(--background);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-family: inherit; line-height: 1.5;
+      color: var(--foreground);
+      outline: none; resize: vertical;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field-textarea::placeholder { color: var(--muted-foreground); }
+    .field-textarea:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 25%, transparent);
+    }
+
+    /* Select */
+    .field-select {
+      display: flex; height: 2.5rem; width: 100%;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--input);
+      background-color: var(--background);
+      padding: 0.5rem 2.25rem 0.5rem 0.75rem;
+      font-size: 0.875rem; font-family: inherit;
+      color: var(--foreground);
+      outline: none; appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 0.75rem center;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field-select:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 25%, transparent);
+    }
+
+    /* Description text */
+    .field-description { font-size: 0.8125rem; color: var(--muted-foreground); line-height: 1.4; }
+
+    /* Error message */
+    .field-error {
+      font-size: 0.8125rem; color: var(--destructive); line-height: 1.4;
+      display: flex; align-items: center; gap: 0.25rem;
+    }
+    .field-error svg { width: 0.875rem; height: 0.875rem; flex-shrink: 0; }
+
+    /* Input with icon/addon */
+    .field-input-wrap { position: relative; }
+    .field-input-wrap .field-input { padding-left: 2.25rem; }
+    .field-input-wrap .field-input.icon-right { padding-left: 0.75rem; padding-right: 2.25rem; }
+    .field-input-icon {
+      position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%);
+      pointer-events: none; color: var(--muted-foreground);
+    }
+    .field-input-icon.right { left: auto; right: 0.75rem; }
+    .field-input-icon svg { width: 1rem; height: 1rem; display: block; }
+
+    /* Addon (prefix/suffix) */
+    .field-addon-wrap { display: flex; }
+    .field-addon {
+      display: flex; align-items: center; padding: 0 0.75rem;
+      border: 1px solid var(--input); background-color: var(--muted);
+      font-size: 0.875rem; color: var(--muted-foreground);
+      white-space: nowrap;
+    }
+    .field-addon.prefix {
+      border-right: none;
+      border-radius: calc(var(--radius) - 2px) 0 0 calc(var(--radius) - 2px);
+    }
+    .field-addon.suffix {
+      border-left: none;
+      border-radius: 0 calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0;
+    }
+    .field-addon-wrap .field-input.with-prefix { border-radius: 0 calc(var(--radius) - 2px) calc(var(--radius) - 2px) 0; }
+    .field-addon-wrap .field-input.with-suffix { border-radius: calc(var(--radius) - 2px) 0 0 calc(var(--radius) - 2px); }
+
+    /* ─── SHARED PRIMITIVES ─── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.5rem; white-space: nowrap;
+      border-radius: calc(var(--radius) - 2px);
+      font-size: 0.875rem; font-weight: 500; font-family: inherit;
+      border: none; cursor: pointer; outline: none;
+      transition: background-color 0.15s, color 0.15s, opacity 0.15s;
+      height: 2.5rem; padding: 0.5rem 1rem;
+    }
+    .btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    .btn:disabled { pointer-events: none; opacity: 0.5; }
+    .btn svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+    .btn-default { background-color: var(--primary); color: var(--primary-foreground); }
+    .btn-default:hover { opacity: 0.9; }
+    .btn-outline { background-color: transparent; border: 1px solid var(--border); color: var(--foreground); }
+    .btn-outline:hover { background-color: var(--accent); }
+    .btn-ghost { background-color: transparent; color: var(--foreground); }
+    .btn-ghost:hover { background-color: var(--accent); }
+    .btn-secondary { background-color: var(--secondary); color: var(--secondary-foreground); }
+    .btn-secondary:hover { opacity: 0.85; }
+    .btn-destructive { background-color: var(--destructive); color: var(--destructive-foreground); }
+    .btn-destructive:hover { opacity: 0.9; }
+    .btn-sm { height: 2.25rem; padding: 0 0.75rem; font-size: 0.875rem; border-radius: calc(var(--radius) - 4px); }
+    .btn-icon { height: 2.5rem; width: 2.5rem; padding: 0; }
+    .btn-icon-sm { height: 2.25rem; width: 2.25rem; padding: 0; }
+
+    /* ─── LAYOUT ─── */
+    .page { min-height: 100vh; background-color: var(--background); padding: 2rem 1rem 4rem; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .page-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+      margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .page-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; }
+    .page-subtitle { font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.25rem; }
+
+    .section-title { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 0.2rem; margin-top: 2.5rem; }
+    .section-title:first-of-type { margin-top: 0; }
+    .section-sub { font-size: 0.8125rem; color: var(--muted-foreground); margin-bottom: 1rem; }
+
+    .preview { border: 1px solid var(--border); border-radius: var(--radius); background-color: var(--card); overflow: hidden; }
+    .preview-row {
+      display: flex; align-items: flex-start; flex-wrap: wrap; gap: 1rem;
+      padding: 1.25rem 1.5rem;
+    }
+    .preview-row + .preview-row { border-top: 1px solid var(--border); }
+    .row-label { font-size: 0.75rem; font-weight: 500; color: var(--muted-foreground); width: 6rem; flex-shrink: 0; padding-top: 0.125rem; }
+
+    .sep { height: 1px; background-color: var(--border); margin: 2.5rem 0 0; }
+
+    .theme-toggle {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background-color: var(--secondary); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.375rem 0.75rem;
+      font-size: 0.8125rem; font-weight: 500; cursor: pointer;
+      color: var(--foreground); font-family: inherit; white-space: nowrap;
+    }
+    .theme-toggle:hover { background-color: var(--accent); }
+    .page-footer {
+      text-align: center; padding: 2rem 0 0.5rem;
+      border-top: 1px solid var(--border); margin-top: 3rem;
+      font-size: 0.75rem; color: var(--muted-foreground);
+    }
+    code {
+      font-family: 'Geist Mono', ui-monospace, monospace; font-size: 0.8125rem;
+      background-color: var(--muted); padding: 0.125rem 0.375rem; border-radius: 4px;
+    }
+
+    /* grid helpers */
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- ══ DIALOGS (portal) ══ -->
+
+  <!-- Dialog: Edit Profile -->
+  <div class="dialog-overlay" id="dialog-profile">
+    <div class="dialog-content">
+      <button class="dialog-close" onclick="closeDialog('dialog-profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="dialog-header">
+        <h2 class="dialog-title">Edit Profile</h2>
+        <p class="dialog-description">Make changes to your profile here. Click save when you're done.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem;padding:0.25rem 0">
+        <div class="field">
+          <label class="field-label">Name</label>
+          <input class="field-input" value="Sofia Davis" />
+        </div>
+        <div class="field">
+          <label class="field-label">Username</label>
+          <div class="field-addon-wrap">
+            <span class="field-addon prefix">@</span>
+            <input class="field-input with-prefix" value="sofiadavis" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Bio</label>
+          <textarea class="field-textarea" rows="3">Senior Product Designer at Acme Corp.</textarea>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeDialog('dialog-profile')">Cancel</button>
+        <button class="btn btn-default btn-sm" onclick="closeDialog('dialog-profile')">Save changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dialog: Share -->
+  <div class="dialog-overlay" id="dialog-share">
+    <div class="dialog-content">
+      <button class="dialog-close" onclick="closeDialog('dialog-share')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="dialog-header">
+        <h2 class="dialog-title">Share this document</h2>
+        <p class="dialog-description">Anyone with the link can view this document.</p>
+      </div>
+      <div style="display:flex;gap:0.5rem">
+        <input class="field-input" style="flex:1" value="https://acme.app/docs/transport-mgmt" readonly />
+        <button class="btn btn-outline btn-sm" style="flex-shrink:0">Copy</button>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn btn-default" onclick="closeDialog('dialog-share')">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dialog: Subscribe -->
+  <div class="dialog-overlay" id="dialog-subscribe">
+    <div class="dialog-content">
+      <button class="dialog-close" onclick="closeDialog('dialog-subscribe')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="dialog-header">
+        <h2 class="dialog-title">Subscribe to newsletter</h2>
+        <p class="dialog-description">Get the latest news and updates delivered to your inbox.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.875rem">
+        <div class="field">
+          <label class="field-label required">Email address</label>
+          <div class="field-input-wrap">
+            <span class="field-input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </span>
+            <input class="field-input" placeholder="you@example.com" type="email" />
+          </div>
+        </div>
+        <div class="field">
+          <label class="field-label">Topics</label>
+          <select class="field-select">
+            <option>All updates</option>
+            <option>Product news</option>
+            <option>Engineering blog</option>
+          </select>
+        </div>
+      </div>
+      <div class="dialog-footer">
+        <button class="btn btn-ghost btn-sm" onclick="closeDialog('dialog-subscribe')">No thanks</button>
+        <button class="btn btn-default btn-sm" onclick="closeDialog('dialog-subscribe')">Subscribe</button>
+      </div>
+    </div>
+  </div>
+
+<div class="page">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span style="font-weight:600">shadcn/ui</span>
+        </div>
+        <h1 class="page-title">Collapsible, Dialog, Dropdown Menu &amp; Field</h1>
+        <p class="page-subtitle">An interactive section, modal layer, contextual actions, and form field patterns.</p>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <svg id="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg id="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </div>
+
+    <!-- ══ COLLAPSIBLE ══ -->
+    <h2 class="section-title">Collapsible</h2>
+    <p class="section-sub">An interactive component which expands/collapses a panel.</p>
+
+    <div class="preview">
+      <div class="preview-row" style="align-items:flex-start;flex-direction:column;gap:1.25rem">
+
+        <!-- Example 1: starred repos -->
+        <div class="collapsible" id="col-1" style="max-width:22rem">
+          <div style="display:flex;align-items:center;gap:0.5rem">
+            <h4 style="font-size:0.875rem;font-weight:500">@sofiadavis starred 3 repositories</h4>
+            <button class="btn btn-ghost btn-icon-sm" onclick="toggleCollapsible('col-1')">
+              <svg id="col-1-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition:transform 0.2s;width:1rem;height:1rem"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+          <div class="collapsible-row" style="margin-top:0.5rem">
+            <span>@radix-ui/primitives</span>
+          </div>
+          <div class="collapsible-content">
+            <div class="collapsible-inner">
+              <div class="collapsible-row"><span>@radix-ui/colors</span></div>
+              <div class="collapsible-row"><span>@stitches/react</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Example 2: settings panel -->
+        <div class="collapsible" id="col-2" style="max-width:22rem;width:100%">
+          <button class="collapsible-trigger" onclick="toggleCollapsible('col-2')" style="justify-content:space-between;border:1px solid var(--border);border-radius:calc(var(--radius) - 2px)">
+            <span style="display:flex;align-items:center;gap:0.5rem">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+              Advanced settings
+            </span>
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="collapsible-content">
+            <div class="collapsible-inner" style="gap:0.75rem;padding:0.75rem 0 0">
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.875rem">
+                <span>Enable dark mode</span>
+                <label style="position:relative;display:inline-block;width:2.75rem;height:1.5rem;flex-shrink:0">
+                  <input type="checkbox" style="opacity:0;width:0;height:0;position:absolute" />
+                  <span style="position:absolute;inset:0;background:var(--input);border-radius:9999px;cursor:pointer;transition:background 0.2s"></span>
+                  <span style="position:absolute;top:2px;left:2px;width:1.25rem;height:1.25rem;background:white;border-radius:9999px;transition:transform 0.2s;box-shadow:0 1px 2px rgb(0 0 0/.2)"></span>
+                </label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.875rem">
+                <span>Show line numbers</span>
+                <label style="position:relative;display:inline-block;width:2.75rem;height:1.5rem;flex-shrink:0">
+                  <input type="checkbox" checked style="opacity:0;width:0;height:0;position:absolute" />
+                  <span style="position:absolute;inset:0;background:var(--primary);border-radius:9999px;cursor:pointer;transition:background 0.2s"></span>
+                  <span style="position:absolute;top:2px;left:calc(100% - 1.375rem);width:1.25rem;height:1.25rem;background:white;border-radius:9999px;box-shadow:0 1px 2px rgb(0 0 0/.2)"></span>
+                </label>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;font-size:0.875rem">
+                <span>Auto-save drafts</span>
+                <label style="position:relative;display:inline-block;width:2.75rem;height:1.5rem;flex-shrink:0">
+                  <input type="checkbox" style="opacity:0;width:0;height:0;position:absolute" />
+                  <span style="position:absolute;inset:0;background:var(--input);border-radius:9999px;cursor:pointer;transition:background 0.2s"></span>
+                  <span style="position:absolute;top:2px;left:2px;width:1.25rem;height:1.25rem;background:white;border-radius:9999px;transition:transform 0.2s;box-shadow:0 1px 2px rgb(0 0 0/.2)"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ DIALOG ══ -->
+    <div class="sep"></div>
+    <h2 class="section-title" style="margin-top:2rem">Dialog</h2>
+    <p class="section-sub">A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.</p>
+
+    <div class="preview">
+      <div class="preview-row">
+        <span class="row-label">Examples</span>
+        <button class="btn btn-outline" onclick="openDialog('dialog-profile')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Edit Profile
+        </button>
+        <button class="btn btn-outline" onclick="openDialog('dialog-share')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share Document
+        </button>
+        <button class="btn btn-default" onclick="openDialog('dialog-subscribe')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          Subscribe
+        </button>
+      </div>
+      <!-- anatomy -->
+      <div class="preview-row" style="flex-direction:column;gap:0.5rem">
+        <span class="row-label" style="width:auto;font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Anatomy</span>
+        <div style="border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;max-width:28rem;position:relative;background:var(--card)">
+          <div style="position:absolute;top:1rem;right:1rem;width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;border-radius:4px;background:var(--muted);cursor:default">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:1rem">
+            <div style="display:flex;flex-direction:column;gap:0.4rem">
+              <div style="font-size:1rem;font-weight:600;color:var(--foreground)">DialogTitle</div>
+              <div style="font-size:0.875rem;color:var(--muted-foreground)">DialogDescription — context below the title.</div>
+            </div>
+            <div style="background:var(--muted);border-radius:calc(var(--radius)-2px);padding:0.75rem;font-size:0.8125rem;color:var(--muted-foreground)">DialogContent area — forms, text, any content.</div>
+            <div style="display:flex;justify-content:flex-end;gap:0.5rem">
+              <button class="btn btn-outline btn-sm" style="pointer-events:none">Cancel</button>
+              <button class="btn btn-default btn-sm" style="pointer-events:none">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DROPDOWN MENU ══ -->
+    <div class="sep"></div>
+    <h2 class="section-title" style="margin-top:2rem">Dropdown Menu</h2>
+    <p class="section-sub">Displays a menu to the user — such as a set of actions or functions — triggered by a button.</p>
+
+    <div class="preview">
+      <div class="preview-row" style="align-items:flex-start;gap:1.5rem;flex-wrap:wrap;padding-bottom:12rem">
+
+        <!-- Basic actions dropdown -->
+        <div>
+          <div style="font-size:0.75rem;font-weight:500;color:var(--muted-foreground);margin-bottom:0.5rem">Basic</div>
+          <div class="dropdown-wrap">
+            <button class="btn btn-outline btn-sm" onclick="toggleDropdown('dd-basic')">
+              Open menu
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dropdown-content bottom-start" id="dd-basic">
+              <div class="dropdown-label">My Account</div>
+              <div class="dropdown-sep"></div>
+              <button class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Profile
+                <span class="dropdown-shortcut">⇧⌘P</span>
+              </button>
+              <button class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Billing
+                <span class="dropdown-shortcut">⌘B</span>
+              </button>
+              <button class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+                Settings
+                <span class="dropdown-shortcut">⌘S</span>
+              </button>
+              <button class="dropdown-item" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                New Team
+              </button>
+              <div class="dropdown-sep"></div>
+              <button class="dropdown-item destructive">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Log out
+                <span class="dropdown-shortcut">⇧⌘Q</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- With checkboxes -->
+        <div>
+          <div style="font-size:0.75rem;font-weight:500;color:var(--muted-foreground);margin-bottom:0.5rem">Checkboxes</div>
+          <div class="dropdown-wrap">
+            <button class="btn btn-outline btn-sm" onclick="toggleDropdown('dd-check')">
+              View options
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="dropdown-content bottom-start" id="dd-check">
+              <div class="dropdown-label">Appearance</div>
+              <div class="dropdown-sep"></div>
+              <button class="dropdown-item" onclick="toggleCheck(this)">
+                <span class="dropdown-indicator">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Status Bar
+              </button>
+              <button class="dropdown-item" onclick="toggleCheck(this)">
+                <span class="dropdown-indicator" style="opacity:0">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Activity Bar
+              </button>
+              <button class="dropdown-item" onclick="toggleCheck(this)">
+                <span class="dropdown-indicator">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </span>
+                Panel
+              </button>
+              <div class="dropdown-sep"></div>
+              <div class="dropdown-label">Panel Position</div>
+              <div class="dropdown-sep"></div>
+              <button class="dropdown-item" onclick="selectRadio(this, 'panel-pos')">
+                <span class="dropdown-indicator" data-group="panel-pos">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="color:var(--foreground)"><circle cx="12" cy="12" r="6"/></svg>
+                </span>
+                Bottom
+              </button>
+              <button class="dropdown-item" onclick="selectRadio(this, 'panel-pos')">
+                <span class="dropdown-indicator" data-group="panel-pos" style="opacity:0">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="color:var(--foreground)"><circle cx="12" cy="12" r="6"/></svg>
+                </span>
+                Right
+              </button>
+              <button class="dropdown-item" onclick="selectRadio(this, 'panel-pos')">
+                <span class="dropdown-indicator" data-group="panel-pos" style="opacity:0">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style="color:var(--foreground)"><circle cx="12" cy="12" r="6"/></svg>
+                </span>
+                Left
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Context-style (3 dots) -->
+        <div>
+          <div style="font-size:0.75rem;font-weight:500;color:var(--muted-foreground);margin-bottom:0.5rem">Context menu</div>
+          <div class="dropdown-wrap">
+            <button class="btn btn-ghost btn-icon-sm" onclick="toggleDropdown('dd-ctx')" title="More options">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+            </button>
+            <div class="dropdown-content bottom-end" id="dd-ctx">
+              <button class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Edit
+              </button>
+              <button class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Duplicate
+              </button>
+              <button class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export
+              </button>
+              <div class="dropdown-sep"></div>
+              <button class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Share
+              </button>
+              <button class="dropdown-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+                Archive
+              </button>
+              <div class="dropdown-sep"></div>
+              <button class="dropdown-item destructive">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                Delete
+                <span class="dropdown-shortcut">⌫</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ FIELD ══ -->
+    <div class="sep"></div>
+    <h2 class="section-title" style="margin-top:2rem">Field</h2>
+    <p class="section-sub">Label + Input/Select/Textarea with description and validation messages — the core form field pattern.</p>
+
+    <div class="preview">
+
+      <!-- Basic states -->
+      <div class="preview-row" style="flex-direction:column;gap:0">
+        <div class="grid2" style="width:100%;gap:1.25rem">
+          <div class="field">
+            <label class="field-label">Email</label>
+            <input class="field-input" type="email" placeholder="m@example.com" />
+            <p class="field-description">We'll never share your email with anyone.</p>
+          </div>
+          <div class="field">
+            <label class="field-label required">Full name</label>
+            <input class="field-input" placeholder="Sofia Davis" />
+          </div>
+          <div class="field">
+            <label class="field-label">Username</label>
+            <input class="field-input error" value="sofia@!" />
+            <p class="field-error">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              Username can only contain letters, numbers and underscores.
+            </p>
+          </div>
+          <div class="field">
+            <label class="field-label">Password</label>
+            <div class="field-input-wrap">
+              <span class="field-input-icon right">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </span>
+              <input class="field-input icon-right" type="password" value="••••••••" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- With icons & addons -->
+      <div class="preview-row" style="flex-direction:column">
+        <p style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted-foreground);margin-bottom:0.75rem">With icons &amp; addons</p>
+        <div class="grid3" style="width:100%;gap:1.25rem">
+          <div class="field">
+            <label class="field-label">Search</label>
+            <div class="field-input-wrap">
+              <span class="field-input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </span>
+              <input class="field-input" placeholder="Search..." />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Website</label>
+            <div class="field-addon-wrap">
+              <span class="field-addon prefix">https://</span>
+              <input class="field-input with-prefix" placeholder="example.com" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Price</label>
+            <div class="field-addon-wrap">
+              <input class="field-input with-suffix" placeholder="0.00" type="number" />
+              <span class="field-addon suffix">XOF</span>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Phone</label>
+            <div class="field-addon-wrap">
+              <span class="field-addon prefix">+225</span>
+              <input class="field-input with-prefix" placeholder="07 00 00 00 00" type="tel" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Route</label>
+            <div class="field-addon-wrap">
+              <span class="field-addon prefix">/api/v1/</span>
+              <input class="field-input with-prefix" value="voyages" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Budget</label>
+            <div class="field-addon-wrap">
+              <span class="field-addon prefix">FCFA</span>
+              <input class="field-input with-prefix with-suffix" placeholder="0" type="number" style="border-radius:0" />
+              <span class="field-addon suffix">.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Select + Textarea -->
+      <div class="preview-row" style="flex-direction:column">
+        <p style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted-foreground);margin-bottom:0.75rem">Select &amp; Textarea</p>
+        <div class="grid2" style="width:100%;gap:1.25rem">
+          <div class="field">
+            <label class="field-label required">Role</label>
+            <select class="field-select">
+              <option value="">Select a role…</option>
+              <option>Owner</option>
+              <option selected>Admin</option>
+              <option>Member</option>
+              <option>Viewer</option>
+            </select>
+            <p class="field-description">Controls what this user can access.</p>
+          </div>
+          <div class="field">
+            <label class="field-label">Type de voyage</label>
+            <select class="field-select">
+              <option>Aller simple</option>
+              <option>Aller-retour</option>
+              <option>Circuit</option>
+            </select>
+          </div>
+          <div class="field" style="grid-column:1/-1">
+            <label class="field-label">Description</label>
+            <textarea class="field-textarea" rows="3" placeholder="Add a short description about this item..."></textarea>
+            <p class="field-description">Shown publicly on your profile. Max 250 characters.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disabled -->
+      <div class="preview-row">
+        <span class="row-label">Disabled</span>
+        <div class="field" style="flex:1">
+          <label class="field-label" style="opacity:0.5">Email</label>
+          <input class="field-input" value="sofia@example.com" disabled />
+        </div>
+        <div class="field" style="flex:1">
+          <label class="field-label" style="opacity:0.5">Plan</label>
+          <select class="field-select" disabled><option>Pro — $12/month</option></select>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="page-footer">
+      shadcn/ui Collapsible, Dialog, Dropdown Menu &amp; Field — Pixel-perfect HTML preview · Real CSS variables &amp; design tokens
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ── Theme ── */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.classList.contains('dark');
+    html.classList.toggle('dark', !isDark);
+    document.getElementById('icon-sun').style.display  = isDark ? 'block' : 'none';
+    document.getElementById('icon-moon').style.display = isDark ? 'none'  : 'block';
+    document.getElementById('theme-label').textContent = isDark ? 'Dark mode' : 'Light mode';
+  }
+
+  /* ── Collapsible ── */
+  function toggleCollapsible(id) {
+    const el = document.getElementById(id);
+    const isOpen = el.classList.toggle('open');
+    // for inline icon button (col-1 style)
+    const iconEl = document.getElementById(id + '-icon');
+    if (iconEl) iconEl.style.transform = isOpen ? 'rotate(180deg)' : '';
+  }
+
+  /* ── Dialog ── */
+  function openDialog(id) { document.getElementById(id).classList.add('open'); }
+  function closeDialog(id) { document.getElementById(id).classList.remove('open'); }
+
+  document.querySelectorAll('.dialog-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) closeDialog(o.id); });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.querySelectorAll('.dialog-overlay.open').forEach(o => closeDialog(o.id));
+  });
+
+  /* ── Dropdown ── */
+  function toggleDropdown(id) {
+    const el = document.getElementById(id);
+    const isOpen = el.classList.contains('open');
+    // close all first
+    document.querySelectorAll('.dropdown-content.open').forEach(d => d.classList.remove('open'));
+    if (!isOpen) el.classList.add('open');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.dropdown-wrap')) {
+      document.querySelectorAll('.dropdown-content.open').forEach(d => d.classList.remove('open'));
+    }
+  });
+
+  /* ── Dropdown checkbox toggle ── */
+  function toggleCheck(btn) {
+    const ind = btn.querySelector('.dropdown-indicator');
+    const isVisible = ind.style.opacity !== '0';
+    ind.style.opacity = isVisible ? '0' : '1';
+  }
+
+  /* ── Dropdown radio ── */
+  function selectRadio(btn, group) {
+    const menu = btn.closest('.dropdown-content');
+    menu.querySelectorAll(`[data-group="${group}"]`).forEach(ind => ind.style.opacity = '0');
+    btn.querySelector(`[data-group="${group}"]`).style.opacity = '1';
+  }
+</script>
+</body>
+</html>

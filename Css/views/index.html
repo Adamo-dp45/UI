@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Css</title>
+    <link rel="stylesheet" href="../src/app.css">
+</head>
+<style>
+    .a11y-nav {
+        position: absolute;
+        top: -10em;
+        z-index: 100;
+        width: 100%;
+    }
+
+    .a11y-nav a {
+        background-color: #FFFFFF;
+        font-weight: 700;
+        position: absolute;
+        left: 0;
+        right: 0;
+        text-align: center;
+        padding: .5rem 0;
+    }
+
+    .a11y-nav a:focus,
+    .a11y-nav a:hover {
+        top: 10em;
+        text-decoration: none;
+    }
+
+    .mb-3 {
+        margin-bottom: 2rem;
+    }
+
+    .link a {
+        margin: 0 10px;
+        text-decoration: none;
+    }
+</style>
+<body>
+
+    <!--
+        Menu d'accessibilité - Permet d'acceder a un contenu particulier en appuyant sur 'Tab'-->
+    <ul class="a11y-nav">
+        <li>
+            <a href="#main">Passer directement au contenu</a>
+        </li>
+        <li>
+            <a href="#search">Aller à la recherche</a>
+        </li>
+    </ul>
+    <!--
+        <div class="dialog">
+            <div class="dialog-body">
+                <p>Voulez vous ..</p>
+                <div>
+                    <button>OK</button>
+                    <button>OK</button>
+                </div>
+            </div>
+        </div>
+    -->
+    <h1>Css ★★★☆☆</h1>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="160" height="50" viewBox="0 0 320 100">
+        <rect x="10" y="10" width="80" height="80" fill="grey">
+            <animate attributeName="fill" values="#578aff;#adadad;#adadad" dur="3s" repeatCount="indefinite"></animate>
+        </rect>
+        <rect x="120" y="10" width="80" height="80" fill="grey">
+            <animate attributeName="fill" values="#578aff;#adadad;#adadad" dur="3s" repeatCount="indefinite" begin="1s"></animate>
+        </rect>
+        <rect x="230" y="10" width="80" height="80" fill="grey">
+            <animate attributeName="fill" values="#578aff;#adadad;#adadad" dur="3s" repeatCount="indefinite" begin="2s"></animate>
+        </rect>
+    </svg>
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="160" height="50" viewBox="0 0 870 200">
+        <circle cx="40" cy="10" r="40" fill="grey">
+            <animate attributeName="fill" values="#578aff;#adadad;#adadad" dur="3s" repeatCount="indefinite"></animate>
+            <animateTransform attributeName="transform" type="translate" values="0 0; 0 100; 0 0" dur="1.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="140" cy="10" r="40" fill="grey">
+            <animate attributeName="fill" values="#578aff;#adadad;#adadad" dur="3s" repeatCount="indefinite" begin="1s"></animate>
+            <animateTransform attributeName="transform" type="translate" values="0 0; 0 100; 0 0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="250" cy="10" r="40" fill="grey">
+            <animate attributeName="fill" values="#578aff;#adadad;#adadad" dur="3s" repeatCount="indefinite" begin="2s"></animate>
+        </circle>
+    </svg>
+
+    <h2>Intégration</h2>
+    <div class="link">
+        <a href="../integration/blog/index.html">Blog</a>
+        <a href="../integration/social/index.html">Social</a>
+        <a href="../integration/fiasco/index.html">The fiasco</a>
+        <a href="../integration/product/index.html">Product</a>
+    </div>
+
+</body>
+</html>

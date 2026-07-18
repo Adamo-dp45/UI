@@ -1,0 +1,46 @@
+<p-card class="mb-3"> <!--
+    - 'mb-3' pour les class utilitaire de 'primeflex'
+-->
+    <div class="flex justify-content-between align-items-center mb-2">
+        <div>
+            <h3 class="m-0">{{ prompt().title }}</h3>
+            <div class="text-sm text-color-secondary">&#64;{{ prompt().author.username }}</div>
+        </div>
+        <div class="flex gap-2">
+            @if (canEdit()) {
+                <p-button icon="pi pi-pencil" size="small" [text]="true" [routerLink]="['/prompts', prompt().id, 'edit']" /> <!--
+                    - '[text]' pour le outline
+                    - '[routerLink]' on met le '[]' vu qu'on lui donne un tableau et angular met automatiquement les '/' entre
+                -->
+            }
+            <p-button icon="pi pi-copy" size="small" [text]="true" (onClick)="copyToClipboard()"></p-button> <!--
+                - <button (click)="copyToClipboard()">Copier</button>
+            -->
+        </div>
+    </div>
+    <textarea name="" class="w-full" rows="8" id="" readonly pTextarea> <!-- 'pTextarea' pour indiquer 'primeng' -->
+        {{ prompt().content }}
+    </textarea>
+    <div class="flex justify-content-between align-items-center">
+        <p-tag [value]="prompt().category.name" />
+        <div class="flex align-items-center gap-2">
+            <p-button
+                [loading]="voting()"
+                (onClick)="upvote()"
+                [severity]="userVote() === 'up' ? 'primary' : 'secondary'"
+                icon="pi pi-thumbs-up"
+                size="small"
+            />
+            <span>{{ score() }}</span>
+            <p-button
+                [loading]="voting()"
+                (onClick)="downvote()"
+                [severity]="userVote() === 'down' ? 'primary' : 'secondary'"
+                icon="pi pi-thumbs-down"
+                size="small"
+            />
+        </div>
+    </div>
+</p-card> <!--
+    - 'prompt()' vu qu'il renvoi un 'InputSignal'
+-->

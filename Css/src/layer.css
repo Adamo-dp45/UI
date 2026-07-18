@@ -1,0 +1,79 @@
+/* Permet de regrouper nos règles et de controller la priorité de nos sélecteurs
+*/ /*
+    - Tous ce qui est dans un layer a une priorité inférieur à celle qui est en dehors
+    - Lorsque les règles sont dans des layer, la règle qui va être dans le dernier layer utilisé l'emporte
+    - On peut redéfinir un layer après l'avoir défini
+*/
+
+/* Permet de changer l'ordre des layers, le dernier layer est le plus spécifique
+*/
+@layer external, global, theme, utilities;
+
+:root {
+    --size: 8px;
+}
+
+html, body {
+    margin: 0
+}
+
+button { /*
+        - Le selecteur l'emporte sur ce qui est dans le layer global
+    */
+    background-color: green;
+    color: #FFF !important; /*
+        - Le comportement du 'important' change avec le système de layer
+    */
+}
+
+@layer global {
+    button {
+        background-color: brown;
+        color: #FFF !important; /*
+            - Le selecteur l'emporte sur ce qui est en dehors du layer à cause du 'important', aussi entre les layer le premier layer qui l'a l'emporte
+        */
+    }
+}
+
+@layer theme {
+    p {
+        color: black;
+    }
+}
+
+@layer theme { /*
+        - Va l'ajouter à la fin du layer
+    */
+    body {
+        background-color: blue;
+    }
+}
+
+@layer { /*
+        - Le layer anonyme, utile juste pour donner une priorité inférieur à nos règles
+    */
+    p {
+        padding: 10px;
+    }
+}
+
+/*
+    - Un autre cas d'utilisation
+*/
+@layer utilities {
+    .p-10 {
+        padding: 10px;
+    }
+}
+
+@layer theme {
+    .btn {
+        background-color: #FFF;
+        padding: 50px; /* Sans le layer 'utilities' si on ajoute la class .p-10 sur notre bouton il ne va pas l'emporter */
+    }
+}
+
+/* Un autre cas d'utilisation
+*/
+@layer external, theme;
+@import 'https://cdn..bootstrap..' layer(external); /* On le met dans un layer */

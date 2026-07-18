@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>shadcn/ui — Popover, Select, Separator & Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── TOKENS ─── */
+    :root {
+      --background: oklch(1 0 0);
+      --foreground: oklch(0.145 0 0);
+      --card: oklch(1 0 0);
+      --card-foreground: oklch(0.145 0 0);
+      --primary: oklch(0.205 0 0);
+      --primary-foreground: oklch(0.985 0 0);
+      --secondary: oklch(0.97 0 0);
+      --secondary-foreground: oklch(0.205 0 0);
+      --muted: oklch(0.97 0 0);
+      --muted-foreground: oklch(0.556 0 0);
+      --accent: oklch(0.97 0 0);
+      --accent-foreground: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --destructive-foreground: oklch(0.985 0 0);
+      --border: oklch(0.922 0 0);
+      --input: oklch(0.922 0 0);
+      --ring: oklch(0.708 0 0);
+      --radius: 0.625rem;
+    }
+    .dark {
+      --background: oklch(0.145 0 0);
+      --foreground: oklch(0.985 0 0);
+      --card: oklch(0.205 0 0);
+      --card-foreground: oklch(0.985 0 0);
+      --primary: oklch(0.985 0 0);
+      --primary-foreground: oklch(0.205 0 0);
+      --secondary: oklch(0.269 0 0);
+      --secondary-foreground: oklch(0.985 0 0);
+      --muted: oklch(0.269 0 0);
+      --muted-foreground: oklch(0.708 0 0);
+      --accent: oklch(0.269 0 0);
+      --accent-foreground: oklch(0.985 0 0);
+      --destructive: oklch(0.396 0.141 25.723);
+      --destructive-foreground: oklch(0.985 0 0);
+      --border: oklch(1 0 0 / 0.1);
+      --input: oklch(1 0 0 / 0.15);
+      --ring: oklch(0.556 0 0);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Geist', ui-sans-serif, system-ui, sans-serif;
+      font-size: 14px; line-height: 1.5;
+      background-color: var(--background); color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* ══════════════════════════════════════════════════
+       POPOVER
+       z-50 w-72 rounded-md border bg-popover p-4
+       text-popover-foreground shadow-md outline-none
+    ══════════════════════════════════════════════════ */
+    .popover-wrap { position: relative; display: inline-block; }
+
+    .popover-content {
+      position: absolute;
+      z-index: 50;
+      width: 18rem;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background-color: var(--card);
+      padding: 1rem;
+      color: var(--card-foreground);
+      box-shadow: 0 4px 6px -1px rgb(0 0 0/.1), 0 2px 4px -2px rgb(0 0 0/.1);
+      outline: none;
+      /* animation */
+      opacity: 0; pointer-events: none;
+      transform: translateY(-6px) scale(0.97);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .popover-content.open {
+      opacity: 1; pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+    /* placement helpers */
+    .popover-content.bottom       { top: calc(100% + 8px); left: 50%; transform: translateX(-50%) translateY(-6px) scale(0.97); }
+    .popover-content.bottom.open  { transform: translateX(-50%) translateY(0) scale(1); }
+    .popover-content.bottom-start { top: calc(100% + 8px); left: 0; }
+    .popover-content.bottom-end   { top: calc(100% + 8px); right: 0; }
+    .popover-content.top-start    { bottom: calc(100% + 8px); left: 0; }
+    .popover-content.top-end      { bottom: calc(100% + 8px); right: 0; }
+    .popover-content.right-start  { left: calc(100% + 8px); top: 0; }
+
+    /* ══════════════════════════════════════════════════
+       SELECT (Radix)
+       Trigger: flex h-10 w-full items-center justify-between
+         rounded-md border border-input bg-background px-3 py-2
+         text-sm ring-offset-background placeholder:text-muted-foreground
+         focus:outline-none focus:ring-2 focus:ring-ring
+         disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1
+       Content: relative z-50 max-h-96 min-w-[8rem] overflow-hidden
+         rounded-md border bg-popover text-popover-foreground shadow-md
+    ══════════════════════════════════════════════════ */
+    .select-wrap { position: relative; display: inline-block; width: 100%; }
+
+    .select-trigger {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 2.5rem; width: 100%;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--input);
+      background-color: var(--background);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-family: inherit; font-weight: 400;
+      color: var(--foreground);
+      cursor: pointer; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      gap: 0.5rem;
+      user-select: none;
+    }
+    .select-trigger:focus, .select-trigger.open {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 25%, transparent);
+    }
+    .select-trigger:disabled { opacity: 0.5; cursor: not-allowed; }
+    .select-trigger .placeholder { color: var(--muted-foreground); }
+    .select-trigger .select-icon {
+      width: 1rem; height: 1rem; flex-shrink: 0;
+      color: var(--muted-foreground); opacity: 0.7;
+      transition: transform 0.2s ease;
+    }
+    .select-trigger.open .select-icon { transform: rotate(180deg); }
+    .select-trigger span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex: 1; }
+
+    .select-content {
+      position: absolute; left: 0; right: 0;
+      z-index: 50;
+      border-radius: calc(var(--radius) - 2px);
+      border: 1px solid var(--border);
+      background-color: var(--card);
+      color: var(--card-foreground);
+      box-shadow: 0 4px 6px -1px rgb(0 0 0/.1), 0 2px 4px -2px rgb(0 0 0/.1);
+      overflow: hidden;
+      max-height: 24rem;
+      overflow-y: auto;
+      /* animation */
+      opacity: 0; pointer-events: none;
+      transform: translateY(-4px) scale(0.98);
+      transition: opacity 0.15s ease, transform 0.15s ease;
+    }
+    .select-content.above { bottom: calc(100% + 4px); }
+    .select-content.below { top: calc(100% + 4px); }
+    .select-content.open { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+
+    /* SelectScrollUpButton / ScrollDownButton */
+    .select-scroll-btn {
+      display: flex; align-items: center; justify-content: center;
+      height: 1.5rem; cursor: default;
+      color: var(--muted-foreground);
+    }
+    .select-scroll-btn svg { width: 1rem; height: 1rem; }
+
+    /* SelectViewport: p-1 */
+    .select-viewport { padding: 0.25rem; }
+
+    /* SelectLabel: py-1.5 pl-8 pr-2 text-sm font-semibold */
+    .select-label {
+      padding: 0.375rem 0.5rem 0.25rem 2rem;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--muted-foreground);
+    }
+
+    /* SelectSeparator: -mx-1 my-1 h-px bg-muted */
+    .select-sep { height: 1px; background-color: var(--border); margin: 0.25rem -0.25rem; }
+
+    /* SelectItem:
+       relative flex w-full cursor-default select-none items-center
+       rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none
+       focus:bg-accent focus:text-accent-foreground
+       data-[disabled]:pointer-events-none data-[disabled]:opacity-50 */
+    .select-item {
+      position: relative;
+      display: flex; align-items: center;
+      width: 100%; cursor: default; user-select: none;
+      border-radius: calc(var(--radius) - 4px);
+      padding: 0.375rem 0.5rem 0.375rem 2rem;
+      font-size: 0.875rem; outline: none;
+      transition: background-color 0.1s;
+      color: var(--foreground);
+      border: none; background: none;
+      text-align: left; font-family: inherit;
+    }
+    .select-item:hover, .select-item:focus { background-color: var(--accent); color: var(--accent-foreground); }
+    .select-item[disabled] { opacity: 0.5; pointer-events: none; }
+    .select-item.checked::before {
+      content: '';
+      position: absolute; left: 0.5rem;
+      width: 0.875rem; height: 0.875rem;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-size: contain;
+    }
+    .dark .select-item.checked::before {
+      filter: invert(1);
+    }
+    /* item with icon */
+    .select-item-icon {
+      position: absolute; left: 0.5rem;
+      display: flex; align-items: center; justify-content: center;
+      width: 1rem; height: 1rem; color: var(--muted-foreground);
+    }
+    .select-item-icon svg { width: 0.875rem; height: 0.875rem; }
+    .select-item.has-icon { padding-left: 2rem; }
+
+    /* ══════════════════════════════════════════════════
+       SEPARATOR
+       shrink-0 bg-border
+       horizontal: h-[1px] w-full
+       vertical:   h-full w-[1px]
+    ══════════════════════════════════════════════════ */
+    .separator {
+      flex-shrink: 0;
+      background-color: var(--border);
+    }
+    .separator-h { height: 1px; width: 100%; }
+    .separator-v { width: 1px; align-self: stretch; }
+
+    /* Separator with label */
+    .separator-label {
+      display: flex; align-items: center; gap: 0.75rem;
+      width: 100%;
+    }
+    .separator-label .separator { flex: 1; }
+    .separator-label span {
+      font-size: 0.75rem; font-weight: 500;
+      color: var(--muted-foreground);
+      white-space: nowrap;
+    }
+
+    /* ══════════════════════════════════════════════════
+       SHEET
+       Same as Dialog but positioned at edge
+       overlay: fixed inset-0 z-50 bg-black/80
+       content:
+         fixed z-50 gap-4 bg-background p-6 shadow-lg
+         transition ease-in-out duration-300
+       sides: top/right/bottom/left
+       right: inset-y-0 right-0 h-full w-3/4 sm:max-w-sm
+    ══════════════════════════════════════════════════ */
+    .sheet-overlay {
+      position: fixed; inset: 0; z-index: 50;
+      background-color: oklch(0 0 0 / 0.8);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .sheet-overlay.open { opacity: 1; pointer-events: auto; }
+
+    /* base content */
+    .sheet-content {
+      position: fixed; z-index: 51;
+      background-color: var(--background);
+      padding: 1.5rem;
+      box-shadow: 0 20px 25px -5px rgb(0 0 0/.1), 0 8px 10px -6px rgb(0 0 0/.1);
+      display: flex; flex-direction: column; gap: 1rem;
+      transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+      overflow-y: auto;
+    }
+
+    /* right */
+    .sheet-content.right {
+      inset-y: 0; right: 0;
+      height: 100%; width: 75%; max-width: 24rem;
+      border-left: 1px solid var(--border);
+      transform: translateX(100%);
+    }
+    .sheet-overlay.open .sheet-content.right { transform: translateX(0); }
+
+    /* left */
+    .sheet-content.left {
+      inset-y: 0; left: 0;
+      height: 100%; width: 75%; max-width: 24rem;
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+    }
+    .sheet-overlay.open .sheet-content.left { transform: translateX(0); }
+
+    /* top */
+    .sheet-content.top {
+      inset-x: 0; top: 0;
+      height: auto; max-height: 60vh;
+      border-bottom: 1px solid var(--border);
+      transform: translateY(-100%);
+    }
+    .sheet-overlay.open .sheet-content.top { transform: translateY(0); }
+
+    /* bottom */
+    .sheet-content.bottom {
+      inset-x: 0; bottom: 0;
+      height: auto; max-height: 60vh;
+      border-top: 1px solid var(--border);
+      border-radius: calc(var(--radius) + 4px) calc(var(--radius) + 4px) 0 0;
+      transform: translateY(100%);
+    }
+    .sheet-overlay.open .sheet-content.bottom { transform: translateY(0); }
+
+    /* Close button */
+    .sheet-close {
+      position: absolute; top: 1rem; right: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      width: 1.75rem; height: 1.75rem;
+      border-radius: calc(var(--radius) - 4px);
+      border: none; background: none; cursor: pointer;
+      color: var(--muted-foreground); font-family: inherit;
+      transition: background-color 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+    .sheet-close:hover { background-color: var(--accent); color: var(--foreground); }
+    .sheet-close svg { width: 1rem; height: 1rem; }
+
+    /* SheetHeader: flex flex-col gap-2 */
+    .sheet-header { display: flex; flex-direction: column; gap: 0.375rem; padding-right: 2rem; }
+    /* SheetTitle: text-lg font-semibold text-foreground */
+    .sheet-title { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; color: var(--foreground); }
+    /* SheetDescription: text-sm text-muted-foreground */
+    .sheet-description { font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.5; }
+    /* SheetFooter: flex flex-col-reverse sm:flex-row sm:justify-end sm:gap-2 */
+    .sheet-footer { display: flex; flex-direction: row; justify-content: flex-end; gap: 0.5rem; margin-top: auto; flex-wrap: wrap; }
+
+    /* ─── SHARED PRIMITIVES ─── */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 0.5rem; white-space: nowrap;
+      border-radius: calc(var(--radius) - 2px);
+      font-size: 0.875rem; font-weight: 500; font-family: inherit;
+      border: none; cursor: pointer; outline: none;
+      transition: background-color 0.15s, color 0.15s, opacity 0.15s;
+      height: 2.5rem; padding: 0.5rem 1rem;
+    }
+    .btn:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+    .btn:disabled { pointer-events: none; opacity: 0.5; }
+    .btn svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+    .btn-default { background-color: var(--primary); color: var(--primary-foreground); }
+    .btn-default:hover { opacity: 0.9; }
+    .btn-outline { background-color: transparent; border: 1px solid var(--border); color: var(--foreground); }
+    .btn-outline:hover { background-color: var(--accent); }
+    .btn-ghost { background-color: transparent; color: var(--foreground); }
+    .btn-ghost:hover { background-color: var(--accent); }
+    .btn-secondary { background-color: var(--secondary); color: var(--secondary-foreground); }
+    .btn-secondary:hover { opacity: 0.85; }
+    .btn-sm { height: 2.25rem; padding: 0 0.75rem; border-radius: calc(var(--radius) - 4px); }
+    .btn-icon-sm { height: 2.25rem; width: 2.25rem; padding: 0; border-radius: calc(var(--radius) - 4px); }
+
+    .field-input {
+      display: flex; height: 2.5rem; width: 100%;
+      border-radius: calc(var(--radius) - 2px); border: 1px solid var(--input);
+      background-color: var(--background); padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-family: inherit; color: var(--foreground);
+      outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field-input:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 25%, transparent);
+    }
+    .field-input::placeholder { color: var(--muted-foreground); }
+    .field-textarea {
+      width: 100%; min-height: 5rem;
+      border-radius: calc(var(--radius) - 2px); border: 1px solid var(--input);
+      background-color: var(--background); padding: 0.5rem 0.75rem;
+      font-size: 0.875rem; font-family: inherit; line-height: 1.5; color: var(--foreground);
+      outline: none; resize: vertical; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field-textarea:focus {
+      border-color: var(--ring);
+      box-shadow: 0 0 0 3px color-mix(in oklab, var(--ring) 25%, transparent);
+    }
+    .field-label { font-size: 0.875rem; font-weight: 500; display: block; margin-bottom: 0.375rem; }
+    .field { display: flex; flex-direction: column; gap: 0.375rem; }
+
+    /* ─── LAYOUT ─── */
+    .page { min-height: 100vh; background-color: var(--background); padding: 2rem 1rem 4rem; }
+    .container { max-width: 860px; margin: 0 auto; }
+    .page-header {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem;
+      margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border);
+    }
+    .page-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; }
+    .page-subtitle { font-size: 0.875rem; color: var(--muted-foreground); margin-top: 0.25rem; }
+    .section-title { font-size: 1rem; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 0.2rem; margin-top: 2.5rem; }
+    .section-title:first-of-type { margin-top: 0; }
+    .section-sub { font-size: 0.8125rem; color: var(--muted-foreground); margin-bottom: 1rem; }
+    .preview { border: 1px solid var(--border); border-radius: var(--radius); background-color: var(--card); overflow: visible; }
+    .preview-row { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 1rem; padding: 1.25rem 1.5rem; }
+    .preview-row + .preview-row { border-top: 1px solid var(--border); }
+    .row-label { font-size: 0.75rem; font-weight: 500; color: var(--muted-foreground); width: 6.5rem; flex-shrink: 0; padding-top: 0.5rem; letter-spacing: 0.01em; }
+    .sep-section { height: 1px; background-color: var(--border); margin: 2.5rem 0 0; }
+    .theme-toggle {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background-color: var(--secondary); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 0.375rem 0.75rem;
+      font-size: 0.8125rem; font-weight: 500; cursor: pointer;
+      color: var(--foreground); font-family: inherit; white-space: nowrap;
+    }
+    .theme-toggle:hover { background-color: var(--accent); }
+    .page-footer {
+      text-align: center; padding: 2rem 0 0.5rem;
+      border-top: 1px solid var(--border); margin-top: 3rem;
+      font-size: 0.75rem; color: var(--muted-foreground);
+    }
+    code {
+      font-family: 'Geist Mono', ui-monospace, monospace; font-size: 0.8125rem;
+      background-color: var(--muted); padding: 0.125rem 0.375rem; border-radius: 4px;
+    }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 640px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+    .sub-heading {
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted-foreground);
+      margin-bottom: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ SHEETS ══ -->
+
+  <!-- Sheet: right — Edit Voyage -->
+  <div class="sheet-overlay" id="sheet-right" onclick="closeSheetOnOverlay(event,'sheet-right')">
+    <div class="sheet-content right" style="position:relative">
+      <button class="sheet-close" onclick="closeSheet('sheet-right')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="sheet-header">
+        <h2 class="sheet-title">Edit voyage</h2>
+        <p class="sheet-description">Update the trip details. Changes are saved immediately.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:1rem;flex:1;overflow-y:auto">
+        <div class="field"><label class="field-label">Route</label><input class="field-input" value="Abidjan → Yamoussoukro" /></div>
+        <div class="field"><label class="field-label">Departure date</label><input class="field-input" type="date" value="2026-03-22" /></div>
+        <div class="field"><label class="field-label">Departure time</label><input class="field-input" type="time" value="07:30" /></div>
+        <div class="field">
+          <label class="field-label">Bus</label>
+          <div class="select-wrap" style="display:block">
+            <button class="select-trigger" onclick="toggleSelect('sheet-bus')" style="width:100%">
+              <span>CI-5934-AB · Mercedes Sprinter</span>
+              <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="select-content below" id="sheet-bus">
+              <div class="select-viewport">
+                <button class="select-item checked" onclick="pickSelect(this,'sheet-bus')">CI-5934-AB · Mercedes Sprinter</button>
+                <button class="select-item" onclick="pickSelect(this,'sheet-bus')">CI-1122-CD · Yutong ZK6122</button>
+                <button class="select-item" onclick="pickSelect(this,'sheet-bus')">CI-7788-EF · King Long XMQ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="field"><label class="field-label">Notes</label><textarea class="field-textarea" rows="3" placeholder="Internal notes about this trip..."></textarea></div>
+      </div>
+      <div class="sheet-footer">
+        <button class="btn btn-outline btn-sm" onclick="closeSheet('sheet-right')">Cancel</button>
+        <button class="btn btn-default btn-sm" onclick="closeSheet('sheet-right')">Save changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sheet: left — Navigation -->
+  <div class="sheet-overlay" id="sheet-left" onclick="closeSheetOnOverlay(event,'sheet-left')">
+    <div class="sheet-content left" style="position:relative;padding:0">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border)">
+        <span style="font-weight:700;font-size:1rem;letter-spacing:-0.02em">Transport CI</span>
+        <button class="sheet-close" style="position:static;margin:0" onclick="closeSheet('sheet-left')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <nav style="padding:0.75rem;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0.25rem">
+        <a href="#" style="display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.75rem;border-radius:calc(var(--radius)-2px);font-size:0.875rem;color:var(--foreground);text-decoration:none;transition:background-color 0.1s" onmouseover="this.style.background='var(--accent)'" onmouseout="this.style.background=''">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted-foreground)"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          Dashboard
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.75rem;border-radius:calc(var(--radius)-2px);font-size:0.875rem;font-weight:500;background:var(--accent);color:var(--accent-foreground);text-decoration:none">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          Exploitation
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.75rem;border-radius:calc(var(--radius)-2px);font-size:0.875rem;color:var(--foreground);text-decoration:none;transition:background-color 0.1s" onmouseover="this.style.background='var(--accent)'" onmouseout="this.style.background=''">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          Billetterie
+        </a>
+        <a href="#" style="display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.75rem;border-radius:calc(var(--radius)-2px);font-size:0.875rem;color:var(--foreground);text-decoration:none;transition:background-color 0.1s" onmouseover="this.style.background='var(--accent)'" onmouseout="this.style.background=''">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Rapports
+        </a>
+        <div style="height:1px;background:var(--border);margin:0.5rem 0"></div>
+        <a href="#" style="display:flex;align-items:center;gap:0.625rem;padding:0.5rem 0.75rem;border-radius:calc(var(--radius)-2px);font-size:0.875rem;color:var(--foreground);text-decoration:none;transition:background-color 0.1s" onmouseover="this.style.background='var(--accent)'" onmouseout="this.style.background=''">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+          Paramètres
+        </a>
+      </nav>
+      <div style="padding:1rem 1.5rem;border-top:1px solid var(--border)">
+        <div style="display:flex;align-items:center;gap:0.75rem">
+          <div style="width:2rem;height:2rem;border-radius:9999px;background:var(--muted);display:flex;align-items:center;justify-content:center;font-size:0.6875rem;font-weight:600;color:var(--muted-foreground);flex-shrink:0">AK</div>
+          <div style="flex:1;min-width:0"><p style="font-size:0.875rem;font-weight:500;line-height:1.2">Adamo Koné</p><p style="font-size:0.75rem;color:var(--muted-foreground)">adamo@transport.ci</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sheet: top — Search / Command -->
+  <div class="sheet-overlay" id="sheet-top" onclick="closeSheetOnOverlay(event,'sheet-top')">
+    <div class="sheet-content top" style="gap:0.75rem">
+      <div style="display:flex;align-items:center;gap:0.75rem;border:1px solid var(--border);border-radius:calc(var(--radius)-2px);padding:0 0.75rem;background:var(--background)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted-foreground);flex-shrink:0"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="field-input" placeholder="Search voyages, tickets, passengers…" style="border:none;padding-left:0;padding-right:0;box-shadow:none;flex:1" autofocus />
+        <kbd style="background:var(--muted);border:1px solid var(--border);border-radius:4px;padding:0.1rem 0.4rem;font-size:0.75rem;font-family:'Geist Mono',monospace;flex-shrink:0">Esc</kbd>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:0.25rem">
+        <p style="font-size:0.75rem;font-weight:600;color:var(--muted-foreground);padding:0 0.25rem">Recent searches</p>
+        <button style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.5rem;border-radius:calc(var(--radius)-2px);font-size:0.875rem;border:none;background:none;cursor:pointer;color:var(--foreground);font-family:inherit;text-align:left;transition:background-color 0.1s" onmouseover="this.style.background='var(--accent)'" onmouseout="this.style.background=''"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted-foreground)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Abidjan → Yamoussoukro · 22 mars</button>
+        <button style="display:flex;align-items:center;gap:0.5rem;padding:0.5rem 0.5rem;border-radius:calc(var(--radius)-2px);font-size:0.875rem;border:none;background:none;cursor:pointer;color:var(--foreground);font-family:inherit;text-align:left;transition:background-color 0.1s" onmouseover="this.style.background='var(--accent)'" onmouseout="this.style.background=''"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted-foreground)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Sofia Davis · Ticket #1042</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sheet: bottom — Filters -->
+  <div class="sheet-overlay" id="sheet-bottom" onclick="closeSheetOnOverlay(event,'sheet-bottom')">
+    <div class="sheet-content bottom" style="gap:1.25rem">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <h2 style="font-size:1rem;font-weight:600">Filters</h2>
+        <button class="btn-ghost btn btn-sm" style="font-size:0.8125rem;color:var(--muted-foreground)" onclick="closeSheet('sheet-bottom')">Reset</button>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label class="field-label">Origin</label>
+          <input class="field-input" placeholder="Any city…" />
+        </div>
+        <div class="field">
+          <label class="field-label">Destination</label>
+          <input class="field-input" placeholder="Any city…" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Status</label>
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+          <button class="btn btn-default btn-sm" onclick="toggleFilter(this)">All</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleFilter(this)">Confirmed</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleFilter(this)">Pending</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleFilter(this)">Cancelled</button>
+        </div>
+      </div>
+      <div class="sheet-footer" style="margin-top:0">
+        <button class="btn btn-outline btn-sm" onclick="closeSheet('sheet-bottom')">Cancel</button>
+        <button class="btn btn-default btn-sm" onclick="closeSheet('sheet-bottom')">Apply filters</button>
+      </div>
+    </div>
+  </div>
+
+<div class="page">
+  <div class="container">
+
+    <!-- Header -->
+    <div class="page-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.25rem">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span style="font-weight:600">shadcn/ui</span>
+        </div>
+        <h1 class="page-title">Popover, Select, Separator &amp; Sheet</h1>
+        <p class="page-subtitle">Floating panels, rich dropdowns, visual dividers and edge-anchored overlays.</p>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <svg id="icon-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg id="icon-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="theme-label">Dark mode</span>
+      </button>
+    </div>
+
+    <!-- ══ POPOVER ══ -->
+    <h2 class="section-title">Popover</h2>
+    <p class="section-sub">Displays rich content in a portal, triggered by a button. <code>z-50 w-72 rounded-md border bg-popover p-4 shadow-md</code></p>
+
+    <div class="preview">
+
+      <!-- Basic -->
+      <div class="preview-row" style="padding-bottom:14rem">
+        <span class="row-label" style="padding-top:0.6rem">Examples</span>
+
+        <!-- Open popover -->
+        <div class="popover-wrap">
+          <button class="btn btn-outline btn-sm" onclick="togglePopover('pop-open')">Open popover</button>
+          <div class="popover-content bottom-start open" id="pop-open" style="position:absolute;opacity:1;pointer-events:auto;transform:none;top:calc(100% + 8px)">
+            <div style="display:grid;gap:1rem">
+              <div style="display:flex;flex-direction:column;gap:0.25rem">
+                <h4 style="font-size:0.875rem;font-weight:600;line-height:1">Dimensions</h4>
+                <p style="font-size:0.8125rem;color:var(--muted-foreground)">Set the dimensions for the layer.</p>
+              </div>
+              <div style="display:grid;grid-template-columns:auto 1fr;gap:0.5rem 1rem;align-items:center">
+                <label style="font-size:0.875rem;font-weight:500;text-align:right">Width</label>
+                <input class="field-input btn-sm" value="100%" style="height:2rem" />
+                <label style="font-size:0.875rem;font-weight:500;text-align:right">Max. width</label>
+                <input class="field-input btn-sm" value="300px" style="height:2rem" />
+                <label style="font-size:0.875rem;font-weight:500;text-align:right">Height</label>
+                <input class="field-input btn-sm" value="25px" style="height:2rem" />
+                <label style="font-size:0.875rem;font-weight:500;text-align:right">Max. height</label>
+                <input class="field-input btn-sm" value="none" style="height:2rem" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Date picker style -->
+        <div class="popover-wrap">
+          <button class="btn btn-outline btn-sm" onclick="togglePopover('pop-date')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Pick a date
+          </button>
+          <div class="popover-content bottom-start" id="pop-date" style="width:auto;min-width:16rem">
+            <p style="font-size:0.875rem;font-weight:600;margin-bottom:0.75rem">March 2026</p>
+            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center">
+              <span style="font-size:0.75rem;font-weight:500;color:var(--muted-foreground);padding:0.25rem">Mo</span>
+              <span style="font-size:0.75rem;font-weight:500;color:var(--muted-foreground);padding:0.25rem">Tu</span>
+              <span style="font-size:0.75rem;font-weight:500;color:var(--muted-foreground);padding:0.25rem">We</span>
+              <span style="font-size:0.75rem;font-weight:500;color:var(--muted-foreground);padding:0.25rem">Th</span>
+              <span style="font-size:0.75rem;font-weight:500;color:var(--muted-foreground);padding:0.25rem">Fr</span>
+              <span style="font-size:0.75rem;font-weight:500;color:var(--muted-foreground);padding:0.25rem">Sa</span>
+              <span style="font-size:0.75rem;font-weight:500;color:var(--muted-foreground);padding:0.25rem">Su</span>
+              <!-- week 1 padding -->
+              <span></span><span></span><span></span><span></span><span></span>
+              <button onclick="pickDay(this)" style="padding:0.3rem;font-size:0.8125rem;border:none;background:none;cursor:pointer;border-radius:calc(var(--radius)-4px);color:var(--foreground);font-family:inherit;transition:background-color 0.1s" onmouseover="this.style.background='var(--accent)'" onmouseout="if(!this.classList.contains('sel'))this.style.background=''">1</button>
+              <button onclick="pickDay(this)" style="padding:0.3rem;font-size:0.8125rem;border:none;background:none;cursor:pointer;border-radius:calc(var(--radius)-4px);color:var(--foreground);font-family:inherit;transition:background-color 0.1s" onmouseover="this.style.background='var(--accent)'" onmouseout="if(!this.classList.contains('sel'))this.style.background=''">2</button>
+              <!-- rest of month -->
+              <script>
+                (function(){
+                  const days = document.currentScript;
+                  let html = '';
+                  for (let d = 3; d <= 31; d++) {
+                    const sel = d === 21 ? ' class="sel" style="padding:0.3rem;font-size:0.8125rem;border:none;background:var(--primary);color:var(--primary-foreground);cursor:pointer;border-radius:calc(var(--radius)-4px);font-family:inherit"' : ' style="padding:0.3rem;font-size:0.8125rem;border:none;background:none;cursor:pointer;border-radius:calc(var(--radius)-4px);color:var(--foreground);font-family:inherit;transition:background-color 0.1s" onmouseover="if(!this.classList.contains(\'sel\'))this.style.background=\'var(--accent)\'" onmouseout="if(!this.classList.contains(\'sel\'))this.style.background=\'\'"';
+                    html += `<button onclick="pickDay(this)"${sel}>${d}</button>`;
+                  }
+                  days.insertAdjacentHTML('afterend', html);
+                })();
+              </script>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info popover -->
+        <div class="popover-wrap">
+          <button class="btn btn-ghost btn-icon-sm" onclick="togglePopover('pop-info')" title="More info">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          </button>
+          <div class="popover-content bottom-start" id="pop-info" style="width:16rem">
+            <div style="display:flex;flex-direction:column;gap:0.5rem">
+              <p style="font-size:0.875rem;font-weight:600">About seat picker</p>
+              <p style="font-size:0.8125rem;color:var(--muted-foreground);line-height:1.5">Seats highlighted in <span style="color:var(--primary);font-weight:600">black</span> are taken. Seats in <span style="color:oklch(0.6 0.19 142);font-weight:600">green</span> are available. Click to select up to 6 seats per booking.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SELECT ══ -->
+    <div class="sep-section"></div>
+    <h2 class="section-title" style="margin-top:2rem">Select</h2>
+    <p class="section-sub">Displays a list of options for the user to pick from — triggered by a button. Built on Radix UI Select.</p>
+
+    <div class="preview">
+
+      <!-- Basic -->
+      <div class="preview-row" style="align-items:flex-start">
+        <span class="row-label">Basic</span>
+        <div style="width:14rem">
+          <div class="select-wrap">
+            <button class="select-trigger" onclick="toggleSelect('sel-fruit')">
+              <span id="sel-fruit-val" class="placeholder">Select a fruit…</span>
+              <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="select-content below" id="sel-fruit">
+              <div class="select-viewport">
+                <div class="select-label">Fruits</div>
+                <button class="select-item" onclick="pickSelect(this,'sel-fruit','sel-fruit-val')">Apple</button>
+                <button class="select-item" onclick="pickSelect(this,'sel-fruit','sel-fruit-val')">Banana</button>
+                <button class="select-item" onclick="pickSelect(this,'sel-fruit','sel-fruit-val')">Blueberry</button>
+                <button class="select-item" onclick="pickSelect(this,'sel-fruit','sel-fruit-val')">Grapes</button>
+                <button class="select-item" onclick="pickSelect(this,'sel-fruit','sel-fruit-val')">Pineapple</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- With groups & separator -->
+      <div class="preview-row" style="align-items:flex-start">
+        <span class="row-label">Groups</span>
+        <div style="width:16rem">
+          <div class="select-wrap">
+            <button class="select-trigger" onclick="toggleSelect('sel-tz')">
+              <span id="sel-tz-val" class="placeholder">Select timezone…</span>
+              <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="select-content below" id="sel-tz" style="max-height:14rem">
+              <div class="select-viewport">
+                <div class="select-label">Africa</div>
+                <button class="select-item checked" onclick="pickSelect(this,'sel-tz','sel-tz-val')">Africa/Abidjan (GMT+0)</button>
+                <button class="select-item" onclick="pickSelect(this,'sel-tz','sel-tz-val')">Africa/Lagos (GMT+1)</button>
+                <button class="select-item" onclick="pickSelect(this,'sel-tz','sel-tz-val')">Africa/Nairobi (GMT+3)</button>
+                <div class="select-sep"></div>
+                <div class="select-label">Europe</div>
+                <button class="select-item" onclick="pickSelect(this,'sel-tz','sel-tz-val')">Europe/Paris (GMT+1)</button>
+                <button class="select-item" onclick="pickSelect(this,'sel-tz','sel-tz-val')">Europe/London (GMT+0)</button>
+                <div class="select-sep"></div>
+                <div class="select-label">Americas</div>
+                <button class="select-item" onclick="pickSelect(this,'sel-tz','sel-tz-val')">America/New_York (GMT-5)</button>
+                <button class="select-item" onclick="pickSelect(this,'sel-tz','sel-tz-val')">America/Los_Angeles (GMT-8)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- With icons in items -->
+      <div class="preview-row" style="align-items:flex-start">
+        <span class="row-label">With icons</span>
+        <div style="width:14rem">
+          <div class="select-wrap">
+            <button class="select-trigger" onclick="toggleSelect('sel-role')">
+              <span id="sel-role-val">Admin</span>
+              <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="select-content below" id="sel-role">
+              <div class="select-viewport">
+                <button class="select-item has-icon" onclick="pickSelect(this,'sel-role','sel-role-val')">
+                  <span class="select-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+                  Owner
+                </button>
+                <button class="select-item has-icon checked" onclick="pickSelect(this,'sel-role','sel-role-val')">
+                  <span class="select-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg></span>
+                  Admin
+                </button>
+                <button class="select-item has-icon" onclick="pickSelect(this,'sel-role','sel-role-val')">
+                  <span class="select-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+                  Member
+                </button>
+                <button class="select-item has-icon" onclick="pickSelect(this,'sel-role','sel-role-val')">
+                  <span class="select-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span>
+                  Viewer
+                </button>
+                <div class="select-sep"></div>
+                <button class="select-item has-icon" disabled>
+                  <span class="select-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></span>
+                  Billing (disabled)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Disabled -->
+      <div class="preview-row" style="align-items:center">
+        <span class="row-label">Disabled</span>
+        <div style="width:14rem">
+          <button class="select-trigger" disabled>
+            <span>Pro plan — $12/month</span>
+            <svg class="select-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ SEPARATOR ══ -->
+    <div class="sep-section"></div>
+    <h2 class="section-title" style="margin-top:2rem">Separator</h2>
+    <p class="section-sub">Visually or semantically separates content. <code>shrink-0 bg-border h-[1px] w-full</code> (horizontal) or <code>h-full w-[1px]</code> (vertical).</p>
+
+    <div class="preview">
+
+      <!-- Horizontal -->
+      <div class="preview-row" style="flex-direction:column;gap:1.5rem">
+        <div>
+          <p class="sub-heading">Horizontal</p>
+          <div style="max-width:28rem">
+            <div style="display:flex;flex-direction:column;gap:0.25rem">
+              <h4 style="font-size:0.875rem;font-weight:500">Radix Primitives</h4>
+              <p style="font-size:0.875rem;color:var(--muted-foreground)">An open-source UI component library.</p>
+            </div>
+            <div class="separator separator-h" style="margin:1rem 0"></div>
+            <div style="display:flex;align-items:center;gap:1rem;font-size:0.875rem">
+              <a href="#" style="color:var(--foreground);text-decoration:none;transition:color 0.1s" onmouseover="this.style.color='var(--muted-foreground)'" onmouseout="this.style.color='var(--foreground)'">Blog</a>
+              <div class="separator separator-v" style="height:1rem"></div>
+              <a href="#" style="color:var(--foreground);text-decoration:none;transition:color 0.1s" onmouseover="this.style.color='var(--muted-foreground)'" onmouseout="this.style.color='var(--foreground)'">Docs</a>
+              <div class="separator separator-v" style="height:1rem"></div>
+              <a href="#" style="color:var(--foreground);text-decoration:none;transition:color 0.1s" onmouseover="this.style.color='var(--muted-foreground)'" onmouseout="this.style.color='var(--foreground)'">Source</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- With label -->
+        <div>
+          <p class="sub-heading">With label</p>
+          <div style="display:flex;flex-direction:column;gap:0.875rem;max-width:28rem">
+            <div class="separator-label">
+              <div class="separator"></div>
+              <span>OR CONTINUE WITH</span>
+              <div class="separator"></div>
+            </div>
+            <div class="separator-label">
+              <div class="separator"></div>
+              <span>March 2026</span>
+              <div class="separator"></div>
+            </div>
+            <div class="separator-label">
+              <div class="separator"></div>
+              <span>End of section</span>
+              <div class="separator"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- In a card / menu context -->
+        <div>
+          <p class="sub-heading">In context</p>
+          <div style="border:1px solid var(--border);border-radius:var(--radius);padding:0.375rem;max-width:14rem">
+            <div style="padding:0.375rem 0.5rem;font-size:0.8125rem;font-weight:600;color:var(--muted-foreground)">My Account</div>
+            <div class="separator separator-h" style="margin:0.25rem -0.25rem"></div>
+            <button style="display:flex;align-items:center;gap:0.5rem;width:100%;padding:0.375rem 0.5rem;border:none;background:none;cursor:pointer;font-size:0.875rem;border-radius:calc(var(--radius)-4px);color:var(--foreground);font-family:inherit;transition:background-color 0.1s;text-align:left" onmouseover="this.style.background='var(--accent)'" onmouseout="this.style.background=''">Profile</button>
+            <button style="display:flex;align-items:center;gap:0.5rem;width:100%;padding:0.375rem 0.5rem;border:none;background:none;cursor:pointer;font-size:0.875rem;border-radius:calc(var(--radius)-4px);color:var(--foreground);font-family:inherit;transition:background-color 0.1s;text-align:left" onmouseover="this.style.background='var(--accent)'" onmouseout="this.style.background=''">Billing</button>
+            <button style="display:flex;align-items:center;gap:0.5rem;width:100%;padding:0.375rem 0.5rem;border:none;background:none;cursor:pointer;font-size:0.875rem;border-radius:calc(var(--radius)-4px);color:var(--foreground);font-family:inherit;transition:background-color 0.1s;text-align:left" onmouseover="this.style.background='var(--accent)'" onmouseout="this.style.background=''">Settings</button>
+            <div class="separator separator-h" style="margin:0.25rem -0.25rem"></div>
+            <button style="display:flex;align-items:center;gap:0.5rem;width:100%;padding:0.375rem 0.5rem;border:none;background:none;cursor:pointer;font-size:0.875rem;border-radius:calc(var(--radius)-4px);color:var(--destructive);font-family:inherit;transition:background-color 0.1s;text-align:left" onmouseover="this.style.background='color-mix(in oklab,var(--destructive) 8%,var(--accent))'" onmouseout="this.style.background=''">Log out</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ SHEET ══ -->
+    <div class="sep-section"></div>
+    <h2 class="section-title" style="margin-top:2rem">Sheet</h2>
+    <p class="section-sub">Extends the Dialog component to display content that complements the main content of the screen. Slides in from any edge.</p>
+
+    <div class="preview">
+      <div class="preview-row">
+        <span class="row-label">Sides</span>
+        <button class="btn btn-outline btn-sm" onclick="openSheet('sheet-right')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          Right
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="openSheet('sheet-left')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          Left
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="openSheet('sheet-top')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+          Top
+        </button>
+        <button class="btn btn-outline btn-sm" onclick="openSheet('sheet-bottom')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          Bottom
+        </button>
+      </div>
+
+      <!-- Anatomy -->
+      <div class="preview-row" style="flex-direction:column;gap:0.5rem">
+        <p style="font-size:0.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted-foreground)">Anatomy — right sheet</p>
+        <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;max-width:38rem;height:14rem">
+          <!-- main content mock -->
+          <div style="flex:1;padding:1rem;background:var(--muted);display:flex;align-items:center;justify-content:center">
+            <span style="font-size:0.8125rem;color:var(--muted-foreground)">Main content</span>
+          </div>
+          <!-- sheet panel mock -->
+          <div style="width:14rem;border-left:1px solid var(--border);background:var(--card);padding:1rem;display:flex;flex-direction:column;gap:0.75rem;position:relative">
+            <div style="position:absolute;top:0.75rem;right:0.75rem;width:1.5rem;height:1.5rem;display:flex;align-items:center;justify-content:center;border-radius:4px;background:var(--muted)">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </div>
+            <div style="padding-right:2rem">
+              <p style="font-size:0.875rem;font-weight:600">SheetTitle</p>
+              <p style="font-size:0.75rem;color:var(--muted-foreground);margin-top:0.2rem">SheetDescription</p>
+            </div>
+            <div style="background:var(--muted);border-radius:calc(var(--radius)-2px);padding:0.5rem;font-size:0.75rem;color:var(--muted-foreground);flex:1">SheetBody</div>
+            <div style="display:flex;justify-content:flex-end;gap:0.375rem;flex-shrink:0">
+              <button class="btn btn-outline btn-sm" style="pointer-events:none;height:1.75rem;font-size:0.75rem">Cancel</button>
+              <button class="btn btn-default btn-sm" style="pointer-events:none;height:1.75rem;font-size:0.75rem">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      shadcn/ui Popover, Select, Separator &amp; Sheet — Pixel-perfect HTML preview · Real CSS variables &amp; design tokens
+    </div>
+
+  </div>
+</div>
+
+<script>
+  /* ── Theme ── */
+  function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.classList.contains('dark');
+    html.classList.toggle('dark', !isDark);
+    document.getElementById('icon-sun').style.display  = isDark ? 'block' : 'none';
+    document.getElementById('icon-moon').style.display = isDark ? 'none'  : 'block';
+    document.getElementById('theme-label').textContent = isDark ? 'Dark mode' : 'Light mode';
+  }
+
+  /* ── Popover ── */
+  function togglePopover(id) {
+    const el = document.getElementById(id);
+    const isOpen = el.classList.contains('open');
+    document.querySelectorAll('.popover-content.open').forEach(p => {
+      if (p.id !== 'pop-open') p.classList.remove('open');
+    });
+    if (!isOpen) el.classList.add('open');
+    else el.classList.remove('open');
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.popover-wrap')) {
+      document.querySelectorAll('.popover-content.open').forEach(p => {
+        if (p.id !== 'pop-open') p.classList.remove('open');
+      });
+    }
+  });
+
+  function pickDay(btn) {
+    btn.closest('div').querySelectorAll('button').forEach(b => {
+      b.classList.remove('sel');
+      b.style.background = ''; b.style.color = '';
+    });
+    btn.classList.add('sel');
+    btn.style.background = 'var(--primary)';
+    btn.style.color = 'var(--primary-foreground)';
+  }
+
+  /* ── Select ── */
+  function toggleSelect(id) {
+    const content = document.getElementById(id);
+    const trigger = content.previousElementSibling;
+    const isOpen = content.classList.contains('open');
+    document.querySelectorAll('.select-content.open').forEach(s => {
+      s.classList.remove('open');
+      s.previousElementSibling?.classList.remove('open');
+    });
+    if (!isOpen) {
+      content.classList.add('open');
+      trigger?.classList.add('open');
+    }
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.select-wrap')) {
+      document.querySelectorAll('.select-content.open').forEach(s => {
+        s.classList.remove('open');
+        s.previousElementSibling?.classList.remove('open');
+      });
+    }
+  });
+
+  function pickSelect(btn, selectId, valId) {
+    const content = document.getElementById(selectId);
+    content.querySelectorAll('.select-item').forEach(i => i.classList.remove('checked'));
+    btn.classList.add('checked');
+    if (valId) {
+      const valEl = document.getElementById(valId);
+      if (valEl) { valEl.textContent = btn.textContent.trim(); valEl.classList.remove('placeholder'); }
+    } else {
+      // sheet-bus case — update trigger text
+      const trigger = content.previousElementSibling;
+      if (trigger) { const span = trigger.querySelector('span'); if (span) span.textContent = btn.textContent.trim(); }
+    }
+    content.classList.remove('open');
+    content.previousElementSibling?.classList.remove('open');
+  }
+
+  /* ── Sheet ── */
+  function openSheet(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeSheet(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
+  function closeSheetOnOverlay(e, id) { if (e.target === document.getElementById(id)) closeSheet(id); }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.sheet-overlay.open').forEach(s => closeSheet(s.id));
+    }
+  });
+
+  /* ── Filter toggle ── */
+  function toggleFilter(btn) {
+    const group = btn.closest('div');
+    group.querySelectorAll('.btn').forEach(b => {
+      b.className = b.className.replace('btn-default','btn-outline');
+    });
+    btn.className = btn.className.replace('btn-outline','btn-default');
+  }
+</script>
+</body>
+</html>

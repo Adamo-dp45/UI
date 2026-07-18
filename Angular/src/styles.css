@@ -1,0 +1,45 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import 'primeflex/primeflex.css';
+@import 'primeicons/primeicons.css';
+
+body {
+    font-size: 18px;
+}
+
+.container {
+    max-width: 1000px;
+    margin-inline: auto;
+    padding-inline: 1rem;
+    width: calc(100% - 2rem);
+}
+
+/* Formulaires réactifs
+ */
+.p-inputtext.ng-invalid.ng-touched,
+.p-textarea.ng-invalid.ng-touched,
+.p-select.ng-invalid.ng-touched { /*
+        - La class et la variable vient de 'primeng'
+    */
+    border-color: var(--p-inputtext-invalid-border-color);
+}
+
+.invalid-feedback {
+    display: none;
+    color: var(--p-red-500);
+}
+
+.ng-invalid.ng-dirty + .invalid-feedback,
+.ng-invalid.ng-touched + .invalid-feedback {
+    display: block;
+}
+
+/* Transport
+ */
+/*
+    @import 'tailwindcss';
+
+    body {
+        background-color: #F6F1E8;
+    }
+*/

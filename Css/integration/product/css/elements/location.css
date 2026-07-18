@@ -1,0 +1,38 @@
+.location {
+    padding: 0.25rem 0.75rem; /* On utilise rem ici car cette class peut être générique Si la taille de la police est plus grande il faut que l'espace au tour le soit
+        - On estime que la taille de la police principale est 16px, donc on divise par 16 */
+    background: var(--contrast-light);
+    border-radius: 110px;
+    color: var(--contrast);
+    font-size: 0.625rem;
+    line-height: 2; /* 2 fois la taille de la police */
+    font-weight: 500;
+
+    display: flex;
+    align-items: center;
+    gap: 0.25rem; /* 4px */
+    width: max-content; /* Contenu maximale de l'élément */
+    --icon-size: 0.75rem;
+
+    svg {
+        width: var(--icon-size);
+        height: var(--icon-size);
+    }
+}
+
+.location.is-white {
+    background-color: rgba(255, 255, 255, 0.21);
+    color: var(--text-inverse);
+}
+
+.location.is-bigger {
+    font-size: 0.75rem;
+    --icon-size: 1.125rem;
+}
+
+@media (min-width: 1100px) {
+    .location {
+        font-size: 1rem;
+        --icon-size: 1.125rem;
+    }
+}

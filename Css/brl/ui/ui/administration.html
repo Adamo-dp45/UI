@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Administration — TransportApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   1. DESIGN TOKENS — repris à l'identique du dashboard
+═══════════════════════════════════════════════════════════════ */
+*, ::before, ::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --color-bg:        #f5f5f3;
+  --color-surface:   #fff;
+  --color-surface-2: #f0efed;
+  --color-surface-3: #e8e7e4;
+  --color-surface-4: #dfdedd;
+  --color-border:    #e4e3e0;
+  --color-border-2:  #cccbc7;
+  --color-text:      #171715;
+  --color-text-2:    #5e5e5a;
+  --color-text-3:    #96968f;
+  --color-text-4:    #bbbbb3;
+  --color-amber:      #d97706;
+  --color-amber-light: #fef3c7;
+  --color-amber-dark:  #92400e;
+  --color-amber-glow:  rgba(217, 119, 6, .18);
+  --color-green:        #059669;
+  --color-green-light:  #d1fae5;
+  --color-red:          #dc2626;
+  --color-red-light:    #fee2e2;
+  --color-sky:          #0284c7;
+  --color-sky-light:    #dbeafe;
+  --color-violet:       #7c3aed;
+  --color-violet-light: #ede9fe;
+  --color-orange:       #ea580c;
+  --color-orange-light: #ffedd5;
+  --sidebar-width: 252px;
+  --header-height:  60px;
+  --radius-xs:  4px;
+  --radius-sm:  7px;
+  --radius:    11px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl:22px;
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:    0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.06);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,.16), 0 8px 20px rgba(0,0,0,.08);
+  --ease: cubic-bezier(.4, 0, .2, 1);
+  --duration-fast: 150ms;
+  --duration-slow: 260ms;
+}
+
+.theme-dark {
+  --color-bg:        #0d0d0c;
+  --color-surface:   #191917;
+  --color-surface-2: #212120;
+  --color-surface-3: #282826;
+  --color-surface-4: #303030;
+  --color-border:    #2b2b28;
+  --color-border-2:  #3c3c38;
+  --color-text:      #eaeae6;
+  --color-text-2:    #97978f;
+  --color-text-3:    #5c5c56;
+  --color-text-4:    #3a3a36;
+  --color-amber:       #f59e0b;
+  --color-amber-light: #261f09;
+  --color-amber-dark:  #fbbf24;
+  --color-amber-glow:  rgba(245, 158, 11, .15);
+  --color-green:        #10b981;
+  --color-green-light:  #092018;
+  --color-red:          #f87171;
+  --color-red-light:    #220d0d;
+  --color-sky:          #38bdf8;
+  --color-sky-light:    #051523;
+  --color-violet:       #a78bfa;
+  --color-violet-light: #130d27;
+  --color-orange:       #fb923c;
+  --color-orange-light: #1f1008;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.18);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,.70), 0 8px 20px rgba(0,0,0,.45);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   2. BASE
+═══════════════════════════════════════════════════════════════ */
+html, body {
+  height: 100%;
+  min-height: 100%;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+svg { display: block; flex-shrink: 0; }
+input, select, textarea { font-family: inherit; }
+:focus-visible { outline: 2px solid var(--color-amber); outline-offset: 2px; border-radius: var(--radius-xs); }
+
+/* ═══════════════════════════════════════════════════════════════
+   3. PREVIEW NAV
+═══════════════════════════════════════════════════════════════ */
+#preview-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+  background: var(--color-text);
+  display: flex; align-items: center; height: 44px; padding: 0 16px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  gap: 0;
+}
+.pnav-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.3); margin-right: 10px; white-space: nowrap; }
+.pnav-module { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--color-amber); margin-right: 14px; white-space: nowrap; }
+.pnav-sep { width: 1px; height: 18px; background: rgba(255,255,255,.1); margin: 0 10px; flex-shrink: 0; }
+.pnav-tabs { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+.pnav-tabs::-webkit-scrollbar { display: none; }
+.pnav-tab { font-size: 12px; font-weight: 600; color: rgba(255,255,255,.4); padding: 5px 12px; border-radius: var(--radius-sm); cursor: pointer; white-space: nowrap; flex-shrink: 0; transition: background .15s, color .15s; border: none; background: none; font-family: inherit; }
+.pnav-tab:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); }
+.pnav-tab.is-active { background: var(--color-amber); color: #fff; }
+.pnav-dark-btn { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: rgba(255,255,255,.4); padding: 4px 10px; border-radius: var(--radius-sm); cursor: pointer; flex-shrink: 0; transition: background .15s; border: none; background: none; font-family: inherit; }
+.pnav-dark-btn:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.8); }
+
+/* ═══════════════════════════════════════════════════════════════
+   4. APP LAYOUT
+═══════════════════════════════════════════════════════════════ */
+#app-wrap { padding-top: 44px; height: 100vh; }
+.app-layout { display: flex; height: calc(100vh - 44px); overflow: hidden; }
+.page { display: none; width: 100%; height: 100%; }
+.page.is-active { display: flex; }
+
+/* ═══════════════════════════════════════════════════════════════
+   5. SIDEBAR (fidèle au dashboard)
+═══════════════════════════════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100%;
+  display: flex; flex-direction: column;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  flex-shrink: 0; overflow: hidden;
+}
+.sidebar__logo {
+  display: flex; align-items: center; gap: 11px;
+  height: var(--header-height);
+  padding: 0 16px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+.sidebar__logo-mark {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: var(--color-amber);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; flex-shrink: 0;
+  box-shadow: 0 2px 10px var(--color-amber-glow);
+}
+.sidebar__app-name { font-size: 14.5px; font-weight: 700; letter-spacing: -.35px; line-height: 1.2; }
+.sidebar__app-tagline { font-size: 10.5px; color: var(--color-text-3); margin-top: 1px; }
+.sidebar__nav { flex: 1; overflow-y: auto; padding: 8px 8px 12px; scrollbar-width: none; }
+.sidebar__nav::-webkit-scrollbar { display: none; }
+.nav-group__label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--color-text-4); padding: 16px 10px 5px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: var(--radius-sm);
+  font-size: 13.5px; font-weight: 500; color: var(--color-text-2);
+  cursor: pointer; transition: background var(--duration-fast), color var(--duration-fast);
+  white-space: nowrap; text-decoration: none; width: 100%; text-align: left;
+}
+.nav-item:hover { background: var(--color-surface-2); color: var(--color-text); }
+.nav-item.is-active { background: var(--color-amber-light); color: var(--color-amber); }
+.nav-item__icon { width: 17px; height: 17px; flex-shrink: 0; }
+.nav-subitem {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 8px 5px 36px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500; color: var(--color-text-3);
+  cursor: pointer; transition: color var(--duration-fast), background var(--duration-fast);
+  white-space: nowrap; text-decoration: none;
+}
+.nav-subitem:hover { color: var(--color-text); background: var(--color-surface-2); }
+.nav-subitem.is-active { color: var(--color-amber); font-weight: 600; }
+.nav-subitem__dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; opacity: .45; }
+.nav-subitem.is-active .nav-subitem__dot { opacity: 1; }
+.sidebar__footer { border-top: 1px solid var(--color-border); padding: 8px; flex-shrink: 0; }
+.user-button {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: var(--radius);
+  cursor: pointer; transition: background var(--duration-fast);
+  overflow: hidden; white-space: nowrap; width: 100%;
+}
+.user-button:hover { background: var(--color-surface-2); }
+.user-button__name { font-size: 13px; font-weight: 600; }
+.user-button__role { font-size: 11px; color: var(--color-text-3); margin-top: 1px; }
+.avatar {
+  border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-weight: 700; letter-spacing: .02em;
+  background: linear-gradient(135deg, var(--color-amber), var(--color-amber-dark));
+}
+.avatar--sm  { width: 28px; height: 28px; font-size: 10.5px; }
+.avatar--md  { width: 32px; height: 32px; font-size: 11.5px; }
+.avatar--lg  { width: 38px; height: 38px; font-size: 13px; box-shadow: 0 2px 8px var(--color-amber-glow); }
+.avatar--xl  { width: 44px; height: 44px; font-size: 15px; box-shadow: 0 2px 10px var(--color-amber-glow); }
+.avatar--sky    { background: linear-gradient(135deg, var(--color-sky),    #0369a1); }
+.avatar--green  { background: linear-gradient(135deg, var(--color-green),  #047857); }
+.avatar--violet { background: linear-gradient(135deg, var(--color-violet), #5b21b6); }
+.avatar--red    { background: linear-gradient(135deg, var(--color-red),    #b91c1c); }
+
+/* ═══════════════════════════════════════════════════════════════
+   6. MAIN & HEADER
+═══════════════════════════════════════════════════════════════ */
+.app-main { flex: 1; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.app-header {
+  height: var(--header-height); flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px; padding: 0 24px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+.breadcrumb { display: flex; align-items: center; gap: 6px; font-size: 13.5px; color: var(--color-text-2); }
+.breadcrumb a { color: var(--color-text-2); transition: color var(--duration-fast); }
+.breadcrumb a:hover { color: var(--color-text); }
+.breadcrumb__current { font-weight: 600; color: var(--color-text); }
+.breadcrumb__separator { color: var(--color-text-4); }
+.header-spacer { flex: 1; }
+.header-divider { width: 1px; height: 22px; background: var(--color-border); margin: 0 4px; flex-shrink: 0; }
+.icon-btn {
+  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); color: var(--color-text-2);
+  background: var(--color-surface-2); border: 1px solid var(--color-border);
+  transition: background var(--duration-fast); position: relative; flex-shrink: 0;
+}
+.icon-btn:hover { background: var(--color-surface-3); }
+.notification-dot {
+  position: absolute; top: 6px; right: 6px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--color-red); border: 1.5px solid var(--color-surface);
+}
+.header-avatar-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 4px 8px 4px 4px; border-radius: var(--radius);
+  cursor: pointer; transition: background var(--duration-fast);
+}
+.header-avatar-btn:hover { background: var(--color-surface-2); }
+.header-avatar-btn__name { font-size: 13px; font-weight: 600; }
+.unsaved-indicator {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12.5px; color: var(--color-amber);
+  background: var(--color-amber-light); padding: 6px 12px; border-radius: var(--radius-sm);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   7. PAGE CONTENT
+═══════════════════════════════════════════════════════════════ */
+.page-content {
+  flex: 1; overflow-y: auto; padding: 28px 28px 48px;
+  background: var(--color-bg); min-height: 0;
+  scrollbar-width: thin; scrollbar-color: var(--color-surface-4) transparent;
+}
+.page-content::-webkit-scrollbar { width: 5px; }
+.page-content::-webkit-scrollbar-thumb { background: var(--color-surface-4); border-radius: 99px; }
+.page-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; gap: 16px; }
+.page-header__title { font-size: 22px; font-weight: 700; letter-spacing: -.55px; line-height: 1.2; }
+.page-header__subtitle { font-size: 13px; color: var(--color-text-3); margin-top: 5px; }
+.page-header__actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════════════════════════
+   8. BUTTONS
+═══════════════════════════════════════════════════════════════ */
+.btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 9px 16px; border-radius: var(--radius);
+  font-size: 13.5px; font-weight: 600; white-space: nowrap;
+  cursor: pointer; transition: opacity var(--duration-fast), background var(--duration-fast), box-shadow var(--duration-fast);
+  font-family: inherit; border: none;
+}
+.btn svg { width: 13px; height: 13px; flex-shrink: 0; }
+.btn--sm { padding: 6px 13px; font-size: 12.5px; }
+.btn--sm svg { width: 12px; height: 12px; }
+.btn--primary { background: var(--color-amber); color: #fff; box-shadow: 0 2px 8px var(--color-amber-glow); }
+.btn--primary:hover { opacity: .9; box-shadow: 0 4px 16px var(--color-amber-glow); }
+.btn--ghost { background: var(--color-surface); color: var(--color-text-2); border: 1px solid var(--color-border); }
+.btn--ghost:hover { background: var(--color-surface-2); color: var(--color-text); }
+.btn--danger { background: var(--color-red-light); color: var(--color-red); border: 1px solid transparent; }
+.btn--danger:hover { background: var(--color-red); color: #fff; }
+.icon-action {
+  width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center;
+  background: var(--color-surface-2); color: var(--color-text-2);
+  border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  cursor: pointer; transition: background var(--duration-fast), color var(--duration-fast); flex-shrink: 0;
+}
+.icon-action:hover { background: var(--color-surface-3); color: var(--color-text); }
+.icon-action--danger:hover { background: var(--color-red-light); color: var(--color-red); }
+.icon-action svg { width: 14px; height: 14px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   9. CARD
+═══════════════════════════════════════════════════════════════ */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+.card__title {
+  font-size: 11.5px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--color-text-3);
+}
+.card__link { font-size: 12.5px; font-weight: 600; color: var(--color-amber); transition: opacity var(--duration-fast); }
+.card__link:hover { opacity: .7; }
+
+/* ═══════════════════════════════════════════════════════════════
+   10. TAGS & STATUS PILLS
+═══════════════════════════════════════════════════════════════ */
+.tag {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 11px; font-weight: 700; padding: 2.5px 8px;
+  border-radius: 99px; white-space: nowrap;
+}
+.tag--green  { background: var(--color-green-light);  color: var(--color-green); }
+.tag--red    { background: var(--color-red-light);    color: var(--color-red); }
+.tag--amber  { background: var(--color-amber-light);  color: var(--color-amber); }
+.tag--sky    { background: var(--color-sky-light);    color: var(--color-sky); }
+.tag--violet { background: var(--color-violet-light); color: var(--color-violet); }
+.tag--orange { background: var(--color-orange-light); color: var(--color-orange); }
+.tag--muted  { background: var(--color-surface-3);    color: var(--color-text-3); }
+.status-pill { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
+.status-pill__dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+/* Role badge avec icône */
+.role-badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 700; }
+
+/* ═══════════════════════════════════════════════════════════════
+   11. STATS ROW (KPI mini)
+═══════════════════════════════════════════════════════════════ */
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+.stat-mini {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg); padding: 18px; box-shadow: var(--shadow-sm);
+}
+.stat-mini__icon { width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+.stat-mini__value { font-size: 26px; font-weight: 700; letter-spacing: -.6px; line-height: 1; }
+.stat-mini__label { font-size: 12px; color: var(--color-text-3); margin-top: 5px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   12. FILTER BAR & TABLE
+═══════════════════════════════════════════════════════════════ */
+.filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.filter-search {
+  display: flex; align-items: center; gap: 8px;
+  height: 36px; padding: 0 12px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius); width: 260px;
+  transition: border-color var(--duration-fast);
+}
+.filter-search:focus-within { border-color: var(--color-border-2); }
+.filter-search input { border: none; background: transparent; outline: none; font-family: inherit; font-size: 13px; color: var(--color-text); flex: 1; min-width: 0; }
+.filter-search input::placeholder { color: var(--color-text-4); }
+.filter-select {
+  height: 36px; padding: 0 32px 0 12px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius); font-family: inherit; font-size: 13px; color: var(--color-text-2);
+  cursor: pointer; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2396968f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+.filter-spacer { flex: 1; }
+.result-count { font-size: 12.5px; color: var(--color-text-3); }
+.result-count b { color: var(--color-text); font-weight: 600; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table thead tr { border-bottom: 1px solid var(--color-border); }
+.data-table th {
+  padding: 13px 16px; text-align: left;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--color-text-3); white-space: nowrap; background: var(--color-surface);
+}
+.data-table td { padding: 12px 16px; border-bottom: 1px solid var(--color-border); background: var(--color-surface); vertical-align: middle; }
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr { transition: background var(--duration-fast); }
+.data-table tbody tr:hover td { background: var(--color-surface-2); }
+.data-table__cell--mono  { font-family: 'DM Mono', monospace; }
+.data-table__cell--bold  { font-weight: 600; }
+.data-table__cell--muted { color: var(--color-text-2); font-size: 12.5px; }
+.data-table__cell--dim   { color: var(--color-text-3); font-size: 12px; }
+.table-actions { display: flex; align-items: center; gap: 4px; justify-content: flex-end; }
+
+.checkbox {
+  width: 16px; height: 16px;
+  border: 1.5px solid var(--color-border-2); border-radius: 4px;
+  cursor: pointer; appearance: none;
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+  flex-shrink: 0;
+}
+.checkbox:checked {
+  background: var(--color-amber); border-color: var(--color-amber);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='8' fill='none'%3E%3Cpath d='M1 4l3 3 5-6' stroke='%23fff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: center;
+}
+
+/* Pagination */
+.pagination { display: flex; align-items: center; justify-content: space-between; padding: 13px 16px; border-top: 1px solid var(--color-border); background: var(--color-surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.pagination__info { font-size: 12.5px; color: var(--color-text-3); }
+.pagination__info b { color: var(--color-text); font-weight: 600; }
+.pagination__buttons { display: flex; align-items: center; gap: 3px; }
+.page-btn {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-sm); font-size: 13px; font-weight: 500; cursor: pointer;
+  background: none; border: 1px solid transparent; color: var(--color-text-2);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.page-btn:hover { background: var(--color-surface-2); color: var(--color-text); }
+.page-btn.is-active { background: var(--color-amber); color: #fff; border-color: var(--color-amber); font-weight: 700; }
+.page-btn:disabled { opacity: .3; cursor: not-allowed; }
+.page-btn svg { width: 14px; height: 14px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   13. FORMS
+═══════════════════════════════════════════════════════════════ */
+.form-layout { display: grid; grid-template-columns: 1fr 288px; gap: 20px; align-items: start; }
+.form-section { padding: 22px; border-bottom: 1px solid var(--color-border); }
+.form-section:last-child { border-bottom: none; }
+.form-section__title { font-size: 13.5px; font-weight: 700; letter-spacing: -.2px; margin-bottom: 3px; }
+.form-section__desc { font-size: 12.5px; color: var(--color-text-3); margin-bottom: 18px; }
+.form-row { display: grid; gap: 16px; margin-bottom: 16px; }
+.form-row:last-child { margin-bottom: 0; }
+.form-row--2 { grid-template-columns: repeat(2, 1fr); }
+.form-row--3 { grid-template-columns: repeat(3, 1fr); }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field__label { font-size: 12.5px; font-weight: 600; color: var(--color-text-2); display: flex; align-items: center; gap: 5px; }
+.field__required { color: var(--color-red); font-size: 13px; }
+.field__hint { font-size: 11.5px; color: var(--color-text-3); margin-top: 2px; }
+.input, .select, .textarea {
+  height: 38px; padding: 0 12px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); font-family: inherit; font-size: 13.5px; color: var(--color-text);
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+  width: 100%;
+}
+.textarea { height: auto; padding: 10px 12px; resize: vertical; min-height: 88px; line-height: 1.6; }
+.select {
+  appearance: none; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2396968f' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px;
+}
+.input::placeholder, .textarea::placeholder { color: var(--color-text-4); }
+.input:hover, .select:hover, .textarea:hover { border-color: var(--color-border-2); }
+.input:focus, .select:focus, .textarea:focus { outline: none; border-color: var(--color-amber); box-shadow: 0 0 0 3px var(--color-amber-glow); }
+.input--readonly { background: var(--color-surface-2); color: var(--color-text-3); }
+
+/* Toggle */
+.toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--color-border); }
+.toggle-row:last-child { border-bottom: none; padding-bottom: 0; }
+.toggle-row__info { flex: 1; }
+.toggle-row__name { font-size: 13.5px; font-weight: 500; }
+.toggle-row__desc { font-size: 12px; color: var(--color-text-3); margin-top: 2px; }
+.toggle {
+  width: 36px; height: 20px; border-radius: 99px;
+  background: var(--color-surface-3); border: 2px solid var(--color-border);
+  cursor: pointer; position: relative; flex-shrink: 0;
+  transition: background var(--duration-fast), border-color var(--duration-fast);
+}
+.toggle::after {
+  content: ''; position: absolute; left: 2px; top: 2px;
+  width: 12px; height: 12px; border-radius: 50%; background: var(--color-text-3);
+  transition: transform .2s, background .2s;
+}
+.toggle.is-on { background: var(--color-amber); border-color: var(--color-amber); }
+.toggle.is-on::after { transform: translateX(16px); background: #fff; }
+
+/* Save bar */
+.save-bar { display: flex; align-items: center; gap: 10px; padding: 14px 22px; border-top: 1px solid var(--color-border); background: var(--color-surface); }
+.save-bar__hint { font-size: 12.5px; color: var(--color-text-3); }
+.save-bar__spacer { flex: 1; }
+
+/* Settings tabs */
+.settings-tabs { display: flex; padding: 0 22px; border-bottom: 1px solid var(--color-border); background: var(--color-surface); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+.settings-tab { padding: 14px 16px; font-size: 13px; font-weight: 600; color: var(--color-text-3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color var(--duration-fast), border-color var(--duration-fast); white-space: nowrap; }
+.settings-tab:hover { color: var(--color-text); }
+.settings-tab.is-active { color: var(--color-amber); border-bottom-color: var(--color-amber); }
+
+/* Danger zone */
+.danger-zone { padding: 18px; background: color-mix(in srgb, var(--color-red-light) 50%, transparent); border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+.danger-zone__title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--color-red); margin-bottom: 12px; }
+.danger-zone__row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid rgba(220,38,38,.12); }
+.danger-zone__row:last-child { border-bottom: none; padding-bottom: 0; }
+.danger-zone__label { font-size: 13.5px; font-weight: 500; }
+.danger-zone__desc  { font-size: 12.5px; color: var(--color-text-3); margin-top: 2px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   14. SHOW LAYOUT (fiche)
+═══════════════════════════════════════════════════════════════ */
+.show-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; align-items: start; }
+.detail-section { padding: 22px; border-bottom: 1px solid var(--color-border); }
+.detail-section:last-child { border-bottom: none; }
+.detail-section__title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-3); margin-bottom: 16px; }
+.detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.detail-label { font-size: 11.5px; font-weight: 600; color: var(--color-text-3); margin-bottom: 4px; }
+.detail-value { font-size: 14px; font-weight: 500; color: var(--color-text); }
+.detail-value--mono { font-family: 'DM Mono', monospace; font-size: 13px; }
+.meta-card { padding: 18px; }
+.meta-card__title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-3); margin-bottom: 14px; }
+.meta-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--color-border); }
+.meta-row:last-child { border-bottom: none; padding-bottom: 0; }
+.meta-row__key { color: var(--color-text-3); }
+.meta-row__value { font-weight: 500; font-family: 'DM Mono', monospace; font-size: 12.5px; }
+.actions-card { padding: 16px; }
+.actions-card__title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--color-text-3); margin-bottom: 12px; }
+.action-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-sm);
+  font-size: 13px; font-weight: 500; color: var(--color-text-2);
+  cursor: pointer; transition: background var(--duration-fast), color var(--duration-fast);
+  border: 1px solid var(--color-border); background: var(--color-surface);
+  width: 100%; text-align: left; margin-bottom: 6px;
+}
+.action-item:last-child { margin-bottom: 0; }
+.action-item:hover { background: var(--color-surface-2); color: var(--color-text); }
+.action-item--danger { color: var(--color-red); border-color: var(--color-red-light); }
+.action-item--danger:hover { background: var(--color-red-light); }
+.action-item svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════════════════════════
+   15. ROLES CARDS
+═══════════════════════════════════════════════════════════════ */
+.roles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 16px; }
+.role-card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); overflow: hidden; }
+.role-card__header { padding: 18px; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; gap: 12px; }
+.role-card__icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.role-card__name { font-size: 15px; font-weight: 700; letter-spacing: -.25px; }
+.role-card__desc { font-size: 12px; color: var(--color-text-3); margin-top: 2px; }
+.role-card__footer { padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; }
+.role-card__stats { display: flex; gap: 20px; }
+.role-stat__value { font-size: 18px; font-weight: 700; letter-spacing: -.4px; }
+.role-stat__label { font-size: 11px; color: var(--color-text-3); margin-top: 1px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   16. PERMISSION MATRIX
+═══════════════════════════════════════════════════════════════ */
+.perm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.perm-table th { padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--color-text-3); border-bottom: 1px solid var(--color-border); background: var(--color-surface); }
+.perm-table td { padding: 11px 16px; border-bottom: 1px solid var(--color-border); background: var(--color-surface); vertical-align: middle; }
+.perm-table tbody tr:last-child td { border-bottom: none; }
+.perm-table tbody tr:hover td { background: var(--color-surface-2); }
+.perm-table__group td { background: var(--color-surface-2) !important; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: var(--color-text-3); padding: 10px 16px; }
+.perm-check {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+  transition: background var(--duration-fast);
+}
+.perm-check--yes { background: var(--color-green-light); color: var(--color-green); }
+.perm-check--no  { background: var(--color-surface-3);   color: var(--color-text-4); }
+.perm-check svg { width: 10px; height: 10px; }
+
+/* Method badges */
+.method-badge { display: inline-flex; align-items: center; padding: 2px 7px; border-radius: var(--radius-xs); font-size: 10.5px; font-weight: 700; font-family: 'DM Mono', monospace; flex-shrink: 0; }
+.method-badge--get    { background: var(--color-green-light); color: var(--color-green); }
+.method-badge--post   { background: var(--color-sky-light);   color: var(--color-sky); }
+.method-badge--put    { background: var(--color-amber-light);  color: var(--color-amber); }
+.method-badge--delete { background: var(--color-red-light);   color: var(--color-red); }
+
+/* ═══════════════════════════════════════════════════════════════
+   17. USER ROLE ATTRIBUTION
+═══════════════════════════════════════════════════════════════ */
+.attribution-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+.user-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-bottom: 1px solid var(--color-border);
+  cursor: pointer; transition: background var(--duration-fast);
+}
+.user-row:last-child { border-bottom: none; }
+.user-row:hover { background: var(--color-surface-2); }
+.user-row.is-active { background: var(--color-amber-light); }
+.user-row__info { flex: 1; min-width: 0; }
+.user-row__name { font-size: 13.5px; font-weight: 600; }
+.user-row__email { font-size: 12px; color: var(--color-text-3); margin-top: 1px; }
+.user-row__roles { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
+.role-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: var(--radius); border: 1.5px solid var(--color-border);
+  cursor: pointer; transition: border-color var(--duration-fast), background var(--duration-fast);
+  margin-bottom: 8px;
+}
+.role-item:hover { background: var(--color-surface-2); border-color: var(--color-border-2); }
+.role-item.is-active { border-color: var(--color-amber); background: var(--color-amber-light); }
+.role-item__icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.role-item__name { font-size: 13.5px; font-weight: 600; }
+.role-item__desc { font-size: 12px; color: var(--color-text-3); margin-top: 2px; }
+.role-item__count { margin-left: auto; font-size: 12px; color: var(--color-text-3); white-space: nowrap; flex-shrink: 0; }
+
+/* ═══════════════════════════════════════════════════════════════
+   18. PERMISSION LIST (référentiel)
+═══════════════════════════════════════════════════════════════ */
+.perm-section { border-bottom: 1px solid var(--color-border); }
+.perm-section:last-child { border-bottom: none; }
+.perm-section__header { display: flex; align-items: center; gap: 10px; padding: 13px 18px; background: var(--color-surface-2); cursor: pointer; transition: background var(--duration-fast); }
+.perm-section__header:hover { background: var(--color-surface-3); }
+.perm-section__name { font-size: 13px; font-weight: 700; flex: 1; }
+.perm-section__count { font-size: 12px; color: var(--color-text-3); }
+.perm-row { display: flex; align-items: center; gap: 14px; padding: 10px 18px 10px 30px; border-top: 1px solid var(--color-border); transition: background var(--duration-fast); }
+.perm-row:hover { background: var(--color-surface-2); }
+.perm-row__name { font-family: 'DM Mono', monospace; font-size: 12.5px; font-weight: 500; flex: 1.2; }
+.perm-row__desc { font-size: 12.5px; color: var(--color-text-2); flex: 2; }
+
+/* ═══════════════════════════════════════════════════════════════
+   19. ALERT BANNER
+═══════════════════════════════════════════════════════════════ */
+.alert-banner {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 16px; border-radius: var(--radius);
+  margin-bottom: 20px; font-size: 13px;
+  background: var(--color-amber-light); border: 1px solid rgba(217,119,6,.2); color: var(--color-amber-dark);
+}
+.theme-dark .alert-banner { color: var(--color-amber); }
+.alert-banner svg { flex-shrink: 0; margin-top: 1px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   20. MODAL
+═══════════════════════════════════════════════════════════════ */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,.45);
+  backdrop-filter: blur(4px); z-index: 800;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .2s var(--ease);
+}
+.modal-backdrop.is-open { opacity: 1; pointer-events: auto; }
+.modal {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl); box-shadow: var(--shadow-xl);
+  width: min(460px, calc(100vw - 32px));
+  transform: translateY(12px) scale(.97); transition: transform .22s var(--ease);
+}
+.modal-backdrop.is-open .modal { transform: translateY(0) scale(1); }
+.modal__header { padding: 22px 22px 0; display: flex; align-items: center; gap: 14px; }
+.modal__icon { width: 44px; height: 44px; border-radius: 12px; background: var(--color-red-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.modal__icon svg { width: 20px; height: 20px; color: var(--color-red); }
+.modal__title    { font-size: 17px; font-weight: 700; letter-spacing: -.35px; }
+.modal__subtitle { font-size: 13px; color: var(--color-text-3); margin-top: 3px; }
+.modal__body     { padding: 16px 22px; }
+.modal__body p   { font-size: 13.5px; color: var(--color-text-2); line-height: 1.6; }
+.modal__body b   { color: var(--color-text); font-weight: 600; }
+.modal__footer   { padding: 0 22px 22px; display: flex; justify-content: flex-end; gap: 8px; }
+
+/* ═══════════════════════════════════════════════════════════════
+   21. TOASTS
+═══════════════════════════════════════════════════════════════ */
+.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 900; display: flex; flex-direction: column; gap: 8px; }
+.toast {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; background: var(--color-text); color: var(--color-surface);
+  border-radius: var(--radius-lg); box-shadow: 0 8px 32px rgba(0,0,0,.2);
+  font-size: 13.5px; font-weight: 500; min-width: 280px; max-width: 360px;
+  animation: toastIn .25s var(--ease);
+}
+.toast__icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.toast__icon svg { width: 12px; height: 12px; }
+.toast--ok   .toast__icon { background: var(--color-green); }
+.toast--err  .toast__icon { background: var(--color-red); }
+.toast__close { margin-left: auto; color: rgba(255,255,255,.4); cursor: pointer; flex-shrink: 0; }
+.toast__close:hover { color: #fff; }
+@keyframes toastIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════
+     PREVIEW NAV
+══════════════════════════════════════════════ -->
+<nav id="preview-nav">
+  <span class="pnav-label">Preview</span>
+  <span class="pnav-module">Administration</span>
+  <div class="pnav-sep"></div>
+  <div class="pnav-tabs">
+    <button class="pnav-tab is-active" onclick="showPage('entreprise', this)">Entreprise</button>
+    <button class="pnav-tab" onclick="showPage('users-list', this)">Users — Liste</button>
+    <button class="pnav-tab" onclick="showPage('users-show', this)">Users — Fiche</button>
+    <button class="pnav-tab" onclick="showPage('users-form', this)">Users — Formulaire</button>
+    <button class="pnav-tab" onclick="showPage('roles-list', this)">Rôles — Liste</button>
+    <button class="pnav-tab" onclick="showPage('roles-form', this)">Rôles — Formulaire</button>
+    <button class="pnav-tab" onclick="showPage('userrole', this)">Attribution</button>
+    <button class="pnav-tab" onclick="showPage('permissions', this)">Permissions</button>
+  </div>
+  <button class="pnav-dark-btn" onclick="toggleDark()">
+    <svg id="icon-sun" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    <svg id="icon-moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+    Dark
+  </button>
+</nav>
+
+<div id="app-wrap">
+
+<!-- ════════════════════════════════════════════════════════
+     PAGE : ENTREPRISE
+════════════════════════════════════════════════════════ -->
+<div class="page app-layout is-active" id="page-entreprise">
+  <nav class="sidebar" aria-label="Navigation principale">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/></svg></div>
+      <div><div class="sidebar__app-name">TransportApp</div><div class="sidebar__app-tagline">Gestion de flotte</div></div>
+    </div>
+    <div class="sidebar__nav">
+      <div class="nav-group__label">Principal</div>
+      <a href="#" class="nav-item"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+      <a href="#" class="nav-item"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M1 17l3-9h16l3 9M1 17h22M6.5 17a2 2 0 100-4 2 2 0 000 4zM17.5 17a2 2 0 100-4 2 2 0 000 4zM4 8h16"/></svg>Flotte</a>
+      <a href="#" class="nav-item"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Exploitation</a>
+      <a href="#" class="nav-item"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M2 9a3 3 0 010-6h20a3 3 0 010 6M2 9v12h20V9M12 9v12"/></svg>Billetterie</a>
+      <div class="nav-group__label">Administration</div>
+      <a href="#" class="nav-item is-active"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Administration</a>
+      <a href="#" class="nav-subitem is-active"><span class="nav-subitem__dot"></span>Entreprise</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Utilisateurs</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Rôles</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Permissions</a>
+      <a href="#" class="nav-item"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>Personnel</a>
+      <a href="#" class="nav-item"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Rapports</a>
+    </div>
+    <div class="sidebar__footer">
+      <div class="user-button">
+        <div class="avatar avatar--sm">AD</div>
+        <div><div class="user-button__name">Admin Principal</div><div class="user-button__role">Super Admin</div></div>
+      </div>
+    </div>
+  </nav>
+  <div class="app-main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#">Administration</a><svg class="breadcrumb__separator" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b class="breadcrumb__current">Paramètres entreprise</b></nav>
+      <div class="header-spacer"></div>
+      <button class="btn btn--primary" onclick="showToast('ok', 'Paramètres sauvegardés.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Sauvegarder</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header">
+        <div>
+          <h1 class="page-header__title">Paramètres de l'entreprise</h1>
+          <p class="page-header__subtitle">Informations légales, contact et configuration globale</p>
+        </div>
+      </div>
+      <div class="card" style="overflow:hidden">
+        <div class="settings-tabs">
+          <div class="settings-tab is-active" onclick="switchTab(this,'tab-general')">Général</div>
+          <div class="settings-tab" onclick="switchTab(this,'tab-contact')">Contact</div>
+          <div class="settings-tab" onclick="switchTab(this,'tab-systeme')">Système</div>
+        </div>
+        <!-- Tab Général -->
+        <div id="tab-general">
+          <div class="form-section">
+            <div class="form-section__title">Identité de l'entreprise</div>
+            <div class="form-section__desc">Apparaît sur les tickets et documents officiels</div>
+            <div class="form-row form-row--2">
+              <div class="field"><label class="field__label">Raison sociale <span class="field__required">*</span></label><input class="input" value="TransportApp SARL"></div>
+              <div class="field"><label class="field__label">Sigle</label><input class="input" value="TransportApp"></div>
+            </div>
+            <div class="form-row form-row--3">
+              <div class="field"><label class="field__label">RCCM <span class="field__required">*</span></label><input class="input" value="CI-ABJ-2021-B-12345"></div>
+              <div class="field"><label class="field__label">N° Contribuable</label><input class="input" value="0123456X"></div>
+              <div class="field"><label class="field__label">Pays <span class="field__required">*</span></label><select class="select"><option selected>Côte d'Ivoire</option><option>Sénégal</option><option>Mali</option></select></div>
+            </div>
+            <div class="form-row"><div class="field"><label class="field__label">Adresse du siège</label><input class="input" value="Plateau, Avenue Houdaille, Abidjan, Côte d'Ivoire"></div></div>
+          </div>
+          <div class="form-section">
+            <div class="form-section__title">Préférences</div>
+            <div class="form-section__desc">Devise, langue et format de date</div>
+            <div class="form-row form-row--3">
+              <div class="field"><label class="field__label">Devise</label><select class="select"><option selected>FCFA (XOF)</option><option>EUR</option><option>USD</option></select></div>
+              <div class="field"><label class="field__label">Langue</label><select class="select"><option selected>Français</option><option>English</option></select></div>
+              <div class="field"><label class="field__label">Format de date</label><select class="select"><option selected>DD/MM/YYYY</option><option>MM/DD/YYYY</option></select></div>
+            </div>
+          </div>
+          <div class="form-section" style="border-bottom:none">
+            <div class="form-section__title">Options globales</div>
+            <div class="toggle-row"><div class="toggle-row__info"><div class="toggle-row__name">Billetterie en ligne activée</div><div class="toggle-row__desc">Permet la vente de tickets via l'interface web</div></div><div class="toggle is-on" onclick="this.classList.toggle('is-on')"></div></div>
+            <div class="toggle-row"><div class="toggle-row__info"><div class="toggle-row__name">Alertes stock faible</div><div class="toggle-row__desc">Notifications automatiques quand un seuil est atteint</div></div><div class="toggle is-on" onclick="this.classList.toggle('is-on')"></div></div>
+            <div class="toggle-row"><div class="toggle-row__info"><div class="toggle-row__name">Mode maintenance</div><div class="toggle-row__desc">Restreint l'accès aux non-admins</div></div><div class="toggle" onclick="this.classList.toggle('is-on')"></div></div>
+          </div>
+        </div>
+        <!-- Tab Contact -->
+        <div id="tab-contact" style="display:none">
+          <div class="form-section">
+            <div class="form-section__title">Coordonnées</div>
+            <div class="form-section__desc">Informations de contact de l'entreprise</div>
+            <div class="form-row form-row--2">
+              <div class="field"><label class="field__label">Téléphone principal <span class="field__required">*</span></label><input class="input" value="+225 27 22 00 00 00"></div>
+              <div class="field"><label class="field__label">Téléphone secondaire</label><input class="input" placeholder="+225 …"></div>
+            </div>
+            <div class="form-row form-row--2">
+              <div class="field"><label class="field__label">Email</label><input class="input" value="contact@transportapp.ci"></div>
+              <div class="field"><label class="field__label">Site web</label><input class="input" value="https://transportapp.ci"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Tab Système -->
+        <div id="tab-systeme" style="display:none">
+          <div class="form-section">
+            <div class="form-section__title">Configuration système</div>
+            <div class="form-section__desc">Paramètres techniques avancés</div>
+            <div class="form-row form-row--2">
+              <div class="field"><label class="field__label">Version</label><input class="input input--readonly" value="v2.4.1" readonly></div>
+              <div class="field"><label class="field__label">Environnement</label><input class="input input--readonly" value="Production" readonly></div>
+            </div>
+            <div class="form-row form-row--2">
+              <div class="field"><label class="field__label">Seuil alerte stock</label><input class="input" type="number" value="5"><div class="field__hint">Alerte si quantité ≤ ce seuil</div></div>
+              <div class="field"><label class="field__label">Délai session (min)</label><input class="input" type="number" value="120"></div>
+            </div>
+          </div>
+          <div class="form-section" style="border-bottom:none">
+            <div class="form-section__title">Journalisation</div>
+            <div class="toggle-row"><div class="toggle-row__info"><div class="toggle-row__name">Journal d'activité (audit log)</div><div class="toggle-row__desc">Enregistre toutes les actions critiques</div></div><div class="toggle is-on" onclick="this.classList.toggle('is-on')"></div></div>
+            <div class="toggle-row"><div class="toggle-row__info"><div class="toggle-row__name">Sauvegarde automatique quotidienne</div><div class="toggle-row__desc">Export BDD chaque nuit à 02:00</div></div><div class="toggle is-on" onclick="this.classList.toggle('is-on')"></div></div>
+          </div>
+        </div>
+        <div class="save-bar"><span class="save-bar__hint">Modifications non sauvegardées</span><div class="save-bar__spacer"></div><button class="btn btn--ghost">Annuler</button><button class="btn btn--primary" onclick="showToast('ok','Paramètres sauvegardés.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Sauvegarder</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     PAGE : USERS LISTE
+════════════════════════════════════════════════════════ -->
+<div class="page app-layout" id="page-users-list">
+  <nav class="sidebar" aria-label="Navigation principale">
+    <div class="sidebar__logo"><div class="sidebar__logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/></svg></div><div><div class="sidebar__app-name">TransportApp</div><div class="sidebar__app-tagline">Gestion de flotte</div></div></div>
+    <div class="sidebar__nav">
+      <div class="nav-group__label">Principal</div>
+      <a href="#" class="nav-item"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Dashboard</a>
+      <div class="nav-group__label">Administration</div>
+      <a href="#" class="nav-item is-active"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Administration</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Entreprise</a>
+      <a href="#" class="nav-subitem is-active"><span class="nav-subitem__dot"></span>Utilisateurs</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Rôles</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Permissions</a>
+    </div>
+    <div class="sidebar__footer"><div class="user-button"><div class="avatar avatar--sm">AD</div><div><div class="user-button__name">Admin Principal</div><div class="user-button__role">Super Admin</div></div></div></div>
+  </nav>
+  <div class="app-main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#">Administration</a><svg class="breadcrumb__separator" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b class="breadcrumb__current">Utilisateurs</b></nav>
+      <div class="header-spacer"></div>
+      <button class="btn btn--ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Exporter</button>
+      <button class="btn btn--primary" onclick="showPage('users-form', document.querySelectorAll('.pnav-tab')[3])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouvel utilisateur</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header">
+        <div><h1 class="page-header__title">Utilisateurs</h1><p class="page-header__subtitle">Gestion des comptes · <b style="color:var(--color-text)">8 comptes</b> enregistrés</p></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-mini"><div class="stat-mini__icon" style="background:var(--color-amber-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75M21 21v-2a4 4 0 00-3-3.87"/></svg></div><div class="stat-mini__value">8</div><div class="stat-mini__label">Utilisateurs totaux</div></div>
+        <div class="stat-mini"><div class="stat-mini__icon" style="background:var(--color-green-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div><div class="stat-mini__value">7</div><div class="stat-mini__label">Comptes actifs</div></div>
+        <div class="stat-mini"><div class="stat-mini__icon" style="background:var(--color-red-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="stat-mini__value">1</div><div class="stat-mini__label">Comptes inactifs</div></div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;color:var(--color-text-3)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input placeholder="Nom, email, identifiant…"></div>
+        <select class="filter-select"><option>Tous les rôles</option><option>Super Admin</option><option>Exploitant</option><option>Caissier</option><option>Mécanicien</option></select>
+        <select class="filter-select"><option>Tous les statuts</option><option>Actif</option><option>Inactif</option></select>
+        <div class="filter-spacer"></div>
+        <span class="result-count"><b>8</b> utilisateurs</span>
+      </div>
+      <div class="card">
+        <div style="overflow-x:auto">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width:40px"><input type="checkbox" class="checkbox"></th>
+                <th>Utilisateur</th>
+                <th>Identifiant</th>
+                <th>Rôle(s)</th>
+                <th>Dernière connexion</th>
+                <th>Statut</th>
+                <th style="width:110px;text-align:right">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox" class="checkbox" checked></td>
+                <td><div style="display:flex;align-items:center;gap:10px"><div class="avatar avatar--md">AD</div><div><div style="font-weight:600">Admin Principal</div><div class="data-table__cell--dim">admin@transportapp.ci</div></div></div></td>
+                <td class="data-table__cell--mono data-table__cell--dim">admin</td>
+                <td><span class="role-badge" style="background:var(--color-violet-light);color:var(--color-violet)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Super Admin</span></td>
+                <td class="data-table__cell--mono data-table__cell--dim">Aujourd'hui 07:45</td>
+                <td><span class="status-pill tag--green"><span class="status-pill__dot"></span>Actif</span></td>
+                <td><div class="table-actions"><button class="icon-action" onclick="showPage('users-show', document.querySelectorAll('.pnav-tab')[2])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-action" onclick="showPage('users-form', document.querySelectorAll('.pnav-tab')[3])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-action icon-action--danger" onclick="document.getElementById('modal-delete').classList.add('is-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td><div style="display:flex;align-items:center;gap:10px"><div class="avatar avatar--md avatar--sky">KI</div><div><div style="font-weight:600">Koné Ibrahim</div><div class="data-table__cell--dim">k.ibrahim@transportapp.ci</div></div></div></td>
+                <td class="data-table__cell--mono data-table__cell--dim">k.ibrahim</td>
+                <td><span class="role-badge" style="background:var(--color-sky-light);color:var(--color-sky)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Exploitant</span></td>
+                <td class="data-table__cell--mono data-table__cell--dim">Hier 16:32</td>
+                <td><span class="status-pill tag--green"><span class="status-pill__dot"></span>Actif</span></td>
+                <td><div class="table-actions"><button class="icon-action" onclick="showPage('users-show', document.querySelectorAll('.pnav-tab')[2])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-action" onclick="showPage('users-form', document.querySelectorAll('.pnav-tab')[3])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-action icon-action--danger" onclick="document.getElementById('modal-delete').classList.add('is-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td><div style="display:flex;align-items:center;gap:10px"><div class="avatar avatar--md avatar--green">TM</div><div><div style="font-weight:600">Traoré Moussa</div><div class="data-table__cell--dim">t.moussa@transportapp.ci</div></div></div></td>
+                <td class="data-table__cell--mono data-table__cell--dim">t.moussa</td>
+                <td><div style="display:flex;gap:4px"><span class="role-badge" style="background:var(--color-amber-light);color:var(--color-amber)">Caissier</span><span class="role-badge" style="background:var(--color-orange-light);color:var(--color-orange)">Exploitant</span></div></td>
+                <td class="data-table__cell--mono data-table__cell--dim">03/03/2026</td>
+                <td><span class="status-pill tag--green"><span class="status-pill__dot"></span>Actif</span></td>
+                <td><div class="table-actions"><button class="icon-action" onclick="showPage('users-show', document.querySelectorAll('.pnav-tab')[2])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-action" onclick="showPage('users-form', document.querySelectorAll('.pnav-tab')[3])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-action icon-action--danger" onclick="document.getElementById('modal-delete').classList.add('is-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td><input type="checkbox" class="checkbox"></td>
+                <td><div style="display:flex;align-items:center;gap:10px"><div class="avatar avatar--md avatar--red">OS</div><div><div style="font-weight:600">Ouattara Seydou</div><div class="data-table__cell--dim">o.seydou@transportapp.ci</div></div></div></td>
+                <td class="data-table__cell--mono data-table__cell--dim">o.seydou</td>
+                <td><span class="role-badge" style="background:var(--color-red-light);color:var(--color-red)">Mécanicien</span></td>
+                <td class="data-table__cell--mono data-table__cell--dim">01/03/2026</td>
+                <td><span class="status-pill tag--red"><span class="status-pill__dot"></span>Inactif</span></td>
+                <td><div class="table-actions"><button class="icon-action" onclick="showPage('users-show', document.querySelectorAll('.pnav-tab')[2])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button><button class="icon-action" onclick="showPage('users-form', document.querySelectorAll('.pnav-tab')[3])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-action icon-action--danger" onclick="document.getElementById('modal-delete').classList.add('is-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination">
+          <span class="pagination__info">Affichage <b>1–8</b> sur <b>8</b> utilisateurs</span>
+          <div class="pagination__buttons">
+            <button class="page-btn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+            <button class="page-btn is-active">1</button>
+            <button class="page-btn" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     PAGE : USERS FICHE
+════════════════════════════════════════════════════════ -->
+<div class="page app-layout" id="page-users-show">
+  <nav class="sidebar" aria-label="Navigation principale">
+    <div class="sidebar__logo"><div class="sidebar__logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/></svg></div><div><div class="sidebar__app-name">TransportApp</div><div class="sidebar__app-tagline">Gestion de flotte</div></div></div>
+    <div class="sidebar__nav">
+      <div class="nav-group__label">Administration</div>
+      <a href="#" class="nav-item is-active"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Administration</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Entreprise</a>
+      <a href="#" class="nav-subitem is-active"><span class="nav-subitem__dot"></span>Utilisateurs</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Rôles</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Permissions</a>
+    </div>
+    <div class="sidebar__footer"><div class="user-button"><div class="avatar avatar--sm">AD</div><div><div class="user-button__name">Admin Principal</div><div class="user-button__role">Super Admin</div></div></div></div>
+  </nav>
+  <div class="app-main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#" onclick="showPage('users-list', document.querySelectorAll('.pnav-tab')[1]);return false">Utilisateurs</a><svg class="breadcrumb__separator" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b class="breadcrumb__current">Koné Ibrahim</b></nav>
+      <div class="header-spacer"></div>
+      <button class="btn btn--ghost btn--sm" onclick="showPage('users-list', document.querySelectorAll('.pnav-tab')[1])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>Retour</button>
+      <button class="btn btn--primary btn--sm" onclick="showPage('users-form', document.querySelectorAll('.pnav-tab')[3])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Modifier</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header"><div><h1 class="page-header__title">Koné Ibrahim</h1><p class="page-header__subtitle">Fiche utilisateur · Créé le 15 janvier 2024</p></div></div>
+      <div class="show-layout">
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card">
+            <div style="display:flex;align-items:center;gap:18px;padding:24px;border-bottom:1px solid var(--color-border)">
+              <div class="avatar avatar--xl avatar--sky">KI</div>
+              <div>
+                <div style="font-size:20px;font-weight:700;letter-spacing:-.4px">Koné Ibrahim</div>
+                <div style="font-size:13px;color:var(--color-text-3);margin-top:3px">k.ibrahim · k.ibrahim@transportapp.ci</div>
+                <div style="display:flex;gap:6px;margin-top:9px">
+                  <span class="status-pill tag--green"><span class="status-pill__dot"></span>Actif</span>
+                  <span class="role-badge" style="background:var(--color-sky-light);color:var(--color-sky)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Exploitant</span>
+                </div>
+              </div>
+            </div>
+            <div class="detail-section">
+              <div class="detail-section__title">Informations du compte</div>
+              <div class="detail-grid">
+                <div><div class="detail-label">Identifiant</div><div class="detail-value detail-value--mono">k.ibrahim</div></div>
+                <div><div class="detail-label">Email</div><div class="detail-value">k.ibrahim@transportapp.ci</div></div>
+                <div><div class="detail-label">Créé le</div><div class="detail-value">15 janvier 2024</div></div>
+                <div><div class="detail-label">Dernière connexion</div><div class="detail-value">Hier 16:32</div></div>
+              </div>
+            </div>
+            <div class="detail-section" style="border-bottom:none">
+              <div class="detail-section__title">Rôles attribués</div>
+              <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--radius);border:1px solid var(--color-border);background:var(--color-surface-2)">
+                <div style="width:34px;height:34px;border-radius:10px;background:var(--color-sky-light);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-sky)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div>
+                <div style="flex:1"><div style="font-size:13.5px;font-weight:600">Exploitant</div><div style="font-size:12px;color:var(--color-text-3);margin-top:2px">Gestion des voyages, trajets et suivi flotte</div></div>
+                <span class="tag tag--sky">12 permissions</span>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="detail-section" style="border-bottom:none">
+              <div class="detail-section__title">Dernières connexions</div>
+              <table class="data-table">
+                <thead><tr><th>Date &amp; heure</th><th>IP</th><th>Navigateur</th><th>Statut</th></tr></thead>
+                <tbody>
+                  <tr><td class="data-table__cell--mono data-table__cell--dim">03/03/2026 16:32</td><td class="data-table__cell--mono data-table__cell--dim">41.207.xx.xx</td><td class="data-table__cell--muted">Chrome 121 / macOS</td><td><span class="status-pill tag--green"><span class="status-pill__dot"></span>Succès</span></td></tr>
+                  <tr><td class="data-table__cell--mono data-table__cell--dim">02/03/2026 09:14</td><td class="data-table__cell--mono data-table__cell--dim">41.207.xx.xx</td><td class="data-table__cell--muted">Chrome 121 / macOS</td><td><span class="status-pill tag--green"><span class="status-pill__dot"></span>Succès</span></td></tr>
+                  <tr><td class="data-table__cell--mono data-table__cell--dim">01/03/2026 08:55</td><td class="data-table__cell--mono data-table__cell--dim">41.207.xx.xx</td><td class="data-table__cell--muted">Mobile Safari / iOS</td><td><span class="status-pill tag--red"><span class="status-pill__dot"></span>Échec MDP</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card meta-card"><div class="meta-card__title">Métadonnées</div><div class="meta-row"><span class="meta-row__key">ID</span><span class="meta-row__value">#12</span></div><div class="meta-row"><span class="meta-row__key">Créé le</span><span class="meta-row__value">15/01/2024</span></div><div class="meta-row"><span class="meta-row__key">Modifié le</span><span class="meta-row__value">04/03/2026</span></div><div class="meta-row"><span class="meta-row__key">Connexions</span><span class="meta-row__value">148</span></div></div>
+          <div class="card actions-card">
+            <div class="actions-card__title">Actions</div>
+            <button class="action-item" onclick="showPage('users-form', document.querySelectorAll('.pnav-tab')[3])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Modifier le compte</button>
+            <button class="action-item" onclick="showPage('userrole', document.querySelectorAll('.pnav-tab')[6])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Gérer les rôles</button>
+            <button class="action-item" onclick="showToast('ok','Email de réinitialisation envoyé.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Réinitialiser le MDP</button>
+            <button class="action-item" onclick="showToast('ok','Compte désactivé.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Désactiver le compte</button>
+            <button class="action-item action-item--danger" onclick="document.getElementById('modal-delete').classList.add('is-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>Supprimer le compte</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     PAGE : USERS FORMULAIRE
+════════════════════════════════════════════════════════ -->
+<div class="page app-layout" id="page-users-form">
+  <nav class="sidebar" aria-label="Navigation principale">
+    <div class="sidebar__logo"><div class="sidebar__logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/></svg></div><div><div class="sidebar__app-name">TransportApp</div><div class="sidebar__app-tagline">Gestion de flotte</div></div></div>
+    <div class="sidebar__nav">
+      <div class="nav-group__label">Administration</div>
+      <a href="#" class="nav-item is-active"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Administration</a>
+      <a href="#" class="nav-subitem is-active"><span class="nav-subitem__dot"></span>Utilisateurs</a>
+    </div>
+    <div class="sidebar__footer"><div class="user-button"><div class="avatar avatar--sm">AD</div><div><div class="user-button__name">Admin Principal</div><div class="user-button__role">Super Admin</div></div></div></div>
+  </nav>
+  <div class="app-main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#" onclick="showPage('users-list', document.querySelectorAll('.pnav-tab')[1]);return false">Utilisateurs</a><svg class="breadcrumb__separator" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b class="breadcrumb__current">Modifier — Koné Ibrahim</b></nav>
+      <div class="header-spacer"></div>
+      <span class="unsaved-indicator"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Non sauvegardé</span>
+      <button class="btn btn--ghost btn--sm" style="margin-left:8px" onclick="showPage('users-show', document.querySelectorAll('.pnav-tab')[2])">Annuler</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header"><div><h1 class="page-header__title">Modifier l'utilisateur</h1><p class="page-header__subtitle">Koné Ibrahim · k.ibrahim@transportapp.ci</p></div></div>
+      <div class="form-layout">
+        <div>
+          <div class="card" style="overflow:hidden;margin-bottom:16px">
+            <div class="form-section">
+              <div class="form-section__title">Identité</div>
+              <div class="form-section__desc">Nom d'affichage et coordonnées</div>
+              <div class="form-row form-row--2">
+                <div class="field"><label class="field__label">Nom complet <span class="field__required">*</span></label><input class="input" value="Koné Ibrahim"></div>
+                <div class="field"><label class="field__label">Email <span class="field__required">*</span></label><input class="input" value="k.ibrahim@transportapp.ci"></div>
+              </div>
+              <div class="form-row form-row--2">
+                <div class="field"><label class="field__label">Identifiant</label><input class="input input--readonly" value="k.ibrahim" readonly><div class="field__hint">Non modifiable après création</div></div>
+                <div class="field"><label class="field__label">Téléphone</label><input class="input" value="+225 07 00 00 00"></div>
+              </div>
+            </div>
+            <div class="form-section">
+              <div class="form-section__title">Sécurité</div>
+              <div class="form-section__desc">Laisser vide pour ne pas changer le mot de passe</div>
+              <div class="form-row form-row--2">
+                <div class="field"><label class="field__label">Nouveau mot de passe</label><input class="input" type="password" placeholder="••••••••"></div>
+                <div class="field"><label class="field__label">Confirmer le mot de passe</label><input class="input" type="password" placeholder="••••••••"></div>
+              </div>
+            </div>
+            <div class="form-section">
+              <div class="form-section__title">Statut</div>
+              <div class="toggle-row"><div class="toggle-row__info"><div class="toggle-row__name">Compte actif</div><div class="toggle-row__desc">L'utilisateur peut se connecter</div></div><div class="toggle is-on" onclick="this.classList.toggle('is-on')"></div></div>
+              <div class="toggle-row"><div class="toggle-row__info"><div class="toggle-row__name">Authentification 2 facteurs</div><div class="toggle-row__desc">Requiert un code OTP à chaque connexion</div></div><div class="toggle" onclick="this.classList.toggle('is-on')"></div></div>
+            </div>
+            <div class="danger-zone">
+              <div class="danger-zone__title">Zone dangereuse</div>
+              <div class="danger-zone__row">
+                <div><div class="danger-zone__label">Supprimer ce compte</div><div class="danger-zone__desc">Irréversible — toutes les données seront supprimées.</div></div>
+                <button class="btn btn--danger btn--sm" onclick="document.getElementById('modal-delete').classList.add('is-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>Supprimer</button>
+              </div>
+            </div>
+            <div class="save-bar"><span class="save-bar__hint">Dernière modification · 04/03/2026</span><div class="save-bar__spacer"></div><button class="btn btn--ghost" onclick="showPage('users-show', document.querySelectorAll('.pnav-tab')[2])">Annuler</button><button class="btn btn--primary" onclick="showToast('ok','Utilisateur mis à jour.');showPage('users-show', document.querySelectorAll('.pnav-tab')[2])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Sauvegarder</button></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card meta-card"><div class="meta-card__title">Métadonnées</div><div class="meta-row"><span class="meta-row__key">ID</span><span class="meta-row__value">#12</span></div><div class="meta-row"><span class="meta-row__key">Créé le</span><span class="meta-row__value">15/01/2024</span></div><div class="meta-row"><span class="meta-row__key">Modifié le</span><span class="meta-row__value">04/03/2026</span></div></div>
+          <div class="card" style="padding:16px">
+            <div class="card__title" style="margin-bottom:10px">Rôles actuels</div>
+            <span class="role-badge" style="background:var(--color-sky-light);color:var(--color-sky)"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>Exploitant</span>
+            <button class="btn btn--ghost btn--sm" style="margin-top:10px;width:100%;justify-content:center" onclick="showPage('userrole', document.querySelectorAll('.pnav-tab')[6])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Gérer les rôles</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     PAGE : ROLES LISTE
+════════════════════════════════════════════════════════ -->
+<div class="page app-layout" id="page-roles-list">
+  <nav class="sidebar" aria-label="Navigation principale">
+    <div class="sidebar__logo"><div class="sidebar__logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/></svg></div><div><div class="sidebar__app-name">TransportApp</div><div class="sidebar__app-tagline">Gestion de flotte</div></div></div>
+    <div class="sidebar__nav">
+      <div class="nav-group__label">Administration</div>
+      <a href="#" class="nav-item is-active"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Administration</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Entreprise</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Utilisateurs</a>
+      <a href="#" class="nav-subitem is-active"><span class="nav-subitem__dot"></span>Rôles</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Permissions</a>
+    </div>
+    <div class="sidebar__footer"><div class="user-button"><div class="avatar avatar--sm">AD</div><div><div class="user-button__name">Admin Principal</div><div class="user-button__role">Super Admin</div></div></div></div>
+  </nav>
+  <div class="app-main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#">Administration</a><svg class="breadcrumb__separator" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b class="breadcrumb__current">Rôles</b></nav>
+      <div class="header-spacer"></div>
+      <button class="btn btn--primary" onclick="showPage('roles-form', document.querySelectorAll('.pnav-tab')[5])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nouveau rôle</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header"><div><h1 class="page-header__title">Rôles</h1><p class="page-header__subtitle">Profils d'accès · <b style="color:var(--color-text)">5 rôles</b> configurés</p></div></div>
+      <div class="roles-grid">
+        <div class="role-card">
+          <div class="role-card__header"><div class="role-card__icon" style="background:var(--color-violet-light)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div style="flex:1"><div class="role-card__name">Super Admin</div><div class="role-card__desc">Accès complet à toutes les fonctionnalités</div></div><span class="tag tag--violet">Système</span></div>
+          <div class="role-card__footer"><div class="role-card__stats"><div><div class="role-stat__value">All</div><div class="role-stat__label">Permissions</div></div><div><div class="role-stat__value">1</div><div class="role-stat__label">Utilisateur</div></div></div><button class="icon-action" onclick="showPage('roles-form', document.querySelectorAll('.pnav-tab')[5])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button></div>
+        </div>
+        <div class="role-card">
+          <div class="role-card__header"><div class="role-card__icon" style="background:var(--color-sky-light)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-sky)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><div style="flex:1"><div class="role-card__name">Exploitant</div><div class="role-card__desc">Gestion des voyages, trajets et véhicules</div></div></div>
+          <div class="role-card__footer"><div class="role-card__stats"><div><div class="role-stat__value">12</div><div class="role-stat__label">Permissions</div></div><div><div class="role-stat__value">3</div><div class="role-stat__label">Utilisateurs</div></div></div><div style="display:flex;gap:4px"><button class="icon-action" onclick="showPage('roles-form', document.querySelectorAll('.pnav-tab')[5])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-action icon-action--danger" onclick="document.getElementById('modal-delete').classList.add('is-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></div></div>
+        </div>
+        <div class="role-card">
+          <div class="role-card__header"><div class="role-card__icon" style="background:var(--color-amber-light)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><path d="M2 9a3 3 0 010-6h20a3 3 0 010 6M2 9v12h20V9M12 9v12"/></svg></div><div style="flex:1"><div class="role-card__name">Caissier</div><div class="role-card__desc">Vente de tickets et gestion de la caisse</div></div></div>
+          <div class="role-card__footer"><div class="role-card__stats"><div><div class="role-stat__value">5</div><div class="role-stat__label">Permissions</div></div><div><div class="role-stat__value">2</div><div class="role-stat__label">Utilisateurs</div></div></div><div style="display:flex;gap:4px"><button class="icon-action" onclick="showPage('roles-form', document.querySelectorAll('.pnav-tab')[5])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-action icon-action--danger" onclick="document.getElementById('modal-delete').classList.add('is-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></div></div>
+        </div>
+        <div class="role-card">
+          <div class="role-card__header"><div class="role-card__icon" style="background:var(--color-red-light)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div><div style="flex:1"><div class="role-card__name">Mécanicien</div><div class="role-card__desc">Dépannages et gestion du stock pièces</div></div></div>
+          <div class="role-card__footer"><div class="role-card__stats"><div><div class="role-stat__value">7</div><div class="role-stat__label">Permissions</div></div><div><div class="role-stat__value">2</div><div class="role-stat__label">Utilisateurs</div></div></div><div style="display:flex;gap:4px"><button class="icon-action" onclick="showPage('roles-form', document.querySelectorAll('.pnav-tab')[5])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-action icon-action--danger" onclick="document.getElementById('modal-delete').classList.add('is-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></div></div>
+        </div>
+        <div class="role-card">
+          <div class="role-card__header"><div class="role-card__icon" style="background:var(--color-surface-3)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-3)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div style="flex:1"><div class="role-card__name">Lecture seule</div><div class="role-card__desc">Consultation sans modification possible</div></div></div>
+          <div class="role-card__footer"><div class="role-card__stats"><div><div class="role-stat__value">4</div><div class="role-stat__label">Permissions</div></div><div><div class="role-stat__value">0</div><div class="role-stat__label">Utilisateurs</div></div></div><div style="display:flex;gap:4px"><button class="icon-action" onclick="showPage('roles-form', document.querySelectorAll('.pnav-tab')[5])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="icon-action icon-action--danger" onclick="document.getElementById('modal-delete').classList.add('is-open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     PAGE : ROLES FORMULAIRE
+════════════════════════════════════════════════════════ -->
+<div class="page app-layout" id="page-roles-form">
+  <nav class="sidebar" aria-label="Navigation principale">
+    <div class="sidebar__logo"><div class="sidebar__logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/></svg></div><div><div class="sidebar__app-name">TransportApp</div><div class="sidebar__app-tagline">Gestion de flotte</div></div></div>
+    <div class="sidebar__nav">
+      <div class="nav-group__label">Administration</div>
+      <a href="#" class="nav-item is-active"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Administration</a>
+      <a href="#" class="nav-subitem is-active"><span class="nav-subitem__dot"></span>Rôles</a>
+    </div>
+    <div class="sidebar__footer"><div class="user-button"><div class="avatar avatar--sm">AD</div><div><div class="user-button__name">Admin Principal</div><div class="user-button__role">Super Admin</div></div></div></div>
+  </nav>
+  <div class="app-main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#" onclick="showPage('roles-list', document.querySelectorAll('.pnav-tab')[4]);return false">Rôles</a><svg class="breadcrumb__separator" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b class="breadcrumb__current">Exploitant — Modifier</b></nav>
+      <div class="header-spacer"></div>
+      <button class="btn btn--ghost btn--sm" onclick="showPage('roles-list', document.querySelectorAll('.pnav-tab')[4])">Annuler</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header"><div><h1 class="page-header__title">Modifier le rôle — Exploitant</h1><p class="page-header__subtitle">Définissez le nom et les permissions associées</p></div></div>
+      <div class="form-layout">
+        <div>
+          <div class="card" style="overflow:hidden;margin-bottom:16px">
+            <div class="form-section">
+              <div class="form-section__title">Informations</div>
+              <div class="form-row form-row--2">
+                <div class="field"><label class="field__label">Nom du rôle <span class="field__required">*</span></label><input class="input" value="Exploitant"></div>
+                <div class="field"><label class="field__label">Slug (système)</label><input class="input input--readonly" value="exploitant" readonly><div class="field__hint">Non modifiable après création</div></div>
+              </div>
+              <div class="form-row"><div class="field"><label class="field__label">Description</label><textarea class="textarea">Gestion des voyages, trajets, véhicules et planification</textarea></div></div>
+            </div>
+            <div class="form-section" style="border-bottom:none;padding-bottom:8px"><div class="form-section__title">Permissions attribuées</div><div class="form-section__desc">Cochez les permissions à accorder à ce rôle</div></div>
+            <div style="overflow-x:auto">
+              <table class="perm-table">
+                <thead><tr><th>Permission</th><th>Description</th><th style="text-align:center;width:80px">Accordée</th></tr></thead>
+                <tbody>
+                  <tr class="perm-table__group"><td colspan="3">Module Exploitation</td></tr>
+                  <tr><td class="data-table__cell--mono" style="font-size:12.5px">voyage.index</td><td class="data-table__cell--muted">Voir la liste des voyages</td><td style="text-align:center"><div class="perm-check perm-check--yes" onclick="togglePerm(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div></td></tr>
+                  <tr><td class="data-table__cell--mono" style="font-size:12.5px">voyage.create</td><td class="data-table__cell--muted">Créer un nouveau voyage</td><td style="text-align:center"><div class="perm-check perm-check--yes" onclick="togglePerm(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div></td></tr>
+                  <tr><td class="data-table__cell--mono" style="font-size:12.5px">voyage.edit</td><td class="data-table__cell--muted">Modifier un voyage existant</td><td style="text-align:center"><div class="perm-check perm-check--yes" onclick="togglePerm(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div></td></tr>
+                  <tr><td class="data-table__cell--mono" style="font-size:12.5px">voyage.delete</td><td class="data-table__cell--muted">Supprimer un voyage</td><td style="text-align:center"><div class="perm-check perm-check--no" onclick="togglePerm(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></td></tr>
+                  <tr class="perm-table__group"><td colspan="3">Module Flotte</td></tr>
+                  <tr><td class="data-table__cell--mono" style="font-size:12.5px">car.index</td><td class="data-table__cell--muted">Voir la liste des véhicules</td><td style="text-align:center"><div class="perm-check perm-check--yes" onclick="togglePerm(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div></td></tr>
+                  <tr><td class="data-table__cell--mono" style="font-size:12.5px">car.create</td><td class="data-table__cell--muted">Ajouter un véhicule</td><td style="text-align:center"><div class="perm-check perm-check--no" onclick="togglePerm(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></td></tr>
+                  <tr class="perm-table__group"><td colspan="3">Module Billetterie</td></tr>
+                  <tr><td class="data-table__cell--mono" style="font-size:12.5px">ticket.index</td><td class="data-table__cell--muted">Voir les tickets vendus</td><td style="text-align:center"><div class="perm-check perm-check--yes" onclick="togglePerm(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg></div></td></tr>
+                  <tr><td class="data-table__cell--mono" style="font-size:12.5px">ticket.create</td><td class="data-table__cell--muted">Vendre un ticket</td><td style="text-align:center"><div class="perm-check perm-check--no" onclick="togglePerm(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></td></tr>
+                  <tr class="perm-table__group"><td colspan="3">Module Administration</td></tr>
+                  <tr><td class="data-table__cell--mono" style="font-size:12.5px">user.index</td><td class="data-table__cell--muted">Voir la liste des utilisateurs</td><td style="text-align:center"><div class="perm-check perm-check--no" onclick="togglePerm(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></td></tr>
+                  <tr><td class="data-table__cell--mono" style="font-size:12.5px">user.create</td><td class="data-table__cell--muted">Créer un utilisateur</td><td style="text-align:center"><div class="perm-check perm-check--no" onclick="togglePerm(this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="save-bar"><span class="save-bar__hint" id="perm-count">5 permissions accordées</span><div class="save-bar__spacer"></div><button class="btn btn--ghost" onclick="showPage('roles-list', document.querySelectorAll('.pnav-tab')[4])">Annuler</button><button class="btn btn--primary" onclick="showToast('ok','Rôle mis à jour.');showPage('roles-list', document.querySelectorAll('.pnav-tab')[4])"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Sauvegarder</button></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="card" style="padding:16px">
+            <div class="card__title" style="margin-bottom:12px">Utilisateurs avec ce rôle</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;align-items:center;gap:8px"><div class="avatar avatar--sm avatar--sky">KI</div><div><div style="font-size:13px;font-weight:500">Koné Ibrahim</div><div style="font-size:11.5px;color:var(--color-text-3)">k.ibrahim</div></div></div>
+              <div style="display:flex;align-items:center;gap:8px"><div class="avatar avatar--sm avatar--green">TM</div><div><div style="font-size:13px;font-weight:500">Traoré Moussa</div><div style="font-size:11.5px;color:var(--color-text-3)">t.moussa</div></div></div>
+              <div style="display:flex;align-items:center;gap:8px"><div class="avatar avatar--sm">DO</div><div><div style="font-size:13px;font-weight:500">Diallo Oumar</div><div style="font-size:11.5px;color:var(--color-text-3)">d.oumar</div></div></div>
+            </div>
+          </div>
+          <div class="card" style="padding:16px">
+            <div class="card__title" style="margin-bottom:10px">Résumé</div>
+            <div style="display:flex;flex-direction:column;gap:6px;font-size:13px">
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-3)">Accordées</span><b id="perm-yes">5</b></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-3)">Refusées</span><span id="perm-no">5</span></div>
+              <div style="display:flex;justify-content:space-between"><span style="color:var(--color-text-3)">Utilisateurs</span><span>3</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     PAGE : ATTRIBUTION DES RÔLES
+════════════════════════════════════════════════════════ -->
+<div class="page app-layout" id="page-userrole">
+  <nav class="sidebar" aria-label="Navigation principale">
+    <div class="sidebar__logo"><div class="sidebar__logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/></svg></div><div><div class="sidebar__app-name">TransportApp</div><div class="sidebar__app-tagline">Gestion de flotte</div></div></div>
+    <div class="sidebar__nav">
+      <div class="nav-group__label">Administration</div>
+      <a href="#" class="nav-item is-active"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Administration</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Utilisateurs</a>
+      <a href="#" class="nav-subitem is-active"><span class="nav-subitem__dot"></span>Attribution des rôles</a>
+    </div>
+    <div class="sidebar__footer"><div class="user-button"><div class="avatar avatar--sm">AD</div><div><div class="user-button__name">Admin Principal</div><div class="user-button__role">Super Admin</div></div></div></div>
+  </nav>
+  <div class="app-main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#">Administration</a><svg class="breadcrumb__separator" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b class="breadcrumb__current">Attribution des rôles</b></nav>
+      <div class="header-spacer"></div>
+      <button class="btn btn--primary" onclick="showToast('ok','Attributions sauvegardées.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>Sauvegarder</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header"><div><h1 class="page-header__title">Attribution des rôles</h1><p class="page-header__subtitle">Assignez un ou plusieurs rôles à chaque utilisateur</p></div></div>
+      <div class="attribution-layout">
+        <div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--color-text-2)">Sélectionnez un utilisateur</div>
+          <div class="card" style="overflow:hidden">
+            <div style="padding:10px 12px;border-bottom:1px solid var(--color-border)">
+              <div class="filter-search" style="width:100%"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;color:var(--color-text-3)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input placeholder="Rechercher…"></div>
+            </div>
+            <div class="user-row is-active"><div class="avatar avatar--lg avatar--sky">KI</div><div class="user-row__info"><div class="user-row__name">Koné Ibrahim</div><div class="user-row__email">k.ibrahim@transportapp.ci</div><div class="user-row__roles"><span class="role-badge" style="background:var(--color-sky-light);color:var(--color-sky);font-size:11px">Exploitant</span></div></div><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2.5" style="flex-shrink:0"><path d="M9 18l6-6-6-6"/></svg></div>
+            <div class="user-row"><div class="avatar avatar--lg avatar--green">TM</div><div class="user-row__info"><div class="user-row__name">Traoré Moussa</div><div class="user-row__email">t.moussa@transportapp.ci</div><div class="user-row__roles"><span class="role-badge" style="background:var(--color-amber-light);color:var(--color-amber);font-size:11px">Caissier</span><span class="role-badge" style="background:var(--color-orange-light);color:var(--color-orange);font-size:11px">Exploitant</span></div></div></div>
+            <div class="user-row"><div class="avatar avatar--lg avatar--red">OS</div><div class="user-row__info"><div class="user-row__name">Ouattara Seydou</div><div class="user-row__email">o.seydou@transportapp.ci</div><div class="user-row__roles"><span class="role-badge" style="background:var(--color-red-light);color:var(--color-red);font-size:11px">Mécanicien</span></div></div></div>
+            <div class="user-row"><div class="avatar avatar--lg">DO</div><div class="user-row__info"><div class="user-row__name">Diallo Oumar</div><div class="user-row__email">d.oumar@transportapp.ci</div><div class="user-row__roles"><span style="font-size:12px;color:var(--color-text-4);font-style:italic">Aucun rôle</span></div></div></div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:4px;color:var(--color-text-2)">Rôles pour <b style="color:var(--color-text)">Koné Ibrahim</b></div>
+          <div style="font-size:12px;color:var(--color-text-3);margin-bottom:12px">Cliquez pour activer / désactiver un rôle</div>
+          <div class="role-item" onclick="this.classList.toggle('is-active')"><div class="role-item__icon" style="background:var(--color-violet-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div style="flex:1"><div class="role-item__name">Super Admin</div><div class="role-item__desc">Accès complet</div></div><span class="role-item__count">Toutes</span></div>
+          <div class="role-item is-active" onclick="this.classList.toggle('is-active')"><div class="role-item__icon" style="background:var(--color-sky-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-sky)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></div><div style="flex:1"><div class="role-item__name">Exploitant</div><div class="role-item__desc">Voyages, trajets, véhicules</div></div><span class="role-item__count">12 perms</span></div>
+          <div class="role-item" onclick="this.classList.toggle('is-active')"><div class="role-item__icon" style="background:var(--color-amber-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2"><path d="M2 9a3 3 0 010-6h20a3 3 0 010 6M2 9v12h20V9M12 9v12"/></svg></div><div style="flex:1"><div class="role-item__name">Caissier</div><div class="role-item__desc">Billetterie, caisse</div></div><span class="role-item__count">5 perms</span></div>
+          <div class="role-item" onclick="this.classList.toggle('is-active')"><div class="role-item__icon" style="background:var(--color-red-light)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg></div><div style="flex:1"><div class="role-item__name">Mécanicien</div><div class="role-item__desc">Dépannages, stock</div></div><span class="role-item__count">7 perms</span></div>
+          <div class="role-item" onclick="this.classList.toggle('is-active')"><div class="role-item__icon" style="background:var(--color-surface-3)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-3)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div style="flex:1"><div class="role-item__name">Lecture seule</div><div class="role-item__desc">Consultation uniquement</div></div><span class="role-item__count">4 perms</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     PAGE : PERMISSIONS
+════════════════════════════════════════════════════════ -->
+<div class="page app-layout" id="page-permissions">
+  <nav class="sidebar" aria-label="Navigation principale">
+    <div class="sidebar__logo"><div class="sidebar__logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/></svg></div><div><div class="sidebar__app-name">TransportApp</div><div class="sidebar__app-tagline">Gestion de flotte</div></div></div>
+    <div class="sidebar__nav">
+      <div class="nav-group__label">Administration</div>
+      <a href="#" class="nav-item is-active"><svg class="nav-item__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Administration</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Entreprise</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Utilisateurs</a>
+      <a href="#" class="nav-subitem"><span class="nav-subitem__dot"></span>Rôles</a>
+      <a href="#" class="nav-subitem is-active"><span class="nav-subitem__dot"></span>Permissions</a>
+    </div>
+    <div class="sidebar__footer"><div class="user-button"><div class="avatar avatar--sm">AD</div><div><div class="user-button__name">Admin Principal</div><div class="user-button__role">Super Admin</div></div></div></div>
+  </nav>
+  <div class="app-main">
+    <header class="app-header">
+      <nav class="breadcrumb"><a href="#">Administration</a><svg class="breadcrumb__separator" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg><b class="breadcrumb__current">Permissions</b></nav>
+      <div class="header-spacer"></div>
+      <button class="btn btn--ghost"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>Régénérer</button>
+    </header>
+    <div class="page-content">
+      <div class="page-header"><div><h1 class="page-header__title">Permissions</h1><p class="page-header__subtitle">Référentiel RBAC · <b style="color:var(--color-text)">générées automatiquement</b> depuis les routes Symfony</p></div></div>
+      <div class="alert-banner"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg><span>Les permissions sont générées automatiquement depuis les routes Symfony (attribut <code>#[IsGranted]</code>). Ne pas modifier manuellement.</span></div>
+      <div class="filter-bar">
+        <div class="filter-search"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;color:var(--color-text-3)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input placeholder="Rechercher une permission…"></div>
+        <select class="filter-select"><option>Tous les modules</option><option>Administration</option><option>Exploitation</option><option>Flotte</option><option>Billetterie</option></select>
+        <select class="filter-select"><option>Toutes méthodes</option><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select>
+        <div class="filter-spacer"></div>
+        <span class="result-count"><b>28</b> permissions</span>
+      </div>
+      <div class="card" style="overflow:hidden">
+        <div class="perm-section">
+          <div class="perm-section__header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-sky)" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg><span class="perm-section__name">Exploitation</span><span class="perm-section__count">8 permissions</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--color-text-3)"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div class="perm-row"><span class="perm-row__name">voyage.index</span><span class="perm-row__desc">Voir la liste des voyages</span><span class="method-badge method-badge--get">GET</span></div>
+          <div class="perm-row"><span class="perm-row__name">voyage.show</span><span class="perm-row__desc">Voir le détail d'un voyage</span><span class="method-badge method-badge--get">GET</span></div>
+          <div class="perm-row"><span class="perm-row__name">voyage.create</span><span class="perm-row__desc">Créer un nouveau voyage</span><span class="method-badge method-badge--post">POST</span></div>
+          <div class="perm-row"><span class="perm-row__name">voyage.edit</span><span class="perm-row__desc">Modifier un voyage existant</span><span class="method-badge method-badge--put">PUT</span></div>
+          <div class="perm-row"><span class="perm-row__name">voyage.delete</span><span class="perm-row__desc">Supprimer un voyage</span><span class="method-badge method-badge--delete">DELETE</span></div>
+          <div class="perm-row"><span class="perm-row__name">trajet.index</span><span class="perm-row__desc">Voir la liste des trajets</span><span class="method-badge method-badge--get">GET</span></div>
+          <div class="perm-row"><span class="perm-row__name">trajet.create</span><span class="perm-row__desc">Créer un trajet</span><span class="method-badge method-badge--post">POST</span></div>
+          <div class="perm-row"><span class="perm-row__name">trajet.edit</span><span class="perm-row__desc">Modifier un trajet</span><span class="method-badge method-badge--put">PUT</span></div>
+        </div>
+        <div class="perm-section">
+          <div class="perm-section__header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2" style="flex-shrink:0"><path d="M1 17l3-9h16l3 9M1 17h22M6.5 17a2 2 0 100-4 2 2 0 000 4zM17.5 17a2 2 0 100-4 2 2 0 000 4z"/></svg><span class="perm-section__name">Flotte &amp; Maintenance</span><span class="perm-section__count">7 permissions</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--color-text-3)"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div class="perm-row"><span class="perm-row__name">car.index</span><span class="perm-row__desc">Voir la liste des véhicules</span><span class="method-badge method-badge--get">GET</span></div>
+          <div class="perm-row"><span class="perm-row__name">car.show</span><span class="perm-row__desc">Voir le détail d'un véhicule</span><span class="method-badge method-badge--get">GET</span></div>
+          <div class="perm-row"><span class="perm-row__name">car.create</span><span class="perm-row__desc">Ajouter un véhicule</span><span class="method-badge method-badge--post">POST</span></div>
+          <div class="perm-row"><span class="perm-row__name">car.edit</span><span class="perm-row__desc">Modifier un véhicule</span><span class="method-badge method-badge--put">PUT</span></div>
+          <div class="perm-row"><span class="perm-row__name">car.delete</span><span class="perm-row__desc">Supprimer un véhicule</span><span class="method-badge method-badge--delete">DELETE</span></div>
+          <div class="perm-row"><span class="perm-row__name">depannage.create</span><span class="perm-row__desc">Créer un dépannage</span><span class="method-badge method-badge--post">POST</span></div>
+          <div class="perm-row"><span class="perm-row__name">depannage.edit</span><span class="perm-row__desc">Modifier un dépannage</span><span class="method-badge method-badge--put">PUT</span></div>
+        </div>
+        <div class="perm-section">
+          <div class="perm-section__header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2" style="flex-shrink:0"><path d="M2 9a3 3 0 010-6h20a3 3 0 010 6M2 9v12h20V9M12 9v12"/></svg><span class="perm-section__name">Billetterie</span><span class="perm-section__count">4 permissions</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--color-text-3)"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div class="perm-row"><span class="perm-row__name">ticket.index</span><span class="perm-row__desc">Voir les tickets vendus</span><span class="method-badge method-badge--get">GET</span></div>
+          <div class="perm-row"><span class="perm-row__name">ticket.show</span><span class="perm-row__desc">Voir le détail d'un ticket</span><span class="method-badge method-badge--get">GET</span></div>
+          <div class="perm-row"><span class="perm-row__name">ticket.create</span><span class="perm-row__desc">Émettre un ticket (vente)</span><span class="method-badge method-badge--post">POST</span></div>
+          <div class="perm-row"><span class="perm-row__name">ticket.cancel</span><span class="perm-row__desc">Annuler un ticket</span><span class="method-badge method-badge--put">PUT</span></div>
+        </div>
+        <div class="perm-section" style="border-bottom:none">
+          <div class="perm-section__header"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2" style="flex-shrink:0"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="perm-section__name">Administration</span><span class="perm-section__count">9 permissions</span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--color-text-3)"><path d="M6 9l6 6 6-6"/></svg></div>
+          <div class="perm-row"><span class="perm-row__name">user.index</span><span class="perm-row__desc">Voir la liste des utilisateurs</span><span class="method-badge method-badge--get">GET</span></div>
+          <div class="perm-row"><span class="perm-row__name">user.create</span><span class="perm-row__desc">Créer un utilisateur</span><span class="method-badge method-badge--post">POST</span></div>
+          <div class="perm-row"><span class="perm-row__name">user.edit</span><span class="perm-row__desc">Modifier un utilisateur</span><span class="method-badge method-badge--put">PUT</span></div>
+          <div class="perm-row"><span class="perm-row__name">user.delete</span><span class="perm-row__desc">Supprimer un utilisateur</span><span class="method-badge method-badge--delete">DELETE</span></div>
+          <div class="perm-row"><span class="perm-row__name">role.index</span><span class="perm-row__desc">Voir les rôles</span><span class="method-badge method-badge--get">GET</span></div>
+          <div class="perm-row"><span class="perm-row__name">role.create</span><span class="perm-row__desc">Créer un rôle</span><span class="method-badge method-badge--post">POST</span></div>
+          <div class="perm-row"><span class="perm-row__name">role.edit</span><span class="perm-row__desc">Modifier un rôle</span><span class="method-badge method-badge--put">PUT</span></div>
+          <div class="perm-row"><span class="perm-row__name">entreprise.edit</span><span class="perm-row__desc">Modifier les paramètres entreprise</span><span class="method-badge method-badge--put">PUT</span></div>
+          <div class="perm-row"><span class="perm-row__name">userrole.assign</span><span class="perm-row__desc">Attribuer des rôles aux utilisateurs</span><span class="method-badge method-badge--post">POST</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     MODAL SUPPRESSION
+════════════════════════════════════════════════════════ -->
+<div class="modal-backdrop" id="modal-delete" onclick="if(event.target===this)this.classList.remove('is-open')">
+  <div class="modal">
+    <div class="modal__header">
+      <div class="modal__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></div>
+      <div><div class="modal__title">Confirmer la suppression</div><div class="modal__subtitle">Cette action est irréversible</div></div>
+    </div>
+    <div class="modal__body"><p>Vous êtes sur le point de supprimer cet élément. Toutes les données associées seront <b>définitivement supprimées</b>.</p></div>
+    <div class="modal__footer">
+      <button class="btn btn--ghost" onclick="document.getElementById('modal-delete').classList.remove('is-open')">Annuler</button>
+      <button class="btn btn--danger" onclick="document.getElementById('modal-delete').classList.remove('is-open');showToast('ok','Élément supprimé.')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toast-container"></div>
+
+</div><!-- /app-wrap -->
+
+<script>
+/* ── Navigation entre pages ─────────────────────────────── */
+const PAGE_MAP = {
+  'entreprise':  'page-entreprise',
+  'users-list':  'page-users-list',
+  'users-show':  'page-users-show',
+  'users-form':  'page-users-form',
+  'roles-list':  'page-roles-list',
+  'roles-form':  'page-roles-form',
+  'userrole':    'page-userrole',
+  'permissions': 'page-permissions',
+};
+
+function showPage(id, tabEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('is-active'));
+  const pid = PAGE_MAP[id];
+  if (pid) document.getElementById(pid).classList.add('is-active');
+  document.querySelectorAll('.pnav-tab').forEach(t => t.classList.remove('is-active'));
+  if (tabEl) tabEl.classList.add('is-active');
+}
+
+/* ── Dark mode ──────────────────────────────────────────── */
+(function () {
+  const saved = localStorage.getItem('ta-dark');
+  const on = saved !== null ? JSON.parse(saved) : matchMedia('(prefers-color-scheme:dark)').matches;
+  if (on) applyDark(true);
+})();
+
+function toggleDark() {
+  const on = document.documentElement.classList.toggle('theme-dark');
+  localStorage.setItem('ta-dark', on);
+  applyDark(on);
+}
+
+function applyDark(on) {
+  document.getElementById('icon-sun').style.display  = on ? 'none'  : 'block';
+  document.getElementById('icon-moon').style.display = on ? 'block' : 'none';
+}
+
+/* ── Settings tabs (Entreprise) ─────────────────────────── */
+function switchTab(el, targetId) {
+  el.closest('.card').querySelectorAll('.settings-tab').forEach(t => t.classList.remove('is-active'));
+  el.classList.add('is-active');
+  ['tab-general', 'tab-contact', 'tab-systeme'].forEach(id => {
+    const d = document.getElementById(id);
+    if (d) d.style.display = id === targetId ? '' : 'none';
+  });
+}
+
+/* ── Toggle permission ──────────────────────────────────── */
+function togglePerm(el) {
+  const isYes = el.classList.contains('perm-check--yes');
+  el.classList.toggle('perm-check--yes', !isYes);
+  el.classList.toggle('perm-check--no',   isYes);
+  el.innerHTML = isYes
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>';
+  const yes = document.querySelectorAll('.perm-check--yes').length;
+  const no  = document.querySelectorAll('.perm-check--no').length;
+  const cnt = document.getElementById('perm-count');
+  const y2  = document.getElementById('perm-yes');
+  const n2  = document.getElementById('perm-no');
+  if (cnt) cnt.textContent = yes + ' permissions accordées';
+  if (y2)  y2.textContent  = yes;
+  if (n2)  n2.textContent  = no;
+}
+
+/* ── Toasts ─────────────────────────────────────────────── */
+function showToast(type, msg) {
+  const icons = {
+    ok:  '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>',
+    err: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+  };
+  const container = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = 'toast toast--' + (type === 'ok' ? 'ok' : 'err');
+  t.innerHTML = `<div class="toast__icon">${icons[type] || icons.ok}</div>${msg}<button class="toast__close" onclick="this.parentElement.remove()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
+  container.appendChild(t);
+  setTimeout(() => t.remove(), 4000);
+}
+
+/* ── Echap → ferme modal ─────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('modal-delete').classList.remove('is-open');
+});
+</script>
+</body>
+</html>

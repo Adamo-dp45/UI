@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Css</title>
+    <link rel="stylesheet" href="../src/app.css">
+</head>
+<body>
+    <h1>Modules</h1>
+    <div class="link">
+        <a href="./container.html">Container</a>
+        <a href="./navigation/topbar/index.html">Topbar</a>
+        <a href="./css/scroll-snap.html">Scroll snap</a>
+        <a href="./css/tableaux responsive/index.html">Tableau responsive</a>
+        <a href="./css/snow/index.html">Neige</a>
+        <a href="./css/effet de soulignement/index.html">Effet de soulignement</a>
+        <a href="./css/images responsive/index.html">Image responsive</a>
+        <a href="./css/checkbox/index.html">Checkbox</a>
+    </div>
+
+    <article class="product">
+        <img src="./img/bg-card.png" class="product-img" width="480" height="320" />
+        <div class="product-body">
+            <div class="product-category">Loeeeeeee</div>
+            <div class="product-info">
+                <div class="product-title">Laerr</div>
+                <div class="product-price">12 F</div>
+            </div>
+            <p class="product-description">
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Officia, dolore ad tempora corporis exceptur
+            </p>
+            <a href="" class="product-link">Voir le produit</a>
+        </div>
+    </article>
+
+    <!--
+        Les balises de composants
+    -->
+    <dialog> <!-- Modal HTML - open="true" pour ouvrir -->
+        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Molestiae, amet numquam mollitia minima accusamus doloribus sint deserunt dignissimos culpa ipsam modi ullam, enim molestias fugit inventore vel! Esse, neque corrupti?
+    </dialog>
+    <popover>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. In labore beatae saepe officiis
+    </popover> <!-- Infobulle -->
+
+    <div>
+        <button class="shadow">Shadow</button>
+        <div class="background">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit magni veritatis harum, dolore velit quia expedita libero molestias vitae voluptatibus
+        </div>
+    </div>
+
+    <div style="position: relative; height: 10vh;">
+        <div class="center">Center</div>
+    </div>
+    <div class="center-grid mb-3">
+        <div>Centre grid</div>
+    </div>
+
+    <p class="mb-3 indent">
+        <span class="float">Float</span> Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae necessitatibus magnam facere iure mollitia labore at nulla? At quasi tempora eveniet et maiores commodi pariatur placeat tempore natus sint. Nobis?
+    </p>
+
+    <!-- <iframe src="" frameborder="0"></iframe>
+    <div class="ban">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit
+    </div> -->
+
+    <!--
+        Flexbox
+    -->
+    <div class="flex mb-3">
+        <div>1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+    </div>
+
+    <div class="banner mb-3">
+        <h1>Mon titre</h1>
+        <p>
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aspernatur sed eaque nisi eligendi enim eos quis, fugiat tempora. Rem, sequi dolore voluptate quia maiores magni voluptas qui voluptates vitae tenetur!
+        </p>
+        <a href="">Acheter</a> <!-- Par défaut le lien va prendre toute la largeur à cause du align-items stretch ce qui fais que les éléments s'étendent sur toute la largeur dans le cas la direction à column -->
+        <div> <!-- Si on veut que les 2 liens soit l'un à côté de l'autre -->
+            <a href="">Acheter</a>
+            <a href="">Acheter</a>
+        </div>
+    </div>
+
+    <main class="page mb-3">
+        <article class="main">
+            <p>
+                Lorem ipsum dolor sit amet consectetur adipisicing elit. Animi beatae ad obcaecati mollitia porro, voluptatibus quae, tenetur magnam suscipit at voluptate odio odit deleniti assumenda eos dignissimos eum consequatur repudiandae.
+            </p>
+        </article>
+        <aside class="sidebar">
+            Sidebar
+        </aside>
+    </main>
+
+    <!--
+        Grid
+    -->
+    <div class="grid mb-3">
+        <div class="child">1</div>
+        <div>2</div>
+        <div>3</div>
+        <div>4</div>
+        <div>5</div>
+    </div>
+
+    <section class="site mb-3">
+        <header>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+        </header>
+        <main>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing</p>
+            <p>Impedit sit iure sequi repellendus voluptates anim</p>
+            <p>Dolore nam dignissimos explicabo</p>
+            <p>Nisi asperiores consectetur similique necessitatibus</p>
+        </main>
+        <aside>
+            <ul>
+                <li>Lorem ipsum dolor sit</li>
+                <li>Lorem ipsum dolor sit</li>
+                <li>Lorem ipsum dolor sit</li>
+                <li>Lorem ipsum dolor sit</li>
+            </ul>
+        </aside>
+        <footer>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit
+        </footer>
+    </section>
+
+    <div class="bootstrap mb-3">
+        <div class="col-2">1</div>
+        <div class="col-3">2</div>
+        <div class="col-5">3</div>
+        <div>4</div>
+        <div>5</div>
+        <div>6</div>
+        <div>7</div>
+        <div>8</div>
+        <div>9</div>
+        <div>10</div>
+        <div>11</div>
+        <div>12</div>
+        <div>13</div>
+        <div>14</div>
+        <div>15</div>
+        <div>16</div>
+        <div>17</div>
+        <div>18</div>
+        <div>19</div>
+        <div>20</div>
+    </div>
+
+    <!--
+        Autres balises
+    -->
+    <a href="" target="_blank"></a> <!-- target : Pour définir le type de lien, '_blank' lien externe -->
+    <input type="email" inputmode="email" name="" id=""> <!--
+        'inputmode' permet de choisir quel type de clavier on veut voir afficher lorsque l'on clique dans le champ dans un mobile
+    -->
+    <del>Lorem</del> - <ins>Lorem</ins>
+    <mark>Mark</mark> - <abbr title="abbr">Abbr</abbr>
+    <u>Souligné</u> <b>Bold</b> <i>Italic</i>
+    lo <sup>2</sup> <sub>3</sub>
+    <small>Small</small>
+    <address>Address</address>
+    <big>Big</big>
+    <center>Center</center>
+    <kbd>0548</kbd>
+    <strong>Strong</strong>
+    <progress>10</progress>
+    <time datetime="14/11/2025"></time>
+    <blockquote>
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Id rem dolor recusandae ex dicta architecto nam deserunt expedita error provident maiores quod, in reprehenderit vitae cumque similique vero sint quibusdam?
+    </blockquote>
+    <ul>
+        <li type="A">Lettre majuscule</li>
+        <li type="a">Lettre miniscule</li>
+        <li type="I">Chiffre romains majuscule</li>
+        <li type="i">Chiffre romains miniscule</li>
+        <li type="1">Chiffre</li>
+        <li type="square">Pus carré</li>
+        <li type="disc">Pus circulaire pleine</li>
+        <li type="circle">Pus circulaire vide</li>
+    </ul>
+    <dl> <!-- Liste de définition -->
+        <dt>Terme a définir</dt>
+        <dd>Définition de terme</dd>
+    </dl>
+    <!-- <audio src="" controls /> - controls : Pour afficher les controls de l'audio -->
+    <!-- <video
+        src=""
+        width="300px"
+        height="300px"
+        autoplay
+        loop
+        controls
+    />
+        - autoplay : Pour jouer automatiquement
+        - loop : Pour jouer en boucle
+        - controls : Pour afficher les controls de la vidéo
+    -->
+    <table class="table-responsive" border="5">
+        <caption>Titre du tableau</caption>
+        <thead>
+            <tr> <!-- Ligne du tableau -->
+                <th align="left">Titre</th> <!-- Titre du tableau, 'align' position du texte -->
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td bgcolor="red" rowspan="1" colspan="4">Cellule</td> <!-- Cellule du tableau, 'rowspan' Pour fusionner des cellules verticale, 'colspan' Pour fusionner des cellules horizontale -->
+                <td>Cel</td>
+            </tr>
+        </tbody>
+        <tfoot>
+            <tr>
+                <td>Total</td>
+            </tr>
+        </tfoot>
+    </table>
+    <style>
+        table {
+            border-collapse: collapse; /* Pour fusionner les bordures d'un tableau, 'separate' par défaut */
+            caption-side: bottom; /* La position du titre, 'top' par défaut */
+            padding: 20px;
+        }
+    </style>
+
+    <form action="" enctype="multipart/form-data">
+        <fieldset>
+            <legend>Légende du form</legend>
+            <input type="text" class="input" size="25" maxlength="15" name="" id="" required autocomplete="off"> <!-- size taille du champ, 'autofocus' pour focus le champ automatiquement -->
+            <input type="number" name="" min="1" max="15" step="2" id=""> <!-- step : 2 pas de déplacement -->
+            <input type="url" name="" id="">
+            <input type="range" name="" id="">
+            <input type="time" name="" id="">
+            <input type="week" name="" id="">
+            <input type="month" name="" id="">
+            <input type="datetime" name="" id="">
+            <input type="search" name="" id="">
+            <input type="color" name="" id="">
+            <input type="radio" name="na" id="">
+            <input type="radio" name="na" id="">
+            <input type="datetime local" name="" id="">
+            <input type="file" name="" id=""> <!-- Pour sélectionner un fichier et à besoin du 'enctype' au niveau du formulaire -->
+            <textarea name="" rows="15" cols="15" id=""></textarea>
+
+            <input type="reset" value="Réinitialiser le formulaire">
+            <input type="button" value="Envoyer"> <!-- Ne fais rien et est géré en javascript pour exécuter une action -->
+        </fieldset>
+    </form>
+    <style>
+        .input:required { /* Permet de changer le style des éléments requis */
+            background-color: rgb(54, 54, 52);
+        }
+        .input:invalid { /* Permet de changer le style des éléments invalides */
+            background-color: rgb(187, 204, 185);
+        }
+        .input:focus { /* Permet de changer l'apparence d'un champ lorsque le curseur se trouve à l'intérieur */
+            background-color: rgb(150, 150, 150);
+        }
+    </style>
+
+    <marquee behavior="slide" loop.5 direction="left" scrollament="3"> <!-- Permet de faire défiler un élément
+        - loop : Nombre de défilement avant de disparaître
+        - direction : La direction du défilement
+        - behavior : Le comportement du texte
+    -->
+        Lorem ipsum dolor sit amet consectetur
+    </marquee>
+    <samp>This text is meant to be treated as sample output from a computer program</samp>
+
+    <p id="main">Lorem, ipsum dolor sit amet consectetur adipisicing elit</p>
+    <p id="search">Lorem ipsum dolor sit amet consectetur adipisicing elit</p>
+</body>
+</html>

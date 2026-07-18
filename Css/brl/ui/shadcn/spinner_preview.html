@@ -1,0 +1,101 @@
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:.4; transform:scale(.85); } }
+@keyframes orbit { to { transform: rotate(360deg); } }
+@keyframes ripple { 0% { transform:scale(.3); opacity:1; } 100% { transform:scale(1.8); opacity:0; } }
+@keyframes dash { 0% { stroke-dashoffset:200; } 100% { stroke-dashoffset:0; } }
+@keyframes morph {
+  0%,100% { border-radius:50%; transform:rotate(0deg) scale(1); }
+  25% { border-radius:30% 70% 70% 30%/30% 30% 70% 70%; transform:rotate(90deg) scale(.9); }
+  50% { border-radius:50%; transform:rotate(180deg) scale(1.05); }
+  75% { border-radius:70% 30% 30% 70%/70% 70% 30% 30%; transform:rotate(270deg) scale(.9); }
+}
+@keyframes dots { 0%,80%,100% { transform:scale(0); opacity:.3; } 40% { transform:scale(1); opacity:1; } }
+@keyframes barPulse { 0%,100%{height:12px;opacity:.4} 50%{height:32px;opacity:1} }
+
+.grid { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; padding:1.5rem; }
+.cell { display:flex; flex-direction:column; align-items:center; gap:14px; }
+.label { font-size:12px; color:var(--color-text-secondary); font-family:var(--font-sans); }
+
+.sp1 { width:36px;height:36px;border-radius:50%;border:3px solid var(--color-border-secondary);border-top-color:#7F77DD;animation:spin .8s linear infinite; }
+
+.sp2-wrap { position:relative;width:40px;height:40px; }
+.sp2-wrap span { position:absolute;inset:0;border-radius:50%;border:3px solid transparent;animation:spin 1.2s ease-in-out infinite; }
+.sp2-wrap span:nth-child(1){border-top-color:#1D9E75;animation-duration:1.2s;}
+.sp2-wrap span:nth-child(2){border-right-color:#D85A30;inset:6px;animation-duration:.9s;animation-direction:reverse;}
+.sp2-wrap span:nth-child(3){border-bottom-color:#378ADD;inset:12px;animation-duration:1.5s;}
+
+.sp3 { width:36px;height:36px;animation:morph 2s ease-in-out infinite;background:#7F77DD; }
+
+.sp4-wrap { width:44px;height:44px;position:relative; }
+.sp4-dot { position:absolute;width:10px;height:10px;border-radius:50%;background:#D4537E;top:50%;left:50%;margin:-5px 0 0 -5px;transform-origin:0 18px; }
+.sp4-wrap { animation:orbit 1s linear infinite; }
+.sp4-trail { position:absolute;inset:0;border-radius:50%;border:2px dashed color-mix(in srgb,#D4537E 30%,transparent);animation:spin 1s linear infinite reverse; }
+
+.sp5-wrap { display:flex;gap:6px;align-items:center;height:40px; }
+.sp5-bar { width:5px;border-radius:3px;background:#1D9E75;animation:barPulse .9s ease-in-out infinite; }
+.sp5-bar:nth-child(2){animation-delay:.15s;}
+.sp5-bar:nth-child(3){animation-delay:.3s;}
+.sp5-bar:nth-child(4){animation-delay:.45s;}
+.sp5-bar:nth-child(5){animation-delay:.6s;}
+
+.sp6-wrap { position:relative;width:44px;height:44px; }
+.sp6-ring { position:absolute;inset:0;border-radius:50%;border:2.5px solid color-mix(in srgb,#378ADD 20%,transparent);animation:ripple 1.6s ease-out infinite; }
+.sp6-ring:nth-child(2){animation-delay:.5s;}
+.sp6-ring:nth-child(3){animation-delay:1s;}
+.sp6-core { position:absolute;inset:14px;border-radius:50%;background:#378ADD; }
+
+.sp7 { width:36px;height:36px; }
+.sp7 circle { fill:none;stroke:#EF9F27;stroke-width:3;stroke-dasharray:200;animation:dash 1.4s ease-in-out infinite;transform-origin:center;transform:rotate(-90deg); }
+
+.sp8-wrap { display:flex;gap:8px;align-items:center; }
+.sp8-dot { width:10px;height:10px;border-radius:50%;background:#533AB7;animation:dots 1.2s ease-in-out infinite both; }
+.sp8-dot:nth-child(2){animation-delay:.16s;}
+.sp8-dot:nth-child(3){animation-delay:.32s;}
+</style>
+
+<div class="grid">
+  <div class="cell">
+    <div class="sp1"></div>
+    <span class="label">Classic</span>
+  </div>
+  <div class="cell">
+    <div class="sp2-wrap"><span></span><span></span><span></span></div>
+    <span class="label">Triple orbit</span>
+  </div>
+  <div class="cell">
+    <div class="sp3"></div>
+    <span class="label">Morphing</span>
+  </div>
+  <div class="cell">
+    <div class="sp4-wrap">
+      <div class="sp4-trail"></div>
+      <div class="sp4-dot"></div>
+    </div>
+    <span class="label">Comet</span>
+  </div>
+  <div class="cell">
+    <div class="sp5-wrap">
+      <div class="sp5-bar"></div><div class="sp5-bar"></div><div class="sp5-bar"></div><div class="sp5-bar"></div><div class="sp5-bar"></div>
+    </div>
+    <span class="label">Bars</span>
+  </div>
+  <div class="cell">
+    <div class="sp6-wrap">
+      <div class="sp6-ring"></div><div class="sp6-ring"></div><div class="sp6-ring"></div>
+      <div class="sp6-core"></div>
+    </div>
+    <span class="label">Ripple</span>
+  </div>
+  <div class="cell">
+    <svg class="sp7" viewBox="0 0 36 36"><circle cx="18" cy="18" r="14"/></svg>
+    <span class="label">Dash draw</span>
+  </div>
+  <div class="cell">
+    <div class="sp8-wrap">
+      <div class="sp8-dot"></div><div class="sp8-dot"></div><div class="sp8-dot"></div>
+    </div>
+    <span class="label">Dots</span>
+  </div>
+</div>

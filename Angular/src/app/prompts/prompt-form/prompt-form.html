@@ -1,0 +1,66 @@
+@if (loading()) {
+    <div class="flex justify-content-center py-6">
+        <p-progress-spinner />
+    </div>
+} @else {
+    <p-card>
+        <form [formGroup]="form" (ngSubmit)="submit()"> <!--
+            - '[formGroup]' pour lier le formulaire à une instance de 'FormGroup' dans le composant
+            - 'formControlName' pour lier chaque champ à une instance de 'FormControl' dans le composant
+            - '(ngSubmit)' pour gérer la soumission du formulaire
+        -->
+            <div class="field">
+                <label for="title">Titre</label>
+                <input type="text" id="title" class="w-full" pInputText formControlName="title"> <!--
+                    - 'pInputText' une directive de 'primeng' pour styliser les champs
+                -->
+                <small class="invalid-feedback">Le titre est requis (max 30 caractères)</small> <!--
+                    - Dans 'styles.css' on fais en sorte qu'il s'affiche que si il y'a un erreur
+
+                    Ou..
+                    @if (form.get('title')?.errors) {
+                        @if(form.get('title')?.hasError('required')) {
+                            <div class="red">Le titre est requis (max 30 caractères)</div>
+                        }
+                        @if(form.get('title')?.hasError('maxLength')) {
+                            <div class="red">Le titre ne doit pas dépasser 30 caractères</div>
+                        }
+                    }
+                -->
+            </div>
+            <div class="field">
+                <label for="content">Contenu</label>
+                <textarea name="" rows="8" class="w-full" id="" pTextarea formControlName="content"></textarea>
+                <small class="invalid-feedback">Le contenu est requis (min 2 caractères)</small>
+            </div>
+            <div class="field">
+                <label for="category">Catégorie</label>
+                <p-select
+                    formControlName="categoryId"
+                    inputId="category"
+                    [options]="categories()"
+                    optionValue="id"
+                    optionLabel="name"
+                    class="w-full" /> <!--
+                    - Vu qu'on ne peut pas 'id=' sur le composant on a 'inputId'
+                    - 'options' pour les données, 'optionValue' le champ pour la valeur et 'optionLabel' la propriété à afficher
+                -->
+                <small class="invalid-feedback">La catégorie est requise</small>
+            </div>
+            <div class="flex justify-content-end gap-2">
+                @if (promptId()) {
+                    <p-button
+                        [loading]="deletting()"
+                        label="Supprimer"
+                        severity="danger"
+                        (onclick)="deletePrompt()"
+                        class="mr-auto"
+                        [outlined]="true"
+                    />
+                }
+                <p-button label="Annuler" type="reset" severity="secondary" />
+                <p-button [loading]="submitting()" [label]="promptId() ? 'Modifier' : 'Créer'" type="submit" />
+            </div>
+        </form>
+    </p-card>
+}

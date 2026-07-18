@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dashboard — shadcn/ui</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div class="shell">
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+<!-- ═══ SIDEBAR (from Dashboard 1) ═══ -->
+<aside class="sidebar" id="sidebar">
+
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+    </div>
+    <span class="sidebar-logo-text sb-text">Acme Inc.</span>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="sidebar-section">
+      <div class="sb-section-title">Platform</div>
+
+      <a href="#" class="nav-link active" data-nav>
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+        <span class="sb-text">Dashboard</span>
+      </a>
+
+      <a href="#" class="nav-link" data-submenu="sub-orders">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+        <span class="sb-text">Orders</span>
+        <span class="nav-badge">12</span>
+        <svg class="submenu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <div class="submenu" id="sub-orders">
+        <div class="submenu-inner">
+          <a href="#" class="sub-link active" data-subnav><span class="sub-dot"></span>All Orders</a>
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>Pending <span class="sub-badge-warn">8</span></a>
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>Fulfilled</a>
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>Returns</a>
+        </div>
+      </div>
+
+      <a href="#" class="nav-link" data-submenu="sub-customers">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        <span class="sb-text">Customers</span>
+        <svg class="submenu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <div class="submenu" id="sub-customers">
+        <div class="submenu-inner">
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>All Customers</a>
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>Segments</a>
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>Subscriptions</a>
+        </div>
+      </div>
+
+      <a href="#" class="nav-link" data-nav>
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9Z"/><path d="m3 9 2.45-4.9A2 2 0 0 1 7.24 3h9.52a2 2 0 0 1 1.8 1.1L21 9"/><path d="M12 3v6"/></svg>
+        <span class="sb-text">Products</span>
+      </a>
+
+      <a href="#" class="nav-link" data-nav>
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span class="sb-text">Payments</span>
+        <span class="nav-badge muted">3</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sb-section-title">Analytics</div>
+
+      <a href="#" class="nav-link" data-submenu="sub-reports">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        <span class="sb-text">Reports</span>
+        <svg class="submenu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <div class="submenu" id="sub-reports">
+        <div class="submenu-inner">
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>Revenue</a>
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>Traffic</a>
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>Conversions</a>
+        </div>
+      </div>
+
+      <a href="#" class="nav-link" data-nav>
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 20h.01"/><path d="M7 20v-4"/><path d="M12 20v-8"/><path d="M17 20V8"/><path d="M22 4v16"/></svg>
+        <span class="sb-text">Analytics</span>
+      </a>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sb-section-title">Settings</div>
+
+      <a href="#" class="nav-link" data-submenu="sub-settings">
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span class="sb-text">Settings</span>
+        <svg class="submenu-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+      <div class="submenu" id="sub-settings">
+        <div class="submenu-inner">
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>General</a>
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>Team</a>
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>Billing</a>
+          <a href="#" class="sub-link" data-subnav><span class="sub-dot"></span>API Keys</a>
+        </div>
+      </div>
+
+      <a href="#" class="nav-link" data-nav>
+        <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+        <span class="sb-text">Integrations</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Footer user -->
+  <div class="sidebar-footer">
+    <div class="dropdown-anchor">
+      <button class="sb-footer-user" id="sidebarUserBtn">
+        <div class="user-avatar">SA</div>
+        <div class="user-info">
+          <span class="user-name">Sofia Anderson</span>
+          <span class="user-email">sofia@acme.com</span>
+        </div>
+        <svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+      </button>
+      <div class="dropdown" id="sidebarUserDrop" style="bottom:calc(100% + .375rem);top:auto;right:0;left:0;min-width:220px;">
+        <div class="dropdown-header">
+          <div class="dropdown-title">Sofia Anderson</div>
+          <div class="dropdown-subtitle">sofia@acme.com</div>
+        </div>
+        <div class="dropdown-section">
+          <a href="#" class="dropdown-item" data-close-dropdown>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile
+          </a>
+          <a href="#" class="dropdown-item" data-close-dropdown>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            Email preferences
+          </a>
+          <a href="#" class="dropdown-item" data-close-dropdown>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            Settings
+          </a>
+        </div>
+        <div class="sep"></div>
+        <div class="dropdown-section">
+          <a href="#" class="dropdown-item destructive" data-close-dropdown>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+            Log out
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<div class="main">
+
+  <!-- ═══ TOPBAR (from Dashboard 2) ═══ -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="icon-btn" id="sidebarToggle">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" x2="21" y1="6" y2="6"/><line x1="3" x2="21" y1="12" y2="12"/><line x1="3" x2="21" y1="18" y2="18"/></svg>
+      </button>
+      <nav class="breadcrumb">
+        <a class="breadcrumb-parent" href="#">Platform</a>
+        <svg class="breadcrumb-sep" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+        <span class="breadcrumb-current">Dashboard</span>
+      </nav>
+      <div class="topbar-search">
+        <svg class="search-icon-top" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" placeholder="Search..." id="searchInput"/>
+        <div class="search-kbd-top"><kbd>⌘</kbd><kbd>K</kbd></div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="dropdown-anchor">
+        <button class="icon-btn" id="notifBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span class="notif-count" id="notifCount">3</span>
+        </button>
+        <div class="dropdown" id="notifDrop" style="min-width:340px;right:0;top:calc(100% + .375rem);">
+          <div class="dropdown-header" style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div class="dropdown-title">Notifications</div>
+              <div class="dropdown-subtitle" id="notifSubtitle">3 unread messages</div>
+            </div>
+            <button class="btn btn-ghost btn-sm" id="markAllReadBtn" style="font-size:.75rem;color:var(--muted-fg)">Mark all read</button>
+          </div>
+          <div id="notifList">
+            <div class="notif-item unread"><div class="notif-dot-item unread"></div><div class="notif-body"><div class="notif-text"><strong>Olivia Martin</strong> placed a new order for <strong>Pro Plan</strong></div><div class="notif-time-label">2 minutes ago</div></div></div>
+            <div class="notif-item unread"><div class="notif-dot-item unread"></div><div class="notif-body"><div class="notif-text">Payment of <strong>$299.00</strong> received from Isabella Nguyen</div><div class="notif-time-label">14 minutes ago</div></div></div>
+            <div class="notif-item unread"><div class="notif-dot-item unread"></div><div class="notif-body"><div class="notif-text"><strong>Server load</strong> exceeded 85% — auto-scaled cluster</div><div class="notif-time-label">1 hour ago</div></div></div>
+            <div class="notif-item"><div class="notif-dot-item read"></div><div class="notif-body"><div class="notif-text">Invoice <strong>#INV-0089</strong> marked as overdue</div><div class="notif-time-label">3 hours ago</div></div></div>
+            <div class="notif-item"><div class="notif-dot-item read"></div><div class="notif-body"><div class="notif-text">Stripe integration connected successfully</div><div class="notif-time-label">5 hours ago</div></div></div>
+          </div>
+          <div class="notif-footer"><button class="notif-footer-btn" id="viewAllNotifBtn">View all notifications</button></div>
+        </div>
+      </div>
+      <button class="icon-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+      </button>
+      <button class="theme-btn" id="themeBtn">
+        <svg id="sun-i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg id="moon-i" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        <span id="theme-lbl" class="theme-lbl-text">Dark</span>
+      </button>
+      <div class="topbar-divider"></div>
+      <div class="dropdown-anchor">
+        <button class="topbar-avatar" id="profileBtn">SA</button>
+        <div class="dropdown" id="profileDrop" style="min-width:220px;right:0;top:calc(100% + .375rem);">
+          <div class="dropdown-header">
+            <div style="display:flex;align-items:center;gap:.625rem;">
+              <div style="width:2.25rem;height:2.25rem;border-radius:9999px;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--primary-fg);flex-shrink:0;">SA</div>
+              <div><div class="dropdown-title">Sofia Anderson</div><div class="dropdown-subtitle">sofia@acme.com</div></div>
+            </div>
+          </div>
+          <div class="dropdown-section">
+            <div class="dropdown-label">Account</div>
+            <a href="#" class="dropdown-item" data-close-dropdown><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>View profile</a>
+            <a href="#" class="dropdown-item" data-close-dropdown><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>Settings</a>
+            <a href="#" class="dropdown-item" data-close-dropdown><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>Notifications<span style="margin-left:auto;font-size:.625rem;background:var(--c1);color:white;border-radius:9999px;padding:.1rem .35rem;font-weight:700;">3</span></a>
+          </div>
+          <div class="sep"></div>
+          <div class="dropdown-section">
+            <div class="dropdown-label">Workspace</div>
+            <a href="#" class="dropdown-item" data-close-dropdown><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>Acme Inc.<svg style="margin-left:auto" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></a>
+            <a href="#" class="dropdown-item" data-close-dropdown><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>Switch workspace</a>
+          </div>
+          <div class="sep"></div>
+          <div class="dropdown-section">
+            <a href="#" class="dropdown-item destructive" data-close-dropdown><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>Log out</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ CONTENT ═══ -->
+  <div class="content">
+    <div class="content-inner">
+      <!-- Page content goes here -->
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

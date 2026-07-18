@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toggle</title>
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #7d2ae8;
+    }
+
+    .toggle {
+        position: relative;
+        height: 12px;
+        width: 125px;
+        border-radius: 25px;
+        background-color: #FFF;
+        box-shadow: 0 5px 10px rgba(0, 0, 0, .1);
+        cursor: pointer;
+    }
+
+    .toggle::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+        background-color: #7d2ae8;
+        border: 10px solid #FFFFFF;
+        transition: all .5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, .1);
+    }
+
+    .toggle.active::before {
+        left: calc(100% - 70px); /* Largeur plus bordures */
+        background-color: #FFFFFF;
+        border: 10px solid #7d2ae8;
+    }
+</style>
+<body>
+
+    <div class="toggle"></div>
+
+    <script>
+        const toggle = document.querySelector('.toggle')
+        toggle.addEventListener('click', () => toggle.classList.toggle('active'))
+    </script>
+
+</body>
+</html>

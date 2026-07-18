@@ -1,0 +1,21 @@
+:root {
+    --container-padding: 18px;
+    --container-width: 1530px;
+    --search-bg: #FCFCFC;
+    --border: #E7E7E7;
+    --contrast: #7F8E76;
+    --nav-color: #B5B5B5;
+    --input-border: #C5C5C5;
+    --contrast-border: #9BA992;
+    --contrast-progress: #E2EBDC;
+    --category-border: #DDE5D7;
+    --footer-border: #A6B49F;
+    --contrast-light: #F5FAF2;
+    --price: #00A3A4;
+    --text-dark: #1F1F1F;
+    --text-inverse: #FFFFFF;
+    --text-light: #545454;
+    --text-title: #101010;
+    --blue-border: #D9F7F8;
+    --blue-light: #F1FBFB;
+}

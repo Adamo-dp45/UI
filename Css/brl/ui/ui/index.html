@@ -1,0 +1,2499 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — TransportApp</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="styles.css"/>
+</head>
+<style>
+*, ::before, ::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Backgrounds */
+  --color-bg:        #f5f5f3;
+  --color-surface:   #fff;
+  --color-surface-2: #f0efed;
+  --color-surface-3: #e8e7e4;
+  --color-surface-4: #dfdedd;
+
+  /* Borders */
+  --color-border:    #e4e3e0;
+  --color-border-2:  #cccbc7;
+
+  /* Text */
+  --color-text:      #171715;
+  --color-text-2:    #5e5e5a;
+  --color-text-3:    #96968f;
+  --color-text-4:    #bbbbb3;
+
+  /* Accent — Amber */
+  --color-amber:      #d97706;
+  --color-amber-light: #fef3c7;
+  --color-amber-dark:  #92400e;
+  --color-amber-glow:  rgba(217, 119, 6, .18);
+
+  /* Status colors */
+  --color-green:        #059669;
+  --color-green-light:  #d1fae5;
+  --color-red:          #dc2626;
+  --color-red-light:    #fee2e2;
+  --color-sky:          #0284c7;
+  --color-sky-light:    #dbeafe;
+  --color-violet:       #7c3aed;
+  --color-violet-light: #ede9fe;
+  --color-orange:       #ea580c;
+  --color-orange-light: #ffedd5;
+
+  /* Layout */
+  --sidebar-width:          252px;
+  --sidebar-collapsed-width: 60px;
+  --header-height:           60px;
+
+  /* Border radius */
+  --radius-xs:  4px;
+  --radius-sm:  7px;
+  --radius:    11px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl:22px;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,.05);
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:    0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+  --shadow-lg: 0 16px 40px rgba(0,0,0,.12), 0 4px 12px rgba(0,0,0,.06);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,.16), 0 8px 20px rgba(0,0,0,.08);
+
+  /* Motion */
+  --ease:           cubic-bezier(.4, 0, .2, 1);
+  --duration-fast:  150ms;
+  --duration-slow:  260ms;
+}
+
+/* ─── Dark mode overrides ─── */
+.theme-dark {
+  --color-bg:        #0d0d0c;
+  --color-surface:   #191917;
+  --color-surface-2: #212120;
+  --color-surface-3: #282826;
+  --color-surface-4: #303030;
+  --color-border:    #2b2b28;
+  --color-border-2:  #3c3c38;
+  --color-text:      #eaeae6;
+  --color-text-2:    #97978f;
+  --color-text-3:    #5c5c56;
+  --color-text-4:    #3a3a36;
+  --color-amber:       #f59e0b;
+  --color-amber-light: #261f09;
+  --color-amber-dark:  #fbbf24;
+  --color-amber-glow:  rgba(245, 158, 11, .15);
+  --color-green:        #10b981;
+  --color-green-light:  #092018;
+  --color-red:          #f87171;
+  --color-red-light:    #220d0d;
+  --color-sky:          #38bdf8;
+  --color-sky-light:    #051523;
+  --color-violet:       #a78bfa;
+  --color-violet-light: #130d27;
+  --color-orange:       #fb923c;
+  --color-orange-light: #1f1008;
+  --shadow-sm: 0 1px 4px rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.18);
+  --shadow-xl: 0 24px 60px rgba(0,0,0,.70), 0 8px 20px rgba(0,0,0,.45);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   2. BASE
+═══════════════════════════════════════════════════════════════ */
+
+html, body {
+  height: 100%;
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+}
+
+svg { display: block; flex-shrink: 0; }
+
+:focus-visible {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   3. APP LAYOUT
+═══════════════════════════════════════════════════════════════ */
+
+.app-layout {
+  display: flex;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* ─── Overlay (mobile) ─── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .5);
+  z-index: 49;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity .28s;
+}
+.sidebar-overlay.is-visible {
+  display: block;
+  opacity: 1;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   4. SIDEBAR
+═══════════════════════════════════════════════════════════════ */
+
+.sidebar {
+  width: var(--sidebar-width);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: width var(--duration-slow) var(--ease);
+  z-index: 50;
+  position: relative;
+}
+
+.sidebar.is-collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
+/* ── Sidebar Logo ── */
+.sidebar__logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: var(--header-height);
+  padding: 0 14px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: padding var(--duration-slow) var(--ease);
+}
+
+.sidebar.is-collapsed .sidebar__logo {
+  padding: 0;
+  justify-content: center;
+  gap: 0;
+}
+
+.sidebar__logo-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--color-amber);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+  box-shadow: 0 2px 10px var(--color-amber-glow);
+}
+
+.sidebar__logo-wordmark {
+  overflow: hidden;
+  transition: opacity var(--duration-fast), width var(--duration-slow) var(--ease), margin var(--duration-slow) var(--ease);
+}
+
+.sidebar.is-collapsed .sidebar__logo-wordmark {
+  opacity: 0;
+  width: 0;
+  margin: 0;
+}
+
+.sidebar__app-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: -.35px;
+  line-height: 1.2;
+}
+
+.sidebar__app-tagline {
+  font-size: 10.5px;
+  color: var(--color-text-3);
+  margin-top: 1px;
+}
+
+/* ── Sidebar Navigation ── */
+.sidebar__nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 8px 12px;
+  scrollbar-width: none;
+}
+.sidebar__nav::-webkit-scrollbar { display: none; }
+
+.nav-group { margin-bottom: 2px; }
+
+.nav-group__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--color-text-4);
+  padding: 16px 10px 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: opacity var(--duration-fast), height var(--duration-slow) var(--ease), padding var(--duration-slow) var(--ease);
+}
+
+.sidebar.is-collapsed .nav-group__label {
+  opacity: 0;
+  height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.nav-item-wrapper { position: relative; }
+
+/* Nav Item — button OR link */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text-2);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast),
+              padding var(--duration-slow) var(--ease), gap var(--duration-slow) var(--ease);
+  white-space: nowrap;
+  overflow: hidden;
+  user-select: none;
+  width: 100%;
+  text-align: left;
+}
+
+.nav-item:hover          { background: var(--color-surface-2); color: var(--color-text); }
+.nav-item.is-active      { background: var(--color-amber-light); color: var(--color-amber); }
+.nav-item.is-open        { color: var(--color-text); }
+
+a.nav-item               { display: flex; text-decoration: none; }
+a.nav-item:hover         { background: var(--color-surface-2); color: var(--color-text); }
+a.nav-item.is-active     { background: var(--color-amber-light); color: var(--color-amber); }
+
+/* Collapsed: perfect icon centering */
+.sidebar.is-collapsed .nav-item {
+  justify-content: center;
+  padding: 9px 0;
+  gap: 0;
+  width: 44px;
+  margin: 0 auto;
+}
+
+.nav-item__icon  { width: 17px; height: 17px; flex-shrink: 0; }
+
+.nav-item__label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: opacity var(--duration-fast), max-width var(--duration-slow) var(--ease);
+  max-width: 200px;
+}
+
+.sidebar.is-collapsed .nav-item__label {
+  opacity: 0;
+  max-width: 0;
+  pointer-events: none;
+}
+
+.nav-item__badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1.5px 6px;
+  border-radius: 99px;
+  background: var(--color-amber-light);
+  color: var(--color-amber);
+  flex-shrink: 0;
+  transition: opacity var(--duration-fast), max-width var(--duration-slow) var(--ease);
+  max-width: 60px;
+  overflow: hidden;
+}
+
+.sidebar.is-collapsed .nav-item__badge {
+  opacity: 0;
+  max-width: 0;
+  padding: 0;
+}
+
+.nav-item__chevron {
+  flex-shrink: 0;
+  transition: transform .22s var(--ease);
+  margin-left: auto;
+  color: var(--color-text-3);
+}
+
+.nav-item.is-open .nav-item__chevron { transform: rotate(90deg); }
+
+.sidebar.is-collapsed .nav-item__chevron { display: none; }
+
+/* ── Sidebar Tooltip ── */
+.nav-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: var(--color-text);
+  color: var(--color-surface);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s var(--ease), transform .15s var(--ease);
+  z-index: 200;
+  box-shadow: var(--shadow);
+  transform: translateX(-4px);
+}
+
+.nav-tooltip::before {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: var(--color-text);
+}
+
+.nav-tooltip.is-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ── Submenu ── */
+.nav-submenu {
+  overflow: hidden;
+  max-height: 300px;
+  transition: max-height .28s var(--ease);
+  padding-left: 27px;
+  padding-right: 2px;
+}
+
+.nav-submenu.is-closed { max-height: 0; }
+
+.sidebar.is-collapsed .nav-submenu { display: none; }
+
+/* Submenu items */
+.nav-subitem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-3);
+  cursor: pointer;
+  transition: color var(--duration-fast), background var(--duration-fast);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.nav-subitem:hover    { color: var(--color-text); background: var(--color-surface-2); }
+.nav-subitem.is-active { color: var(--color-amber); font-weight: 600; }
+
+.nav-subitem__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  opacity: .45;
+}
+
+.nav-subitem.is-active .nav-subitem__dot { opacity: 1; }
+
+
+/* ── Sidebar Footer (User) ── */
+.sidebar__footer {
+  border-top: 1px solid var(--color-border);
+  padding: 8px;
+  flex-shrink: 0;
+  position: relative;
+  transition: padding var(--duration-slow) var(--ease);
+}
+
+.sidebar.is-collapsed .sidebar__footer { padding: 8px; }
+
+/* User Popup */
+.user-popup {
+  position: fixed;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  z-index: 400;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(6px) scale(.97);
+  transform-origin: bottom left;
+  pointer-events: none;
+  transition: opacity .2s var(--ease), transform .2s var(--ease);
+  width: 234px;
+}
+
+.user-popup.is-open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.user-popup__card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 14px 12px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.user-popup__name  { font-size: 13.5px; font-weight: 700; letter-spacing: -.2px; }
+.user-popup__email { font-size: 11.5px; color: var(--color-text-3); margin-top: 2px; }
+
+.user-popup__role {
+  display: inline-flex;
+  margin-top: 5px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--color-amber-light);
+  color: var(--color-amber);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.user-popup__menu { padding: 6px; }
+
+.user-popup__menu-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-2);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.user-popup__menu-item:hover             { background: var(--color-surface-2); color: var(--color-text); }
+.user-popup__menu-item.is-danger         { color: var(--color-red); }
+.user-popup__menu-item.is-danger:hover   { background: var(--color-red-light); color: var(--color-red); }
+
+.user-popup__separator {
+  height: 1px;
+  background: var(--color-border);
+  margin: 4px 6px;
+}
+
+/* User Button (footer trigger) */
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--duration-fast), padding var(--duration-slow) var(--ease), gap var(--duration-slow) var(--ease);
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.user-button:hover { background: var(--color-surface-2); }
+
+.sidebar.is-collapsed .user-button {
+  justify-content: center;
+  padding: 9px 0;
+  gap: 0;
+  width: 100%;
+  border-radius: var(--radius-sm);
+}
+
+.user-button__info {
+  overflow: hidden;
+  transition: opacity var(--duration-fast), max-width var(--duration-slow) var(--ease);
+  max-width: 200px;
+}
+
+.sidebar.is-collapsed .user-button__info {
+  opacity: 0;
+  max-width: 0;
+}
+
+.user-button__name { font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.user-button__role { font-size: 11px; color: var(--color-text-3); margin-top: 1px; }
+
+.user-button__chevron {
+  margin-left: auto;
+  color: var(--color-text-3);
+  transition: opacity var(--duration-fast), transform .2s var(--ease), max-width var(--duration-slow) var(--ease);
+  flex-shrink: 0;
+  max-width: 20px;
+  overflow: hidden;
+}
+
+.user-button.is-open .user-button__chevron { transform: rotate(180deg); }
+
+.sidebar.is-collapsed .user-button__chevron {
+  opacity: 0;
+  max-width: 0;
+}
+
+
+/* ─── Avatar ─── */
+.avatar {
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: .02em;
+  background: linear-gradient(135deg, var(--color-amber), var(--color-amber-dark));
+}
+
+.avatar--sm  { width: 28px; height: 28px; font-size: 10.5px; }
+.avatar--md  { width: 32px; height: 32px; font-size: 11.5px; }
+.avatar--lg  { width: 38px; height: 38px; font-size: 13px; box-shadow: 0 2px 8px var(--color-amber-glow); }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   5. HEADER
+═══════════════════════════════════════════════════════════════ */
+
+.app-header {
+  height: var(--header-height);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 20px;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: relative;
+  z-index: 40;
+}
+
+/* Icon button */
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-2);
+  flex-shrink: 0;
+  transition: background var(--duration-fast), color var(--duration-fast);
+  position: relative;
+}
+
+.icon-btn:hover { background: var(--color-surface-2); color: var(--color-text); }
+
+.icon-btn.is-bordered {
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+
+.icon-btn.is-bordered:hover { background: var(--color-surface-3); color: var(--color-text); border-color: var(--color-border-2); }
+.icon-btn.is-active         { background: var(--color-surface-3); color: var(--color-text); border-color: var(--color-border-2); }
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  color: var(--color-text-2);
+}
+
+.breadcrumb__current { font-weight: 600; color: var(--color-text); }
+.breadcrumb__separator { color: var(--color-text-4); }
+
+/* Spacer */
+.header-spacer { flex: 1; }
+
+/* Header divider */
+.header-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--color-border);
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+/* Search bar */
+.header-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 10px 0 12px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--color-text-3);
+  width: 224px;
+  cursor: text;
+  transition: border-color var(--duration-fast), background var(--duration-fast);
+}
+
+.header-search:hover { border-color: var(--color-border-2); background: var(--color-surface-3); }
+
+.header-search__kbd {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  background: var(--color-surface-4);
+  border: 1px solid var(--color-border-2);
+  border-radius: var(--radius-xs);
+  padding: 1.5px 5px;
+  font-size: 9.5px;
+  font-family: 'DM Mono', monospace;
+  color: var(--color-text-3);
+}
+
+/* Notification dot */
+.notification-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-red);
+  border: 1.5px solid var(--color-surface);
+}
+
+.notification-dot::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: var(--color-red);
+  opacity: .3;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: .3; }
+  55%       { transform: scale(1.9); opacity: 0; }
+}
+
+/* Avatar button (header) */
+.header-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 8px 4px 4px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+  flex-shrink: 0;
+}
+
+.header-avatar-btn:hover,
+.header-avatar-btn.is-active { background: var(--color-surface-2); }
+
+.header-avatar-btn__name   { font-size: 13px; font-weight: 600; white-space: nowrap; }
+.header-avatar-btn__chevron { color: var(--color-text-3); transition: transform .2s var(--ease); }
+.header-avatar-btn.is-active .header-avatar-btn__chevron { transform: rotate(180deg); }
+
+/* Dropdown wrapper */
+.dropdown-wrapper { position: relative; }
+
+/* Dropdown panel */
+.dropdown-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  z-index: 300;
+  opacity: 0;
+  transform: translateY(-8px) scale(.97);
+  transform-origin: top right;
+  pointer-events: none;
+  transition: opacity .2s var(--ease), transform .2s var(--ease);
+}
+
+.dropdown-panel.is-open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+/* Notifications dropdown */
+.dropdown-panel--notifications {
+  width: 348px;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.dropdown-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px 13px;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.dropdown-panel__title { font-size: 14.5px; font-weight: 700; letter-spacing: -.3px; }
+.dropdown-panel__header-actions { display: flex; align-items: center; gap: 8px; }
+
+.badge-count {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--color-red-light);
+  color: var(--color-red);
+}
+
+.mark-all-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-3);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.mark-all-btn:hover { background: var(--color-surface-2); color: var(--color-text); }
+
+/* Notification list */
+.notification-list {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-4) transparent;
+  list-style: none;
+}
+
+.notification-list::-webkit-scrollbar       { width: 4px; }
+.notification-list::-webkit-scrollbar-thumb { background: var(--color-surface-4); border-radius: 99px; }
+
+.notification-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.notification-item:last-child  { border-bottom: none; }
+.notification-item:hover       { background: var(--color-surface-2); }
+.notification-item.is-unread   { background: color-mix(in srgb, var(--color-amber-light) 45%, transparent); }
+.notification-item.is-unread:hover { background: var(--color-amber-light); }
+
+.notification-item__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.notification-item__body  { flex: 1; min-width: 0; }
+.notification-item__text  { font-size: 13px; line-height: 1.45; color: var(--color-text); }
+.notification-item__text b { font-weight: 600; }
+
+.notification-item__meta {
+  font-size: 11.5px;
+  color: var(--color-text-3);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.notification-item__meta-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--color-text-3);
+  flex-shrink: 0;
+}
+
+.notification-item__unread-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-amber);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+
+.dropdown-panel__footer {
+  padding: 10px 18px 12px;
+  border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.dropdown-panel__footer-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-amber);
+  padding: 8px;
+  border-radius: var(--radius);
+  transition: background var(--duration-fast);
+}
+
+.dropdown-panel__footer-link:hover { background: var(--color-amber-light); }
+
+/* Profile dropdown */
+.dropdown-panel--profile { width: 242px; padding: 8px; }
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 10px 14px;
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 6px;
+}
+
+.profile-card__name  { font-size: 14px; font-weight: 700; letter-spacing: -.25px; }
+.profile-card__email { font-size: 11.5px; color: var(--color-text-3); margin-top: 2px; }
+
+.profile-card__role {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 5px;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2.5px 8px;
+  border-radius: 99px;
+  background: var(--color-amber-light);
+  color: var(--color-amber);
+  letter-spacing: .03em;
+}
+
+.profile-menu { display: flex; flex-direction: column; gap: 1px; }
+
+.profile-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-2);
+  cursor: pointer;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+
+.profile-menu__item:hover          { background: var(--color-surface-2); color: var(--color-text); }
+.profile-menu__item.is-danger      { color: var(--color-red); }
+.profile-menu__item.is-danger:hover { background: var(--color-red-light); color: var(--color-red); }
+.profile-menu__item-suffix         { margin-left: auto; }
+
+.profile-menu__separator { height: 1px; background: var(--color-border); margin: 5px 0; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   6. MAIN CONTENT
+═══════════════════════════════════════════════════════════════ */
+
+.page-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px 28px 40px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-4) transparent;
+  background: var(--color-bg);
+  min-height: 0;
+}
+
+.page-content::-webkit-scrollbar       { width: 5px; }
+.page-content::-webkit-scrollbar-thumb { background: var(--color-surface-4); border-radius: 99px; }
+
+/* Page header */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  gap: 16px;
+}
+
+.page-header__title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.55px;
+  line-height: 1.2;
+}
+
+.page-header__subtitle { font-size: 13px; color: var(--color-text-3); margin-top: 5px; }
+.page-header__actions  { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 16px;
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: opacity var(--duration-fast), background var(--duration-fast), box-shadow var(--duration-fast);
+}
+
+.btn--primary {
+  background: var(--color-amber);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--color-amber-glow);
+}
+.btn--primary:hover { opacity: .9; box-shadow: 0 4px 16px var(--color-amber-glow); }
+
+.btn--ghost {
+  background: var(--color-surface);
+  color: var(--color-text-2);
+  border: 1px solid var(--color-border);
+}
+.btn--ghost:hover { background: var(--color-surface-2); color: var(--color-text); }
+
+
+/* ─── Grid layouts ─── */
+.grid          { display: grid; gap: 16px; margin-bottom: 16px; }
+.grid--4-cols  { grid-template-columns: repeat(4, 1fr); }
+.grid--2-cols  { grid-template-columns: repeat(2, 1fr); }
+.grid--3-1     { grid-template-columns: 1fr 340px; }
+
+
+/* ─── Card ─── */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.card__title {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--color-text-3);
+}
+
+.card__link {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-amber);
+  transition: opacity var(--duration-fast);
+}
+.card__link:hover { opacity: .7; }
+
+
+/* ─── KPI / Stat card ─── */
+.stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-value {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -.8px;
+  line-height: 1;
+  margin: 12px 0 6px;
+}
+
+.stat-value small {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-text-3);
+  letter-spacing: 0;
+}
+
+.stat-footer { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--color-text-3); }
+
+
+/* ─── Bar chart ─── */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 96px;
+  margin-top: 18px;
+}
+
+.bar-chart__column { flex: 1; display: flex; align-items: flex-end; gap: 2px; height: 100%; }
+
+.bar-chart__bar {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: opacity .15s;
+  cursor: pointer;
+}
+
+.bar-chart__bar:hover { opacity: .75; }
+.bar-chart__bar--current { background: var(--color-amber); }
+.bar-chart__bar--previous { background: var(--color-surface-3); }
+
+.bar-chart__labels { display: flex; gap: 5px; margin-top: 7px; }
+
+.bar-chart__label {
+  flex: 1;
+  text-align: center;
+  font-size: 9.5px;
+  color: var(--color-text-3);
+  font-family: 'DM Mono', monospace;
+}
+
+
+/* ─── Donut chart ─── */
+.donut-chart-wrap {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 0;
+  margin-top: 14px;
+}
+
+.donut-chart__legend    { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.donut-chart__legend-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+.donut-chart__legend-key { display: flex; align-items: center; gap: 9px; color: var(--color-text-2); }
+
+.donut-chart__legend-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.donut-chart__legend-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+
+/* ─── Progress bars ─── */
+.progress-stack { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
+
+.progress-item__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.progress-item__name  { font-size: 13px; font-weight: 500; }
+.progress-item__value { font-size: 11.5px; font-family: 'DM Mono', monospace; color: var(--color-text-3); font-weight: 500; }
+
+.progress-track {
+  height: 6px;
+  background: var(--color-surface-2);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 1.1s var(--ease);
+}
+
+
+/* ─── Activity feed ─── */
+.activity-feed        { display: flex; flex-direction: column; margin-top: 14px; list-style: none; }
+
+.activity-feed__item  {
+  display: flex;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.activity-feed__item:last-child { border-bottom: none; padding-bottom: 0; }
+
+.activity-feed__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.activity-feed__body  { flex: 1; min-width: 0; }
+.activity-feed__title { font-size: 13px; font-weight: 500; line-height: 1.45; }
+.activity-feed__meta  { font-size: 11.5px; color: var(--color-text-3); margin-top: 3px; }
+
+.activity-feed__time {
+  font-size: 11px;
+  color: var(--color-text-3);
+  font-family: 'DM Mono', monospace;
+  flex-shrink: 0;
+  padding-top: 1px;
+  white-space: nowrap;
+}
+
+
+/* ─── Data table ─── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+
+.data-table thead tr { border-bottom: 1px solid var(--color-border); }
+
+.data-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--color-text-3);
+  padding: 0 14px 13px;
+  white-space: nowrap;
+}
+
+.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.data-table tbody tr:last-child td { border-bottom: none; }
+.data-table tbody tr { transition: background var(--duration-fast); }
+.data-table tbody tr:hover td { background: var(--color-surface-2); }
+
+.data-table__cell--mono  { font-family: 'DM Mono', monospace; }
+.data-table__cell--muted { color: var(--color-text-2); }
+.data-table__cell--bold  { font-weight: 600; }
+.data-table__cell--dim   { color: var(--color-text-3); font-size: 12px; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   7. SPOTLIGHT SEARCH
+═══════════════════════════════════════════════════════════════ */
+
+.spotlight-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  background: rgba(0, 0, 0, .45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s var(--ease);
+}
+
+.spotlight-backdrop.is-open { opacity: 1; pointer-events: auto; }
+
+.spotlight {
+  position: fixed;
+  top: 18vh;
+  left: 50%;
+  z-index: 901;
+  width: min(640px, calc(100vw - 32px));
+  transform: translateX(-50%) translateY(-12px) scale(.97);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 32px 80px rgba(0,0,0,.22), 0 8px 24px rgba(0,0,0,.12);
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s var(--ease), transform .22s var(--ease);
+}
+
+.spotlight.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+
+.spotlight__input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.spotlight__input-row svg { flex-shrink: 0; color: var(--color-text-3); }
+
+.spotlight__input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--color-text);
+  outline: none;
+  caret-color: var(--color-amber);
+}
+
+.spotlight__input::placeholder { color: var(--color-text-4); }
+
+.spotlight__close-btn {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xs);
+  padding: 2px 7px;
+  font-size: 11px;
+  font-family: 'DM Mono', monospace;
+  color: var(--color-text-3);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.spotlight__close-btn:hover { background: var(--color-surface-3); }
+
+.spotlight__results {
+  max-height: 420px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-4) transparent;
+}
+
+.spotlight__results::-webkit-scrollbar       { width: 4px; }
+.spotlight__results::-webkit-scrollbar-thumb { background: var(--color-surface-4); border-radius: 99px; }
+
+.spotlight__section-label {
+  padding: 10px 18px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--color-text-4);
+}
+
+.spotlight__result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 18px;
+  cursor: pointer;
+  transition: background var(--duration-fast);
+}
+
+.spotlight__result-item:hover,
+.spotlight__result-item.is-selected { background: var(--color-surface-2); }
+.spotlight__result-item.is-selected .spotlight__result-icon { border-color: var(--color-amber); color: var(--color-amber); }
+
+.spotlight__result-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-2);
+  transition: border-color var(--duration-fast), color var(--duration-fast);
+}
+
+.spotlight__result-body  { flex: 1; min-width: 0; }
+.spotlight__result-title { font-size: 13.5px; font-weight: 500; color: var(--color-text); }
+.spotlight__result-sub   { font-size: 12px; color: var(--color-text-3); margin-top: 1px; }
+
+.spotlight__result-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--duration-fast);
+}
+
+.spotlight__result-item:hover .spotlight__result-shortcut,
+.spotlight__result-item.is-selected .spotlight__result-shortcut { opacity: 1; }
+
+.spotlight__kbd {
+  background: var(--color-surface-3);
+  border: 1px solid var(--color-border-2);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10.5px;
+  font-family: 'DM Mono', monospace;
+  color: var(--color-text-3);
+}
+
+.spotlight__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 40px 20px;
+  color: var(--color-text-3);
+}
+
+.spotlight__empty svg        { opacity: .35; }
+.spotlight__empty-title      { font-size: 14px; font-weight: 500; color: var(--color-text-2); }
+.spotlight__empty-subtitle   { font-size: 13px; }
+
+.spotlight__footer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 18px;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+}
+
+.spotlight__footer-hint      { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: var(--color-text-3); }
+.spotlight__footer-separator { width: 1px; height: 12px; background: var(--color-border); margin: 0 2px; }
+
+mark { background: transparent; color: var(--color-amber); font-weight: 700; }
+
+
+/* ═══════════════════════════════════════════════════════════════
+   8. UTILITY COMPONENTS
+═══════════════════════════════════════════════════════════════ */
+
+/* Tag / Badge */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2.5px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.tag--green  { background: var(--color-green-light);  color: var(--color-green); }
+.tag--red    { background: var(--color-red-light);    color: var(--color-red); }
+.tag--amber  { background: var(--color-amber-light);  color: var(--color-amber); }
+.tag--sky    { background: var(--color-sky-light);    color: var(--color-sky); }
+.tag--violet { background: var(--color-violet-light); color: var(--color-violet); }
+
+/* Status pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.status-pill__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   9. RESPONSIVE
+═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1140px) {
+  .grid--3-1 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1023px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100dvh;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform var(--duration-slow) var(--ease);
+    width: var(--sidebar-width) !important;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .sidebar.is-mobile-open { transform: translateX(0); }
+  .app-main { width: 100%; }
+}
+
+@media (max-width: 960px) {
+  .grid--4-cols { grid-template-columns: repeat(2, 1fr); }
+  .grid--2-cols { grid-template-columns: 1fr; }
+  .header-search { display: none; }
+  .header-avatar-btn__name,
+  .header-avatar-btn__chevron { display: none; }
+  .header-avatar-btn { padding: 4px; }
+  .app-header { gap: 4px; padding: 0 16px; }
+}
+
+@media (max-width: 640px) {
+  .page-content    { padding: 14px 14px 36px; }
+  .page-header     { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .page-header__actions { width: 100%; }
+  .page-header__actions .btn { flex: 1; justify-content: center; }
+  .grid            { gap: 12px; margin-bottom: 12px; }
+  .card            { padding: 16px; }
+  .stat-value      { font-size: 26px; }
+  .bar-chart       { height: 72px; }
+  .donut-chart-wrap { flex-direction: column; align-items: flex-start; gap: 14px; }
+  .data-table      { min-width: 540px; }
+  .app-header      { gap: 3px; padding: 0 12px; }
+  .header-divider  { display: none; }
+  .dropdown-panel {
+    position: fixed !important;
+    top: calc(var(--header-height) + 8px) !important;
+    right: 12px !important;
+    left: 12px !important;
+    width: auto !important;
+    max-width: 100% !important;
+    transform: translateY(-8px) scale(.97) !important;
+    transform-origin: top center !important;
+  }
+  .dropdown-panel.is-open { transform: translateY(0) scale(1) !important; }
+  .dropdown-panel--notifications { max-height: calc(100dvh - var(--header-height) - 28px); }
+}
+
+@media (max-width: 400px) {
+  .grid--4-cols { grid-template-columns: 1fr; }
+  .page-content { padding: 10px 10px 32px; }
+  .card         { padding: 14px; }
+  .stat-value   { font-size: 24px; }
+  .sidebar      { width: min(var(--sidebar-width), 88vw) !important; }
+}
+
+</style>
+<body>
+<div class="app-layout">
+
+  <!-- ══════════════════════════════
+       A. OVERLAY (mobile)
+  ══════════════════════════════ -->
+  <div id="sidebar-overlay"
+       class="sidebar-overlay"
+       data-action="close-sidebar"
+       aria-hidden="true"></div>
+
+
+  <!-- ══════════════════════════════
+       B. SIDEBAR
+  ══════════════════════════════ -->
+  <nav id="sidebar"
+       class="sidebar"
+       role="navigation"
+       aria-label="Navigation principale">
+
+    <!-- B1. Logo -->
+    <div class="sidebar__logo" aria-label="TransportApp — Gestion de flotte">
+      <div class="sidebar__logo-mark" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M1 17l3-9h16l3 9M1 17h22M6 17v2M18 17v2M4 8h16"/>
+        </svg>
+      </div>
+      <div class="sidebar__logo-wordmark">
+        <div class="sidebar__app-name">TransportApp</div>
+        <div class="sidebar__app-tagline">Gestion de flotte</div>
+      </div>
+    </div>
+
+    <!-- B2. Navigation principale -->
+    <div class="sidebar__nav">
+
+      <div class="nav-group" role="group" aria-labelledby="nav-label-principal">
+        <div class="nav-group__label" id="nav-label-principal">Principal</div>
+
+        <!-- Dashboard -->
+        <div class="nav-item-wrapper">
+          <a href="/dashboard" class="nav-item is-active" aria-current="page" aria-label="Dashboard">
+            <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"/>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"/>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"/>
+            </svg>
+            <span class="nav-item__label">Dashboard</span>
+          </a>
+          <div class="nav-tooltip" role="tooltip" aria-hidden="true">Dashboard</div>
+        </div>
+
+        <!-- Flotte -->
+        <div class="nav-item-wrapper">
+          <button class="nav-item is-open"
+                  data-action="toggle-submenu"
+                  data-submenu="submenu-flotte"
+                  aria-expanded="true"
+                  aria-controls="submenu-flotte"
+                  aria-label="Flotte, 12 véhicules">
+            <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path d="M1 17l3-9h16l3 9M1 17h22M6.5 17a2 2 0 100-4 2 2 0 000 4zM17.5 17a2 2 0 100-4 2 2 0 000 4zM4 8h16"/>
+            </svg>
+            <span class="nav-item__label">Flotte</span>
+            <span class="nav-item__badge" aria-label="12 éléments">12</span>
+            <svg class="nav-item__chevron" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+          <div class="nav-tooltip" role="tooltip" aria-hidden="true">Flotte</div>
+        </div>
+        <div class="nav-submenu" id="submenu-flotte" role="group" aria-label="Sous-menu Flotte">
+          <a href="/flotte/vehicules"  class="nav-subitem is-active" aria-current="page"><span class="nav-subitem__dot" aria-hidden="true"></span>Véhicules</a>
+          <a href="/flotte/marques"    class="nav-subitem"><span class="nav-subitem__dot" aria-hidden="true"></span>Marques</a>
+          <a href="/flotte/depannages" class="nav-subitem"><span class="nav-subitem__dot" aria-hidden="true"></span>Dépannages</a>
+          <a href="/flotte/entretiens" class="nav-subitem"><span class="nav-subitem__dot" aria-hidden="true"></span>Entretiens</a>
+        </div>
+
+        <!-- Exploitation -->
+        <div class="nav-item-wrapper">
+          <button class="nav-item"
+                  data-action="toggle-submenu"
+                  data-submenu="submenu-exploitation"
+                  aria-expanded="false"
+                  aria-controls="submenu-exploitation"
+                  aria-label="Exploitation">
+            <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+            </svg>
+            <span class="nav-item__label">Exploitation</span>
+            <svg class="nav-item__chevron" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+          <div class="nav-tooltip" role="tooltip" aria-hidden="true">Exploitation</div>
+        </div>
+        <div class="nav-submenu is-closed" id="submenu-exploitation" role="group" aria-label="Sous-menu Exploitation">
+          <a href="/exploitation/gares"    class="nav-subitem"><span class="nav-subitem__dot" aria-hidden="true"></span>Gares</a>
+          <a href="/exploitation/trajets"  class="nav-subitem"><span class="nav-subitem__dot" aria-hidden="true"></span>Trajets</a>
+          <a href="/exploitation/voyages"  class="nav-subitem"><span class="nav-subitem__dot" aria-hidden="true"></span>Voyages</a>
+          <a href="/exploitation/planning" class="nav-subitem"><span class="nav-subitem__dot" aria-hidden="true"></span>Planning</a>
+        </div>
+
+        <!-- Billetterie -->
+        <div class="nav-item-wrapper">
+          <button class="nav-item"
+                  data-action="toggle-submenu"
+                  data-submenu="submenu-billetterie"
+                  aria-expanded="false"
+                  aria-controls="submenu-billetterie"
+                  aria-label="Billetterie">
+            <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path d="M2 9a3 3 0 010-6h20a3 3 0 010 6M2 9v12h20V9M12 9v12"/>
+            </svg>
+            <span class="nav-item__label">Billetterie</span>
+            <svg class="nav-item__chevron" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+          <div class="nav-tooltip" role="tooltip" aria-hidden="true">Billetterie</div>
+        </div>
+        <div class="nav-submenu is-closed" id="submenu-billetterie" role="group" aria-label="Sous-menu Billetterie">
+          <a href="/billetterie/tickets"    class="nav-subitem"><span class="nav-subitem__dot" aria-hidden="true"></span>Tickets</a>
+          <a href="/billetterie/tarifs"     class="nav-subitem"><span class="nav-subitem__dot" aria-hidden="true"></span>Tarifs</a>
+          <a href="/billetterie/promotions" class="nav-subitem"><span class="nav-subitem__dot" aria-hidden="true"></span>Promotions</a>
+        </div>
+
+        <!-- Stock -->
+        <div class="nav-item-wrapper">
+          <a href="/stock" class="nav-item" aria-label="Stock">
+            <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path d="M21 8l-9-6-9 6v8l9 6 9-6V8z"/><path d="M12 22V12"/><path d="M21 8l-9 4-9-4"/>
+            </svg>
+            <span class="nav-item__label">Stock</span>
+          </a>
+          <div class="nav-tooltip" role="tooltip" aria-hidden="true">Stock</div>
+        </div>
+
+        <!-- Rapports -->
+        <div class="nav-item-wrapper">
+          <a href="/rapports" class="nav-item" aria-label="Rapports">
+            <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span class="nav-item__label">Rapports</span>
+          </a>
+          <div class="nav-tooltip" role="tooltip" aria-hidden="true">Rapports</div>
+        </div>
+      </div>
+
+      <!-- B3. RH -->
+      <div class="nav-group" role="group" aria-labelledby="nav-label-rh">
+        <div class="nav-group__label" id="nav-label-rh">Ressources humaines</div>
+
+        <!-- Personnel -->
+        <div class="nav-item-wrapper">
+          <a href="/personnel" class="nav-item" aria-label="Personnel">
+            <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>
+              <path d="M16 3.13a4 4 0 010 7.75"/>
+              <path d="M21 21v-2a4 4 0 00-3-3.87"/>
+            </svg>
+            <span class="nav-item__label">Personnel</span>
+          </a>
+          <div class="nav-tooltip" role="tooltip" aria-hidden="true">Personnel</div>
+        </div>
+
+        <!-- Admins -->
+        <div class="nav-item-wrapper">
+          <a href="/admins" class="nav-item" aria-label="Admins">
+            <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <span class="nav-item__label">Admins</span>
+          </a>
+          <div class="nav-tooltip" role="tooltip" aria-hidden="true">Admins</div>
+        </div>
+
+        <!-- Paramètres -->
+        <div class="nav-item-wrapper">
+          <a href="/parametres" class="nav-item" aria-label="Paramètres">
+            <svg class="nav-item__icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M20 12h2M2 12h2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 20v2M12 2v2"/>
+            </svg>
+            <span class="nav-item__label">Paramètres</span>
+          </a>
+          <div class="nav-tooltip" role="tooltip" aria-hidden="true">Paramètres</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B4. Footer utilisateur -->
+    <div class="sidebar__footer">
+
+      <!-- User popup -->
+      <div id="user-popup"
+           class="user-popup"
+           role="dialog"
+           aria-label="Menu utilisateur"
+           aria-modal="true">
+        <div class="user-popup__card">
+          <div class="avatar avatar--lg" aria-hidden="true">AD</div>
+          <div>
+            <div class="user-popup__name">Admin Principal</div>
+            <div class="user-popup__email">admin@transportapp.ci</div>
+            <div class="user-popup__role">Super Admin</div>
+          </div>
+        </div>
+        <nav class="user-popup__menu" aria-label="Options utilisateur">
+          <a href="/profil" class="user-popup__menu-item">
+            <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="8" r="5"/><path d="M3 21v-2a4 4 0 014-4h10a4 4 0 014 4v2"/>
+            </svg>
+            Mon profil
+          </a>
+          <a href="/parametres/compte" class="user-popup__menu-item">
+            <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M20 12h2M2 12h2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 20v2M12 2v2"/>
+            </svg>
+            Paramètres du compte
+          </a>
+          <a href="/notifications" class="user-popup__menu-item">
+            <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 01-3.46 0"/>
+            </svg>
+            Notifications
+            <span style="margin-left:auto" class="tag tag--amber">3</span>
+          </a>
+          <div class="user-popup__separator" role="separator"></div>
+          <a href="/logout" class="user-popup__menu-item is-danger">
+            <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+            </svg>
+            Se déconnecter
+          </a>
+        </nav>
+      </div>
+
+      <!-- User trigger button -->
+      <button id="btn-user-popup"
+              class="user-button"
+              data-action="toggle-user-popup"
+              aria-haspopup="dialog"
+              aria-expanded="false"
+              aria-label="Menu utilisateur — Admin Principal">
+        <div class="avatar avatar--sm" aria-hidden="true">AD</div>
+        <div class="user-button__info">
+          <div class="user-button__name">Admin Principal</div>
+          <div class="user-button__role">Super Admin</div>
+        </div>
+        <svg class="user-button__chevron" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M6 9l6 6 6-6"/>
+        </svg>
+      </button>
+    </div>
+
+  </nav>
+
+
+  <!-- ══════════════════════════════
+       C. MAIN
+  ══════════════════════════════ -->
+  <div class="app-main">
+
+    <!-- C1. Header -->
+    <header class="app-header">
+
+      <button id="btn-sidebar-toggle"
+              class="icon-btn"
+              data-action="toggle-sidebar"
+              aria-label="Ouvrir/fermer le menu"
+              aria-controls="sidebar"
+              aria-expanded="true">
+        <svg width="17" height="17" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="15" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+
+      <nav class="breadcrumb" aria-label="Fil d'Ariane">
+        <span>Accueil</span>
+        <svg class="breadcrumb__separator" aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+        <b class="breadcrumb__current" aria-current="page">Dashboard</b>
+      </nav>
+
+      <div class="header-spacer"></div>
+
+      <button class="header-search"
+              data-action="open-spotlight"
+              aria-label="Rechercher (⌘K)"
+              aria-haspopup="dialog"
+              aria-controls="spotlight">
+        <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <span>Rechercher…</span>
+        <div class="header-search__kbd" aria-hidden="true"><span>⌘</span><span>K</span></div>
+      </button>
+
+      <div class="header-divider" aria-hidden="true"></div>
+
+      <button id="btn-theme-toggle"
+              class="icon-btn is-bordered"
+              data-action="toggle-dark"
+              aria-label="Basculer le mode sombre">
+        <svg id="icon-sun" aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/>
+          <line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/>
+          <line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+        <svg id="icon-moon" aria-hidden="true" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+
+      <!-- Notifications dropdown -->
+      <div class="dropdown-wrapper">
+        <button id="btn-dropdown-notifications"
+                class="icon-btn is-bordered"
+                data-action="toggle-dropdown"
+                data-dropdown-target="notifications"
+                aria-label="Notifications — 3 non lues"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="dropdown-notifications">
+          <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 01-3.46 0"/>
+          </svg>
+          <span id="notification-dot" class="notification-dot" aria-hidden="true"></span>
+        </button>
+
+        <div id="dropdown-notifications"
+             class="dropdown-panel dropdown-panel--notifications"
+             role="region"
+             aria-label="Notifications"
+             aria-live="polite">
+          <div class="dropdown-panel__header">
+            <h2 class="dropdown-panel__title">Notifications</h2>
+            <div class="dropdown-panel__header-actions">
+              <span id="notification-badge" class="badge-count" aria-live="polite" aria-atomic="true">3 nouvelles</span>
+              <button class="mark-all-btn"
+                      data-action="mark-notifications-read"
+                      aria-label="Marquer toutes les notifications comme lues">Tout lire</button>
+            </div>
+          </div>
+
+          <ul class="notification-list" role="list" aria-label="Liste des notifications">
+            <li class="notification-item is-unread" tabindex="0" role="listitem" aria-label="Non lue — Dépannage signalé, il y a 12 min">
+              <div class="notification-item__icon" style="background:var(--color-red-light)" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2.2">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
+              <div class="notification-item__body">
+                <div class="notification-item__text"><b>Dépannage signalé</b> — VH-019 immobilisé au PK 142, route de Yamoussoukro.</div>
+                <div class="notification-item__meta">
+                  <span>Flotte</span>
+                  <span class="notification-item__meta-dot" aria-hidden="true"></span>
+                  <span><time>Il y a 12 min</time></span>
+                </div>
+              </div>
+              <div class="notification-item__unread-indicator" aria-label="Non lue"></div>
+            </li>
+
+            <li class="notification-item is-unread" tabindex="0" role="listitem" aria-label="Non lue — 23 tickets vendus, il y a 35 min">
+              <div class="notification-item__icon" style="background:var(--color-amber-light)" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2.2">
+                  <path d="M3 8h18v13H3z"/><path d="M16 8V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v3"/>
+                </svg>
+              </div>
+              <div class="notification-item__body">
+                <div class="notification-item__text"><b>23 tickets vendus</b> en ligne pour le trajet Bouaké → Man 15h00.</div>
+                <div class="notification-item__meta">
+                  <span>Billetterie</span>
+                  <span class="notification-item__meta-dot" aria-hidden="true"></span>
+                  <span><time>Il y a 35 min</time></span>
+                </div>
+              </div>
+              <div class="notification-item__unread-indicator" aria-label="Non lue"></div>
+            </li>
+
+            <li class="notification-item is-unread" tabindex="0" role="listitem" aria-label="Non lue — Voyage V-2081 arrivé, il y a 1h">
+              <div class="notification-item__icon" style="background:var(--color-green-light)" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2.2">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </div>
+              <div class="notification-item__body">
+                <div class="notification-item__text"><b>Voyage V-2081 arrivé</b> — Daloa → Abidjan. 50 / 50 passagers.</div>
+                <div class="notification-item__meta">
+                  <span>Exploitation</span>
+                  <span class="notification-item__meta-dot" aria-hidden="true"></span>
+                  <span><time>Il y a 1h</time></span>
+                </div>
+              </div>
+              <div class="notification-item__unread-indicator" aria-label="Non lue"></div>
+            </li>
+
+            <li class="notification-item" tabindex="0" role="listitem">
+              <div class="notification-item__icon" style="background:var(--color-sky-light)" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-sky)" stroke-width="2.2">
+                  <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>
+                </svg>
+              </div>
+              <div class="notification-item__body">
+                <div class="notification-item__text"><b>Traoré Moussa</b> affecté à la ligne Abidjan–Yamoussoukro.</div>
+                <div class="notification-item__meta">
+                  <span>Personnel</span>
+                  <span class="notification-item__meta-dot" aria-hidden="true"></span>
+                  <span><time datetime="2026-03-04T14:32">Hier 14:32</time></span>
+                </div>
+              </div>
+            </li>
+
+            <li class="notification-item" tabindex="0" role="listitem">
+              <div class="notification-item__icon" style="background:var(--color-violet-light)" aria-hidden="true">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--color-violet)" stroke-width="2.2">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                  <polyline points="14 2 14 8 20 8"/>
+                </svg>
+              </div>
+              <div class="notification-item__body">
+                <div class="notification-item__text">Rapport mensuel de <b>février 2026</b> généré et prêt à consulter.</div>
+                <div class="notification-item__meta">
+                  <span>Rapports</span>
+                  <span class="notification-item__meta-dot" aria-hidden="true"></span>
+                  <span><time datetime="2026-03-01">1 mars</time></span>
+                </div>
+              </div>
+            </li>
+          </ul>
+
+          <div class="dropdown-panel__footer">
+            <a href="/notifications" class="dropdown-panel__footer-link" aria-label="Voir toutes les notifications">
+              Toutes les notifications
+              <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-divider" aria-hidden="true"></div>
+
+      <!-- Profile dropdown -->
+      <div class="dropdown-wrapper">
+        <button id="btn-dropdown-profile"
+                class="header-avatar-btn"
+                data-action="toggle-dropdown"
+                data-dropdown-target="profile"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="dropdown-profile"
+                aria-label="Menu du profil — Admin Principal">
+          <div class="avatar avatar--md" aria-hidden="true">AD</div>
+          <span class="header-avatar-btn__name">Admin Principal</span>
+          <svg class="header-avatar-btn__chevron" aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
+        </button>
+
+        <div id="dropdown-profile"
+             class="dropdown-panel dropdown-panel--profile"
+             role="menu"
+             aria-label="Menu profil">
+          <div class="profile-card">
+            <div class="avatar avatar--lg" aria-hidden="true">AD</div>
+            <div>
+              <div class="profile-card__name">Admin Principal</div>
+              <div class="profile-card__email">admin@transportapp.ci</div>
+              <div class="profile-card__role">Super Admin</div>
+            </div>
+          </div>
+          <nav class="profile-menu" aria-label="Actions profil">
+            <a href="/profil" class="profile-menu__item" role="menuitem">
+              <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="8" r="5"/><path d="M3 21v-2a4 4 0 014-4h10a4 4 0 014 4v2"/>
+              </svg>Mon profil
+            </a>
+            <a href="/parametres" class="profile-menu__item" role="menuitem">
+              <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M20 12h2M2 12h2M19.07 19.07l-1.41-1.41M4.93 19.07l1.41-1.41M12 20v2M12 2v2"/>
+              </svg>Paramètres
+            </a>
+            <a href="/notifications" class="profile-menu__item" role="menuitem">
+              <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 01-3.46 0"/>
+              </svg>Notifications
+              <span class="profile-menu__item-suffix tag tag--amber" style="font-size:10.5px" aria-label="3 notifications">3</span>
+            </a>
+            <div class="profile-menu__separator" role="separator"></div>
+            <a href="/changelog" class="profile-menu__item" role="menuitem">
+              <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>Changelog
+              <span class="profile-menu__item-suffix" style="font-size:11px;color:var(--color-text-3)" aria-label="Version 2.4.1">v2.4.1</span>
+            </a>
+            <a href="/aide" class="profile-menu__item" role="menuitem">
+              <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3M12 17h.01"/>
+              </svg>Aide &amp; support
+            </a>
+            <div class="profile-menu__separator" role="separator"></div>
+            <a href="/logout" class="profile-menu__item is-danger" role="menuitem">
+              <svg width="15" height="15" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+              </svg>Se déconnecter
+            </a>
+          </nav>
+        </div>
+      </div>
+
+    </header>
+
+
+    <!-- C2. Page content -->
+    <main id="page-content" class="page-content" aria-label="Tableau de bord">
+      <div class="page-header">
+        <div>
+          <h1 class="page-header__title">Vue d'ensemble</h1>
+          <p class="page-header__subtitle">
+            <time datetime="2026-03-08">Dimanche 8 mars 2026</time>
+            &nbsp;·&nbsp; Mise à jour il y a 2 min
+          </p>
+        </div>
+        <div class="page-header__actions">
+          <button class="btn btn--ghost" aria-label="Actualiser les données">
+            <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"/>
+              <polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+            </svg>
+            Actualiser
+          </button>
+          <button class="btn btn--primary" aria-label="Exporter les données">
+            <svg width="13" height="13" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Exporter
+          </button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <section aria-labelledby="kpi-section-title">
+        <h2 id="kpi-section-title" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Indicateurs clés</h2>
+        <div class="grid grid--4-cols">
+
+          <article class="card" aria-label="Voyages du jour : 48, en hausse de 12%">
+            <div class="card__header">
+              <span class="card__title">Voyages du jour</span>
+              <div class="stat-icon" style="background:var(--color-amber-light)" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value" aria-label="48 voyages">48</div>
+            <div class="stat-footer">
+              <span class="tag tag--green" aria-label="Hausse de 12%">↑ +12%</span>
+              <span>vs hier</span>
+            </div>
+          </article>
+
+          <article class="card" aria-label="Tickets vendus : 1 284, en hausse de 8%">
+            <div class="card__header">
+              <span class="card__title">Tickets vendus</span>
+              <div class="stat-icon" style="background:var(--color-sky-light)" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-sky)" stroke-width="2">
+                  <path d="M3 8h18v13H3z"/><path d="M16 8V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v3"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value" aria-label="1 284 tickets">1&nbsp;284</div>
+            <div class="stat-footer">
+              <span class="tag tag--green" aria-label="Hausse de 8%">↑ +8%</span>
+              <span>vs sem. dernière</span>
+            </div>
+          </article>
+
+          <article class="card" aria-label="Véhicules actifs : 37 sur 42, 5 en maintenance">
+            <div class="card__header">
+              <span class="card__title">Véhicules actifs</span>
+              <div class="stat-icon" style="background:var(--color-green-light)" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2">
+                  <path d="M1 17l3-9h16l3 9M1 17h22M6.5 17a2 2 0 100-4 2 2 0 000 4zM17.5 17a2 2 0 100-4 2 2 0 000 4z"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value" aria-label="37 sur 42">37 <small>/ 42</small></div>
+            <div class="stat-footer">
+              <span class="tag tag--amber">5 en maintenance</span>
+            </div>
+          </article>
+
+          <article class="card" aria-label="Recettes du jour : 842 000 FCFA, en baisse de 3%">
+            <div class="card__header">
+              <span class="card__title">Recettes du jour</span>
+              <div class="stat-icon" style="background:var(--color-green-light)" aria-hidden="true">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2">
+                  <line x1="12" y1="1" x2="12" y2="23"/>
+                  <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value" aria-label="842 000 FCFA">842&nbsp;K <small>FCFA</small></div>
+            <div class="stat-footer">
+              <span class="tag tag--red" aria-label="Baisse de 3%">↓ −3%</span>
+              <span>vs hier</span>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- Charts row -->
+      <div class="grid grid--3-1">
+        <section class="card" aria-labelledby="chart-bar-title">
+          <div class="card__header">
+            <h2 class="card__title" id="chart-bar-title">Tickets vendus — 7 derniers jours</h2>
+            <div style="display:flex;align-items:center;gap:12px;font-size:12px;color:var(--color-text-3)" aria-hidden="true">
+              <span style="display:flex;align-items:center;gap:5px">
+                <span style="width:10px;height:10px;border-radius:3px;background:var(--color-amber);display:inline-block"></span>Cette sem.
+              </span>
+              <span style="display:flex;align-items:center;gap:5px">
+                <span style="width:10px;height:10px;border-radius:3px;background:var(--color-surface-3);display:inline-block"></span>Sem. passée
+              </span>
+            </div>
+          </div>
+          <div class="bar-chart" id="bar-chart-bars" role="img" aria-label="Histogramme des tickets vendus sur 7 jours"></div>
+          <div class="bar-chart__labels" id="bar-chart-labels" aria-hidden="true"></div>
+        </section>
+
+        <section class="card" aria-labelledby="chart-donut-title">
+          <div class="card__header">
+            <h2 class="card__title" id="chart-donut-title">Répartition des trajets</h2>
+          </div>
+          <div class="donut-chart-wrap">
+            <svg viewBox="0 0 100 100" width="108" height="108"
+                 style="transform:rotate(-90deg);flex-shrink:0"
+                 role="img"
+                 aria-label="Donut : Abidjan-Bouaké 37%, Abidjan-Yamoussoukro 25%, Autres 38%">
+              <circle cx="50" cy="50" r="38" fill="none" stroke="var(--color-surface-2)" stroke-width="15"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="var(--color-amber)" stroke-width="15" stroke-dasharray="88 151" stroke-dashoffset="0" stroke-linecap="round"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="var(--color-sky)" stroke-width="15" stroke-dasharray="59 181" stroke-dashoffset="-88" stroke-linecap="round"/>
+              <circle cx="50" cy="50" r="38" fill="none" stroke="var(--color-green)" stroke-width="15" stroke-dasharray="91 148" stroke-dashoffset="-147" stroke-linecap="round"/>
+            </svg>
+            <dl class="donut-chart__legend" aria-label="Légende du graphique de répartition">
+              <div class="donut-chart__legend-row">
+                <div class="donut-chart__legend-key">
+                  <span class="donut-chart__legend-swatch" style="background:var(--color-amber)" aria-hidden="true"></span>
+                  <dt>Abidjan – Bouaké</dt>
+                </div>
+                <dd class="donut-chart__legend-value">37%</dd>
+              </div>
+              <div class="donut-chart__legend-row">
+                <div class="donut-chart__legend-key">
+                  <span class="donut-chart__legend-swatch" style="background:var(--color-sky)" aria-hidden="true"></span>
+                  <dt>Abidjan – Yamoussoukro</dt>
+                </div>
+                <dd class="donut-chart__legend-value">25%</dd>
+              </div>
+              <div class="donut-chart__legend-row">
+                <div class="donut-chart__legend-key">
+                  <span class="donut-chart__legend-swatch" style="background:var(--color-green)" aria-hidden="true"></span>
+                  <dt>Autres trajets</dt>
+                </div>
+                <dd class="donut-chart__legend-value">38%</dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+      </div>
+
+      <!-- Occupation + Activity -->
+      <div class="grid grid--2-cols">
+        <section class="card" aria-labelledby="occupation-title">
+          <div class="card__header">
+            <h2 class="card__title" id="occupation-title">Taux d'occupation par ligne</h2>
+            <span class="card__link" aria-label="Données d'aujourd'hui">Aujourd'hui</span>
+          </div>
+          <div class="progress-stack">
+            <div role="group" aria-label="Daloa vers Abidjan : 93%">
+              <div class="progress-item__header">
+                <span class="progress-item__name">Daloa → Abidjan</span>
+                <span class="progress-item__value" aria-hidden="true">93%</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="93" aria-valuemin="0" aria-valuemax="100" aria-label="93%">
+                <div class="progress-fill" style="width:93%;background:var(--color-red)"></div>
+              </div>
+            </div>
+            <div role="group" aria-label="Abidjan vers Bouaké : 87%">
+              <div class="progress-item__header">
+                <span class="progress-item__name">Abidjan → Bouaké</span>
+                <span class="progress-item__value" aria-hidden="true">87%</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="87" aria-valuemin="0" aria-valuemax="100" aria-label="87%">
+                <div class="progress-fill" style="width:87%;background:var(--color-amber)"></div>
+              </div>
+            </div>
+            <div role="group" aria-label="Abidjan vers Yamoussoukro : 72%">
+              <div class="progress-item__header">
+                <span class="progress-item__name">Abidjan → Yamoussoukro</span>
+                <span class="progress-item__value" aria-hidden="true">72%</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" aria-label="72%">
+                <div class="progress-fill" style="width:72%;background:var(--color-sky)"></div>
+              </div>
+            </div>
+            <div role="group" aria-label="Bouaké vers Man : 61%">
+              <div class="progress-item__header">
+                <span class="progress-item__name">Bouaké → Man</span>
+                <span class="progress-item__value" aria-hidden="true">61%</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="61" aria-valuemin="0" aria-valuemax="100" aria-label="61%">
+                <div class="progress-fill" style="width:61%;background:var(--color-green)"></div>
+              </div>
+            </div>
+            <div role="group" aria-label="Abidjan vers San Pedro : 45%">
+              <div class="progress-item__header">
+                <span class="progress-item__name">Abidjan → San Pedro</span>
+                <span class="progress-item__value" aria-hidden="true">45%</span>
+              </div>
+              <div class="progress-track" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" aria-label="45%">
+                <div class="progress-fill" style="width:45%;background:var(--color-text-3)"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card" aria-labelledby="activity-title">
+          <div class="card__header">
+            <h2 class="card__title" id="activity-title">Activité récente</h2>
+            <a class="card__link" href="/activite" aria-label="Voir toute l'activité récente">Voir tout</a>
+          </div>
+          <ul class="activity-feed" role="list" aria-label="Activité récente">
+            <li class="activity-feed__item" role="listitem">
+              <div class="activity-feed__icon" style="background:var(--color-red-light)" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-red)" stroke-width="2.3">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+              </div>
+              <div class="activity-feed__body">
+                <div class="activity-feed__title">Dépannage — VH-019 (Mercedes)</div>
+                <div class="activity-feed__meta">Signalé par Koné Ibrahim · PK 142</div>
+              </div>
+              <time class="activity-feed__time" datetime="2026-03-08T07:30">07:30</time>
+            </li>
+            <li class="activity-feed__item" role="listitem">
+              <div class="activity-feed__icon" style="background:var(--color-green-light)" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-green)" stroke-width="2.3">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </div>
+              <div class="activity-feed__body">
+                <div class="activity-feed__title">Voyage V-2081 — Départ confirmé</div>
+                <div class="activity-feed__meta">Abidjan → Bouaké · 46 passagers</div>
+              </div>
+              <time class="activity-feed__time" datetime="2026-03-08T08:14">08:14</time>
+            </li>
+            <li class="activity-feed__item" role="listitem">
+              <div class="activity-feed__icon" style="background:var(--color-amber-light)" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-amber)" stroke-width="2.3">
+                  <path d="M3 8h18v13H3z"/><path d="M16 8V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v3"/>
+                </svg>
+              </div>
+              <div class="activity-feed__body">
+                <div class="activity-feed__title">23 tickets vendus en ligne</div>
+                <div class="activity-feed__meta">Bouaké → Man · départ 15h00</div>
+              </div>
+              <time class="activity-feed__time" datetime="2026-03-08T07:52">07:52</time>
+            </li>
+            <li class="activity-feed__item" role="listitem">
+              <div class="activity-feed__icon" style="background:var(--color-sky-light)" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-sky)" stroke-width="2.3">
+                  <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>
+                </svg>
+              </div>
+              <div class="activity-feed__body">
+                <div class="activity-feed__title">Nouvelle affectation — Traoré Moussa</div>
+                <div class="activity-feed__meta">Ligne Abidjan – Yamoussoukro</div>
+              </div>
+              <time class="activity-feed__time" datetime="2026-03-07">hier</time>
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- Voyages table -->
+      <section class="card" aria-labelledby="table-title">
+        <div class="card__header" style="margin-bottom:18px">
+          <h2 class="card__title" id="table-title">Voyages d'aujourd'hui</h2>
+          <a class="card__link" href="/exploitation/voyages" aria-label="Voir tous les voyages">Voir tout →</a>
+        </div>
+        <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+          <table class="data-table" aria-label="Liste des voyages du jour">
+            <thead>
+              <tr>
+                <th scope="col">Réf.</th>
+                <th scope="col">Trajet</th>
+                <th scope="col">Véhicule</th>
+                <th scope="col">Départ</th>
+                <th scope="col">Passagers</th>
+                <th scope="col">Recette FCFA</th>
+                <th scope="col">Statut</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="data-table__cell--mono data-table__cell--dim">V-2081</td>
+                <td style="font-weight:500">Abidjan → Bouaké</td>
+                <td class="data-table__cell--muted" style="font-size:12.5px">VH-004 · Mercedes</td>
+                <td class="data-table__cell--mono"><time datetime="08:00">08:00</time></td>
+                <td class="data-table__cell--mono data-table__cell--bold">46 <span class="data-table__cell--muted" style="font-weight:400">/50</span></td>
+                <td class="data-table__cell--mono data-table__cell--bold">46 000</td>
+                <td><span class="status-pill tag--sky"><span class="status-pill__dot" aria-hidden="true"></span>En route</span></td>
+              </tr>
+              <tr>
+                <td class="data-table__cell--mono data-table__cell--dim">V-2082</td>
+                <td style="font-weight:500">Abidjan → San Pedro</td>
+                <td class="data-table__cell--muted" style="font-size:12.5px">VH-011 · Toyota</td>
+                <td class="data-table__cell--mono"><time datetime="09:30">09:30</time></td>
+                <td class="data-table__cell--mono data-table__cell--bold">28 <span class="data-table__cell--muted" style="font-weight:400">/45</span></td>
+                <td class="data-table__cell--mono data-table__cell--bold">28 000</td>
+                <td><span class="status-pill tag--amber"><span class="status-pill__dot" aria-hidden="true"></span>En gare</span></td>
+              </tr>
+              <tr>
+                <td class="data-table__cell--mono data-table__cell--dim">V-2083</td>
+                <td style="font-weight:500">Bouaké → Man</td>
+                <td class="data-table__cell--muted" style="font-size:12.5px">VH-007 · Iveco</td>
+                <td class="data-table__cell--mono"><time datetime="10:00">10:00</time></td>
+                <td class="data-table__cell--mono data-table__cell--bold">32 <span class="data-table__cell--muted" style="font-weight:400">/40</span></td>
+                <td class="data-table__cell--mono data-table__cell--bold">32 000</td>
+                <td><span class="status-pill tag--amber"><span class="status-pill__dot" aria-hidden="true"></span>En gare</span></td>
+              </tr>
+              <tr>
+                <td class="data-table__cell--mono data-table__cell--dim">V-2080</td>
+                <td style="font-weight:500">Yamoussoukro → Abidjan</td>
+                <td class="data-table__cell--muted" style="font-size:12.5px">VH-019 · Mercedes</td>
+                <td class="data-table__cell--mono"><time datetime="06:00">06:00</time></td>
+                <td class="data-table__cell--mono data-table__cell--bold">50 <span class="data-table__cell--muted" style="font-weight:400">/50</span></td>
+                <td class="data-table__cell--muted" aria-label="Pas de recette">—</td>
+                <td><span class="status-pill tag--red"><span class="status-pill__dot" aria-hidden="true"></span>Dépannage</span></td>
+              </tr>
+              <tr>
+                <td class="data-table__cell--mono data-table__cell--dim">V-2079</td>
+                <td style="font-weight:500">Daloa → Abidjan</td>
+                <td class="data-table__cell--muted" style="font-size:12.5px">VH-003 · Toyota</td>
+                <td class="data-table__cell--mono"><time datetime="05:30">05:30</time></td>
+                <td class="data-table__cell--mono data-table__cell--bold">50 <span class="data-table__cell--muted" style="font-weight:400">/50</span></td>
+                <td class="data-table__cell--mono data-table__cell--bold">50 000</td>
+                <td><span class="status-pill tag--green"><span class="status-pill__dot" aria-hidden="true"></span>Arrivé</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+
+  <!-- ══════════════════════════════
+       D. SPOTLIGHT SEARCH
+  ══════════════════════════════ -->
+  <div id="spotlight-backdrop"
+       class="spotlight-backdrop"
+       data-action="close-spotlight"
+       aria-hidden="true"></div>
+
+  <div id="spotlight"
+       class="spotlight"
+       role="dialog"
+       aria-modal="true"
+       aria-label="Recherche globale"
+       aria-describedby="spotlight-hint">
+
+    <div class="spotlight__input-row">
+      <svg width="18" height="18" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input id="spotlight-input"
+             class="spotlight__input"
+             type="search"
+             placeholder="Rechercher une page, un véhicule, un voyage…"
+             autocomplete="off"
+             spellcheck="false"
+             aria-label="Rechercher"
+             aria-autocomplete="list"
+             aria-controls="spotlight-results"
+             aria-activedescendant=""
+             role="combobox"
+             aria-expanded="true"/>
+      <button class="spotlight__close-btn"
+              data-action="close-spotlight"
+              aria-label="Fermer la recherche (Echap)">Esc</button>
+    </div>
+
+    <div id="spotlight-results"
+         class="spotlight__results"
+         role="listbox"
+         aria-label="Résultats de recherche"
+         aria-live="polite"
+         aria-atomic="false"></div>
+
+    <div class="spotlight__footer" id="spotlight-hint" aria-label="Raccourcis clavier">
+      <div class="spotlight__footer-hint" aria-hidden="true">
+        <span class="spotlight__kbd">↑</span><span class="spotlight__kbd">↓</span><span>Naviguer</span>
+      </div>
+      <div class="spotlight__footer-separator" aria-hidden="true"></div>
+      <div class="spotlight__footer-hint" aria-hidden="true">
+        <span class="spotlight__kbd">↵</span><span>Ouvrir</span>
+      </div>
+      <div class="spotlight__footer-separator" aria-hidden="true"></div>
+      <div class="spotlight__footer-hint" aria-hidden="true">
+        <span class="spotlight__kbd">Esc</span><span>Fermer</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
